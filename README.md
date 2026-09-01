@@ -18,7 +18,22 @@
 
 ---
 
-![BOKA OS Dashboard](screenshot.png)
+## Screenshots
+
+### Main Dashboard
+![BOKA OS Dashboard](boka_screenshot_1.png)
+
+### Family Profiles
+![Family Profiles](boka_screenshot_2.png)
+
+### Settings
+![Settings](boka_screenshot_3.png)
+
+### Skills
+![Skills](boka_screenshot_4.png)
+
+### Chat View
+![Chat View](boka_screenshot_5.png)
 
 ## Features
 
