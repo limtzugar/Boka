@@ -1671,15 +1671,14 @@ export default function BokaPage() {
               <div ref={chatEndRef} />
             </div>
 
-            {/* Input — v0.3.19: flush bar, same height as vision bar (h-10 = 40px) */}
-            <div className="shrink-0 border-t border-[#383850] p-0">
+            {/* v0.5.1: Extras above the input bar (so bar stays same height as vision bar) */}
               {micError && (
-                <div className="px-3 py-1.5 bg-[#ff6b6b]/10 border-b border-[#ff6b6b]/20 flex items-center gap-0">
+                <div className="shrink-0 px-3 py-1.5 bg-[#ff6b6b]/10 border-t border-[#ff6b6b]/20 flex items-center gap-0">
                   <span className="text-[10px] text-[#ff6b6b] font-mono">{micError}</span>
                 </div>
               )}
               {showImageGen && (
-                <div className="mb-2 p-2 bg-[#a855f7]/5 border border-[#a855f7]/30 rounded-lg">
+                <div className="shrink-0 mb-2 p-2 bg-[#a855f7]/5 border border-[#a855f7]/30 rounded-lg">
                   <div className="flex items-center gap-0 mb-1.5">
                     <Palette size={12} className="text-[#a855f7]" />
                     <span className="text-[10px] text-[#a855f7] font-mono">Boka narysuje...</span>
@@ -1707,7 +1706,7 @@ export default function BokaPage() {
               )}
               {/* v0.3.16: pending attachments preview (drag&drop) */}
               {pendingAttachments.length > 0 && (
-                <div className="flex flex-wrap gap-1.5 mb-2">
+                <div className="shrink-0 flex flex-wrap gap-1.5 mb-2">
                   {pendingAttachments.map((att) => (
                     <div
                       key={att.id}
@@ -1746,7 +1745,9 @@ export default function BokaPage() {
                   ))}
                 </div>
               )}
-              <form onSubmit={handleSubmit} className="flex items-stretch gap-0">
+              {/* Input bar — always h-10, same as vision bar */}
+              <div className="shrink-0 border-t border-[#383850] p-0 flex items-stretch">
+              <form onSubmit={handleSubmit} className="flex items-stretch gap-0 flex-1">
                 <div className="relative shrink-0 flex">
                   <button
                     type="button"
@@ -1917,7 +1918,7 @@ export default function BokaPage() {
                   <Send size={16} />
                 </button>
               </form>
-            </div>
+              </div>
           </aside>
             }
             right={
