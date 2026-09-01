@@ -11,7 +11,8 @@ function getSnapshot() {
 function getServerSnapshot() { return false; }
 
 export function useSpeechSynthesis() {
-  const { isSpeaking, setSpeaking } = useAppStore();
+  const isSpeaking = useAppStore(s => s.isSpeaking);
+  const setSpeaking = useAppStore(s => s.setSpeaking);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
   const isSupported = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 

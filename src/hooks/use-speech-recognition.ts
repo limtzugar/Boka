@@ -70,7 +70,9 @@ function useMediaRecorderSupported() {
 }
 
 export function useSpeechRecognition() {
-  const { isListening, setListening, activeMemberId } = useAppStore();
+  const isListening = useAppStore(s => s.isListening);
+  const setListening = useAppStore(s => s.setListening);
+  const activeMemberId = useAppStore(s => s.activeMemberId);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const [continuousMode, setContinuousMode] = useState(false);
   const [micError, setMicError] = useState<string | null>(null);

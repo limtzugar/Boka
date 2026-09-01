@@ -75,17 +75,31 @@ const AGENT_ICONS: Record<string, { icon: React.ReactNode; color: string; label:
 };
 
 export default function BokaPage() {
-  const {
-    familyId, members, activeMemberId, childNearby,
-    messages, isStreaming, currentAgentId,
-    memoryEntries, activeTab, faceStyle,
-    wellbeingLog, lastWellbeingCheckIn,
-    setFamily, setActiveMember, toggleChildNearby,
-    addMessage, setStreaming, setCurrentAgent,
-    setMemoryEntries, setActiveTab, setFaceStyle,
-    addWellbeingEntry, setLastWellbeingCheckIn,
-    updateLastAssistantMessage,
-  } = useAppStore();
+  // individual selectors to avoid Zustand 5 + React 19 infinite re-render
+  const familyId = useAppStore(s => s.familyId);
+  const members = useAppStore(s => s.members);
+  const activeMemberId = useAppStore(s => s.activeMemberId);
+  const childNearby = useAppStore(s => s.childNearby);
+  const messages = useAppStore(s => s.messages);
+  const isStreaming = useAppStore(s => s.isStreaming);
+  const currentAgentId = useAppStore(s => s.currentAgentId);
+  const memoryEntries = useAppStore(s => s.memoryEntries);
+  const activeTab = useAppStore(s => s.activeTab);
+  const faceStyle = useAppStore(s => s.faceStyle);
+  const wellbeingLog = useAppStore(s => s.wellbeingLog);
+  const lastWellbeingCheckIn = useAppStore(s => s.lastWellbeingCheckIn);
+  const setFamily = useAppStore(s => s.setFamily);
+  const setActiveMember = useAppStore(s => s.setActiveMember);
+  const toggleChildNearby = useAppStore(s => s.toggleChildNearby);
+  const addMessage = useAppStore(s => s.addMessage);
+  const setStreaming = useAppStore(s => s.setStreaming);
+  const setCurrentAgent = useAppStore(s => s.setCurrentAgent);
+  const setMemoryEntries = useAppStore(s => s.setMemoryEntries);
+  const setActiveTab = useAppStore(s => s.setActiveTab);
+  const setFaceStyle = useAppStore(s => s.setFaceStyle);
+  const addWellbeingEntry = useAppStore(s => s.addWellbeingEntry);
+  const setLastWellbeingCheckIn = useAppStore(s => s.setLastWellbeingCheckIn);
+  const updateLastAssistantMessage = useAppStore(s => s.updateLastAssistantMessage);
 
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);

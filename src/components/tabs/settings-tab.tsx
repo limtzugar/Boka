@@ -30,7 +30,20 @@ function VaultSection() {
 // ═══════════════════════════════════════════════════════════
 
 export function SettingsTab() {
-  const { faceStyle, setFaceStyle, cameraStyle, setCameraStyle, eyeSharpness, setEyeSharpness, eyeBrightness, setEyeBrightness, eyeSaturation, setEyeSaturation, eyeBlur, setEyeBlur, formulaSettings, setFormulaSettings } = useAppStore();
+  const faceStyle = useAppStore(s => s.faceStyle);
+  const setFaceStyle = useAppStore(s => s.setFaceStyle);
+  const cameraStyle = useAppStore(s => s.cameraStyle);
+  const setCameraStyle = useAppStore(s => s.setCameraStyle);
+  const eyeSharpness = useAppStore(s => s.eyeSharpness);
+  const setEyeSharpness = useAppStore(s => s.setEyeSharpness);
+  const eyeBrightness = useAppStore(s => s.eyeBrightness);
+  const setEyeBrightness = useAppStore(s => s.setEyeBrightness);
+  const eyeSaturation = useAppStore(s => s.eyeSaturation);
+  const setEyeSaturation = useAppStore(s => s.setEyeSaturation);
+  const eyeBlur = useAppStore(s => s.eyeBlur);
+  const setEyeBlur = useAppStore(s => s.setEyeBlur);
+  const formulaSettings = useAppStore(s => s.formulaSettings);
+  const setFormulaSettings = useAppStore(s => s.setFormulaSettings);
   const [settings, setSettings] = useState<SettingsState>({
     provider: 'openrouter',
     openrouterKey: '',
