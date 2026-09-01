@@ -28,7 +28,6 @@ import {
 import { extractFactsFromConversation } from '@/lib/memory-extractor';
 import { chatCompletion, loadSettings } from '@/lib/ai-providers';
 import { ensureFamilySeeded } from '@/lib/auto-seed';
-import { mem0Ingest } from '@/lib/mem0-service';
 import { retrieveMemoryContext, recordConversationTurn } from '@/lib/agent-memory/chat-integration';
 import { getAIClient } from '@/lib/ai-client';
 
@@ -673,7 +672,6 @@ export async function POST(req: NextRequest) {
           const explicitMemoryUpdates = extractMemoryUpdates(responseText);
           for (const update of explicitMemoryUpdates) {
             try {
-              const r = await mem0Ingest({
                 familyId: familyFinal.id,
                 memberId: activeMember.id,
                 content: update,
@@ -704,7 +702,6 @@ export async function POST(req: NextRequest) {
             for (const fact of facts) {
               try {
                 const emotionTag = inferEmotionFromContent(fact.content);
-                const r = await mem0Ingest({
                   familyId: familyFinal.id,
                   memberId: activeMember.id,
                   content: fact.content,

@@ -14,8 +14,6 @@
 // ═══════════════════════════════════════════════════════════
 
 import { db } from '@/lib/db';
-import { mem0Ingest } from '@/lib/mem0-service';
-import { extractEntities, type EntityCandidate } from '@/lib/graphrag-service';
 
 // ── Typy ───────────────────────────────────
 
@@ -112,7 +110,6 @@ async function extractFacts(chunk: string, familyId: string, memberId?: string):
   entities: EntityCandidate[];
 }> {
   // Heuristic: każdy chunk → 1 MemoryEntry (episodic)
-  // + ekstrakcja encji przez graphrag-service
   const entities = await extractEntities(chunk, familyId, memberId);
 
   return {
