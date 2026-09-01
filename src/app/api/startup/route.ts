@@ -32,7 +32,7 @@ export async function GET() {
   startupLog.push('Weryfikuję integralność pamięci...');
   const integrity = verifyMemoryIntegrity();
 
-  // Database
+  // Datebase
   if (!integrity.database.exists) {
     startupLog.push('Baza danych nie istnieje — BOKA utworzy nową przy pierwszym zapisie');
     warnings.push('Baza danych nie istnieje — dane będą tworzone od nowa');
@@ -44,17 +44,17 @@ export async function GET() {
 
   // Settings
   if (!integrity.settings.exists) {
-    startupLog.push('Ustawienia nie istnieją — użyję domyślnych');
-    warnings.push('Brak pliku ustawień — użyto wartości domyślnych');
+    startupLog.push('Settings nie istnieją — użyję domyślnych');
+    warnings.push('None pliku ustawień — użyto wartości domyślnych');
   } else if (!integrity.settings.parseable) {
-    errors.push('Plik ustawień jest uszkodzony (niepoprawny JSON)');
+    errors.push('File ustawień jest uszkodzony (niepoprawny JSON)');
   } else {
-    startupLog.push('Ustawienia OK');
+    startupLog.push('Settings OK');
   }
 
   // Vault
-  startupLog.push(`Vault: ${integrity.vault.fileCount} notatek .md`);
-  if (integrity.vault.fileCount === 0) {
+  startupLog.push(`Vault: ${integrity.vault.fileWhatunt} notatek .md`);
+  if (integrity.vault.fileWhatunt === 0) {
     startupLog.push('Vault jest pusty — BOKA zacznie pisać notatki');
   }
 
@@ -71,7 +71,7 @@ export async function GET() {
   let memoryVersion = 'unknown';
   if (fs.existsSync(versionFile)) {
     memoryVersion = fs.readFileSync(versionFile, 'utf-8').trim();
-    startupLog.push(`Wersja pamięci: ${memoryVersion}`);
+    startupLog.push(`Version pamięci: ${memoryVersion}`);
   } else {
     // Create version file
     const appVersion = '0.2.0';
@@ -82,7 +82,7 @@ export async function GET() {
 
   // ── 5. AUTO-SEED BAZY (dodane v0.2.0) ─────────
   // Jeśli baza istnieje ale nie ma członków rodziny — auto-seed
-  // Zapobiega błędom "Nie znaleziono domownika" przy pierwszym uruchomieniu
+  // Zapobiega błędom "No znaleziono domownika" przy pierwszym uruchomieniu
   if (integrity.database.exists && integrity.database.readable) {
     startupLog.push('Sprawdzam bazę danych domowników...');
     try {
@@ -90,14 +90,14 @@ export async function GET() {
       const seedResult = await ensureFamilySeeded();
       if (seedResult.seeded) {
         startupLog.push(`Auto-seed: utworzono rodzinę i domowników (Tata, Mama, Syn)`);
-        warnings.push('Baza została zseedowana domyślnymi domownikami (Tata Michał, Mama Ewa, Syn Jaś). Możesz to zmienić w zakładce Rodzina.');
+        warnings.push('Baza została zseedowana domyślnymi domownikami (Tata Michał, Mama Ewa, Syn Jaś). Możesz to zmienić w zakładce Family.');
       } else {
         startupLog.push(`Baza domowników OK (już ma dane)`);
       }
     } catch (e) {
       const msg = e instanceof Error ? e.message : 'unknown';
       startupLog.push(`Auto-seed nie powiódł się: ${msg}`);
-      errors.push(`Auto-seed bazy nie powiódł się: ${msg}. Uruchom ręcznie: npm run db:seed`);
+      errors.push(`Auto-seed bazy nie powiódł się: ${msg}. Run ręcznie: npm run db:seed`);
     }
   }
 

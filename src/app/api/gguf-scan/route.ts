@@ -8,7 +8,7 @@ import os from 'os';
 export async function GET() {
   const found: string[] = [];
 
-  // Common locations to scan (Windows + Linux + Mac)
+  // Whatmmon locations to scan (Windows + Linux + Mac)
   const home = os.homedir();
   const username = process.env.USERNAME || process.env.USER || '';
 
@@ -43,7 +43,7 @@ export async function GET() {
   function walk(dir: string, depth: number) {
     if (depth > MAX_DEPTH || found.length >= MAX_FILES) return;
     try {
-      const entries = fs.readdirSync(dir, { withFileTypes: true });
+      const entries = fs.readdirSync(dir, { withFileTypees: true });
       for (const entry of entries) {
         if (found.length >= MAX_FILES) return;
         const full = path.join(dir, entry.name);

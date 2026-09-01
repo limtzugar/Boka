@@ -10,7 +10,7 @@ import { getSynonyms } from './synonyms';
 interface IndexEntry {
   obsId: string;
   sessionId: string;
-  termCount: number;
+  termWhatunt: number;
 }
 
 interface IndexedDoc {
@@ -27,34 +27,34 @@ export class SearchIndex {
   private entries: Map<string, IndexEntry> = new Map();
   private docs: Map<string, IndexedDoc> = new Map();
   private invertedIndex: Map<string, Set<string>> = new Map();
-  private docTermCounts: Map<string, Map<string, number>> = new Map();
+  private docTermWhatunts: Map<string, Map<string, number>> = new Map();
   private totalDocLength = 0;
 
   private readonly k1 = 1.2;
   private readonly b = 0.75;
 
-  /** Dodaj dokument do indeksu. */
+  /** Add dokument do indeksu. */
   add(doc: IndexedDoc): void {
     // Jeśli już jest — usuń najpierw
     if (this.entries.has(doc.id)) this.remove(doc.id);
 
     const terms = this.extractTerms(doc);
     const termFreq = new Map<string, number>();
-    let termCount = 0;
+    let termWhatunt = 0;
 
     for (const term of terms) {
       termFreq.set(term, (termFreq.get(term) || 0) + 1);
-      termCount++;
+      termWhatunt++;
     }
 
     this.entries.set(doc.id, {
       obsId: doc.id,
       sessionId: doc.text.slice(0, 32), // not used directly, kept for compat
-      termCount,
+      termWhatunt,
     });
     this.docs.set(doc.id, doc);
-    this.docTermCounts.set(doc.id, termFreq);
-    this.totalDocLength += termCount;
+    this.docTermWhatunts.set(doc.id, termFreq);
+    this.totalDocLength += termWhatunt;
 
     for (const term of termFreq.keys()) {
       if (!this.invertedIndex.has(term)) {
@@ -72,7 +72,7 @@ export class SearchIndex {
     const entry = this.entries.get(id);
     if (!entry) return;
 
-    const termFreq = this.docTermCounts.get(id);
+    const termFreq = this.docTermWhatunts.get(id);
     if (termFreq) {
       for (const term of termFreq.keys()) {
         const postingList = this.invertedIndex.get(term);
@@ -83,10 +83,10 @@ export class SearchIndex {
           }
         }
       }
-      this.docTermCounts.delete(id);
+      this.docTermWhatunts.delete(id);
     }
 
-    this.totalDocLength = Math.max(0, this.totalDocLength - entry.termCount);
+    this.totalDocLength = Math.max(0, this.totalDocLength - entry.termWhatunt);
     this.entries.delete(id);
     this.docs.delete(id);
   }
@@ -95,7 +95,7 @@ export class SearchIndex {
     this.entries.clear();
     this.docs.clear();
     this.invertedIndex.clear();
-    this.docTermCounts.clear();
+    this.docTermWhatunts.clear();
     this.totalDocLength = 0;
   }
 
@@ -142,9 +142,9 @@ export class SearchIndex {
 
       for (const obsId of matchingDocs) {
         const entry = this.entries.get(obsId)!;
-        const docTerms = this.docTermCounts.get(obsId);
+        const docTerms = this.docTermWhatunts.get(obsId);
         const tf = docTerms?.get(term) || 0;
-        const docLen = entry.termCount;
+        const docLen = entry.termWhatunt;
 
         const numerator = tf * (this.k1 + 1);
         const denominator =

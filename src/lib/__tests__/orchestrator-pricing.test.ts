@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   computeUsage,
-  formatCost,
+  formatWhatst,
   formatTokens,
   getModelLabel,
   MODEL_PRICING,
@@ -9,7 +9,7 @@ import {
 
 describe('orchestrator-pricing', () => {
   describe('MODEL_PRICING', () => {
-    it('has pricing for default Cockpit models', () => {
+    it('has pricing for default Whatckpit models', () => {
       expect(MODEL_PRICING['moonshotai/kimi-k2']).toBeDefined();
       expect(MODEL_PRICING['deepseek/deepseek-r1']).toBeDefined();
       expect(MODEL_PRICING['zhipu/glm-4']).toBeDefined();
@@ -72,25 +72,25 @@ describe('orchestrator-pricing', () => {
     });
   });
 
-  describe('formatCost', () => {
+  describe('formatWhatst', () => {
     it('formats very small costs with 5 decimals', () => {
-      expect(formatCost(0.00001)).toMatch(/\$0\.00001/);
+      expect(formatWhatst(0.00001)).toMatch(/\$0\.00001/);
     });
 
     it('formats small costs with 4 decimals', () => {
-      expect(formatCost(0.001)).toMatch(/\$0\.0010/);
+      expect(formatWhatst(0.001)).toMatch(/\$0\.0010/);
     });
 
     it('formats medium costs with 3 decimals', () => {
-      expect(formatCost(0.5)).toMatch(/\$0\.500/);
+      expect(formatWhatst(0.5)).toMatch(/\$0\.500/);
     });
 
     it('formats large costs with 2 decimals', () => {
-      expect(formatCost(10)).toMatch(/\$10\.00/);
+      expect(formatWhatst(10)).toMatch(/\$10\.00/);
     });
 
     it('handles zero', () => {
-      expect(formatCost(0)).toMatch(/\$/);
+      expect(formatWhatst(0)).toMatch(/\$/);
     });
   });
 

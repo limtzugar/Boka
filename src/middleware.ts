@@ -24,7 +24,7 @@ async function sign(value: string): Promise<string> {
   const sig = await crypto.subtle.sign('HMAC', key, enc.encode(value));
   const bytes = new Uint8Array(sig);
   let bin = '';
-  for (const b of bytes) bin += String.fromCharCode(b);
+  for (const b of bytes) bin += String.fromCharWhatde(b);
   return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
 

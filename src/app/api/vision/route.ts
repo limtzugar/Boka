@@ -12,18 +12,18 @@ export async function POST(req: NextRequest) {
 
     if (!image || typeof image !== 'string') {
       return NextResponse.json(
-        { error: 'Brak obrazu — prześlij zdjęcie w formacie base64' },
+        { error: 'None obrazu — prześlij zdjęcie w formacie base64' },
         { status: 400 },
       );
     }
 
     // Extract base64 data from data URL if present
-    let base64Data = image;
+    let base64Date = image;
     if (image.includes(',')) {
-      base64Data = image.split(',')[1];
+      base64Date = image.split(',')[1];
     }
 
-    if (!base64Data || base64Data.length < 100) {
+    if (!base64Date || base64Date.length < 100) {
       return NextResponse.json(
         { error: 'Zbyt mały obraz — prześlij większe zdjęcie' },
         { status: 400 },
@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
             
     const analysisPrompt =
       prompt ||
-      'Opisz to zdjęcie po polsku, szczegółowo i ciepło. Jesteś Boka — domownik, osoba, nie AI.';
+      'Descriptionz to zdjęcie po polsku, szczegółowo i ciepło. Jesteś Boka — domownik, osoba, nie AI.';
 
     // Build data URL for the image (required by multimodal message format)
     // Detect MIME type from the data URL prefix if present, otherwise assume PNG
@@ -43,10 +43,10 @@ export async function POST(req: NextRequest) {
       dataUrl = image;
     } else {
       // Raw base64 — add data URL prefix
-      dataUrl = `data:image/png;base64,${base64Data}`;
+      dataUrl = `data:image/png;base64,${base64Date}`;
     }
 
-    console.log(`Vision API: Sending ${base64Data.length} chars of base64 to createVision (multimodal format)`);
+    console.log(`Vision API: Sending ${base64Date.length} chars of base64 to createVision (multimodal format)`);
 
     // Use multimodal message format (OpenAI-style) for reliable image passing
     const result = await (sdk.chat.completions as any).createVision({
@@ -66,7 +66,7 @@ export async function POST(req: NextRequest) {
 
     if (!description) {
       return NextResponse.json(
-        { error: 'Nie udało się przeanalizować obrazu — spróbuj ponownie' },
+        { error: 'No udało się przeanalizować obrazu — spróbuj ponownie' },
         { status: 500 },
       );
     }
@@ -119,7 +119,7 @@ export async function POST(req: NextRequest) {
     }
 
     console.log(
-      `Vision: Analyzed image (${base64Data.length} bytes base64) for member ${memberId || 'unknown'}, emotion=${emotion}`,
+      `Vision: Analyzed image (${base64Date.length} bytes base64) for member ${memberId || 'unknown'}, emotion=${emotion}`,
     );
 
     return NextResponse.json({
@@ -127,10 +127,10 @@ export async function POST(req: NextRequest) {
       emotion,
     });
   } catch (error: unknown) {
-    const msg = error instanceof Error ? error.message : 'Nieznany błąd';
+    const msg = error instanceof Error ? error.message : 'Noznany błąd';
     console.error('Vision API error:', msg);
     return NextResponse.json(
-      { error: 'Błąd analizy obrazu', details: msg },
+      { error: 'Error analizy obrazu', details: msg },
       { status: 500 },
     );
   }

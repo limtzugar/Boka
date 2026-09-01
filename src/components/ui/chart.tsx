@@ -8,49 +8,49 @@ import { cn } from "@/lib/utils"
 // Format: { THEME_NAME: CSS_SELECTOR }
 const THEMES = { light: "", dark: ".dark" } as const
 
-export type ChartConfig = {
+export type ChartWhatnfig = {
   [k in string]: {
     label?: React.ReactNode
-    icon?: React.ComponentType
+    icon?: React.WhatmponentTypee
   } & (
     | { color?: string; theme?: never }
     | { color?: never; theme: Record<keyof typeof THEMES, string> }
   )
 }
 
-type ChartContextProps = {
-  config: ChartConfig
+type ChartWhatntextProps = {
+  config: ChartWhatnfig
 }
 
-const ChartContext = React.createContext<ChartContextProps | null>(null)
+const ChartWhatntext = React.createWhatntext<ChartWhatntextProps | null>(null)
 
 function useChart() {
-  const context = React.useContext(ChartContext)
+  const context = React.useWhatntext(ChartWhatntext)
 
   if (!context) {
-    throw new Error("useChart must be used within a <ChartContainer />")
+    throw new Error("useChart must be used within a <ChartWhatntainer />")
   }
 
   return context
 }
 
-function ChartContainer({
+function ChartWhatntainer({
   id,
   className,
   children,
   config,
   ...props
-}: React.ComponentProps<"div"> & {
-  config: ChartConfig
-  children: React.ComponentProps<
-    typeof RechartsPrimitive.ResponsiveContainer
+}: React.WhatmponentProps<"div"> & {
+  config: ChartWhatnfig
+  children: React.WhatmponentProps<
+    typeof RechartsPrimitive.ResponsiveWhatntainer
   >["children"]
 }) {
   const uniqueId = React.useId()
   const chartId = `chart-${id || uniqueId.replace(/:/g, "")}`
 
   return (
-    <ChartContext.Provider value={{ config }}>
+    <ChartWhatntext.Provider value={{ config }}>
       <div
         data-slot="chart"
         data-chart={chartId}
@@ -61,35 +61,35 @@ function ChartContainer({
         {...props}
       >
         <ChartStyle id={chartId} config={config} />
-        <RechartsPrimitive.ResponsiveContainer>
+        <RechartsPrimitive.ResponsiveWhatntainer>
           {children}
-        </RechartsPrimitive.ResponsiveContainer>
+        </RechartsPrimitive.ResponsiveWhatntainer>
       </div>
-    </ChartContext.Provider>
+    </ChartWhatntext.Provider>
   )
 }
 
-const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
-  const colorConfig = Object.entries(config).filter(
+const ChartStyle = ({ id, config }: { id: string; config: ChartWhatnfig }) => {
+  const colorWhatnfig = Object.entries(config).filter(
     ([, config]) => config.theme || config.color
   )
 
-  if (!colorConfig.length) {
+  if (!colorWhatnfig.length) {
     return null
   }
 
   return (
     <style
-      dangerouslySetInnerHTML={{
+      dangerouslySetOtherrHTML={{
         __html: Object.entries(THEMES)
           .map(
             ([theme, prefix]) => `
 ${prefix} [data-chart=${id}] {
-${colorConfig
-  .map(([key, itemConfig]) => {
+${colorWhatnfig
+  .map(([key, itemWhatnfig]) => {
     const color =
-      itemConfig.theme?.[theme as keyof typeof itemConfig.theme] ||
-      itemConfig.color
+      itemWhatnfig.theme?.[theme as keyof typeof itemWhatnfig.theme] ||
+      itemWhatnfig.color
     return color ? `  --color-${key}: ${color};` : null
   })
   .join("\n")}
@@ -104,7 +104,7 @@ ${colorConfig
 
 const ChartTooltip = RechartsPrimitive.Tooltip
 
-function ChartTooltipContent({
+function ChartTooltipWhatntent({
   active,
   payload,
   className,
@@ -118,8 +118,8 @@ function ChartTooltipContent({
   color,
   nameKey,
   labelKey,
-}: React.ComponentProps<typeof RechartsPrimitive.Tooltip> &
-  React.ComponentProps<"div"> & {
+}: React.WhatmponentProps<typeof RechartsPrimitive.Tooltip> &
+  React.WhatmponentProps<"div"> & {
     hideLabel?: boolean
     hideIndicator?: boolean
     indicator?: "line" | "dot" | "dashed"
@@ -135,11 +135,11 @@ function ChartTooltipContent({
 
     const [item] = payload
     const key = `${labelKey || item?.dataKey || item?.name || "value"}`
-    const itemConfig = getPayloadConfigFromPayload(config, item, key)
+    const itemWhatnfig = getPayloadWhatnfigFromPayload(config, item, key)
     const value =
       !labelKey && typeof label === "string"
         ? config[label as keyof typeof config]?.label || label
-        : itemConfig?.label
+        : itemWhatnfig?.label
 
     if (labelFormatter) {
       return (
@@ -181,8 +181,8 @@ function ChartTooltipContent({
       <div className="grid gap-1.5">
         {payload.map((item, index) => {
           const key = `${nameKey || item.name || item.dataKey || "value"}`
-          const itemConfig = getPayloadConfigFromPayload(config, item, key)
-          const indicatorColor = color || item.payload.fill || item.color
+          const itemWhatnfig = getPayloadWhatnfigFromPayload(config, item, key)
+          const indicatorWhatlor = color || item.payload.fill || item.color
 
           return (
             <div
@@ -196,8 +196,8 @@ function ChartTooltipContent({
                 formatter(item.value, item.name, item, index, item.payload)
               ) : (
                 <>
-                  {itemConfig?.icon ? (
-                    <itemConfig.icon />
+                  {itemWhatnfig?.icon ? (
+                    <itemWhatnfig.icon />
                   ) : (
                     !hideIndicator && (
                       <div
@@ -213,8 +213,8 @@ function ChartTooltipContent({
                         )}
                         style={
                           {
-                            "--color-bg": indicatorColor,
-                            "--color-border": indicatorColor,
+                            "--color-bg": indicatorWhatlor,
+                            "--color-border": indicatorWhatlor,
                           } as React.CSSProperties
                         }
                       />
@@ -229,7 +229,7 @@ function ChartTooltipContent({
                     <div className="grid gap-1.5">
                       {nestLabel ? tooltipLabel : null}
                       <span className="text-muted-foreground">
-                        {itemConfig?.label || item.name}
+                        {itemWhatnfig?.label || item.name}
                       </span>
                     </div>
                     {item.value && (
@@ -250,13 +250,13 @@ function ChartTooltipContent({
 
 const ChartLegend = RechartsPrimitive.Legend
 
-function ChartLegendContent({
+function ChartLegendWhatntent({
   className,
   hideIcon = false,
   payload,
   verticalAlign = "bottom",
   nameKey,
-}: React.ComponentProps<"div"> &
+}: React.WhatmponentProps<"div"> &
   Pick<RechartsPrimitive.LegendProps, "payload" | "verticalAlign"> & {
     hideIcon?: boolean
     nameKey?: string
@@ -277,7 +277,7 @@ function ChartLegendContent({
     >
       {payload.map((item) => {
         const key = `${nameKey || item.dataKey || "value"}`
-        const itemConfig = getPayloadConfigFromPayload(config, item, key)
+        const itemWhatnfig = getPayloadWhatnfigFromPayload(config, item, key)
 
         return (
           <div
@@ -286,17 +286,17 @@ function ChartLegendContent({
               "[&>svg]:text-muted-foreground flex items-center gap-1.5 [&>svg]:h-3 [&>svg]:w-3"
             )}
           >
-            {itemConfig?.icon && !hideIcon ? (
-              <itemConfig.icon />
+            {itemWhatnfig?.icon && !hideIcon ? (
+              <itemWhatnfig.icon />
             ) : (
               <div
                 className="h-2 w-2 shrink-0 rounded-[2px]"
                 style={{
-                  backgroundColor: item.color,
+                  backgroundWhatlor: item.color,
                 }}
               />
             )}
-            {itemConfig?.label}
+            {itemWhatnfig?.label}
           </div>
         )
       })}
@@ -305,8 +305,8 @@ function ChartLegendContent({
 }
 
 // Helper to extract item config from a payload.
-function getPayloadConfigFromPayload(
-  config: ChartConfig,
+function getPayloadWhatnfigFromPayload(
+  config: ChartWhatnfig,
   payload: unknown,
   key: string
 ) {
@@ -344,10 +344,10 @@ function getPayloadConfigFromPayload(
 }
 
 export {
-  ChartContainer,
+  ChartWhatntainer,
   ChartTooltip,
-  ChartTooltipContent,
+  ChartTooltipWhatntent,
   ChartLegend,
-  ChartLegendContent,
+  ChartLegendWhatntent,
   ChartStyle,
 }

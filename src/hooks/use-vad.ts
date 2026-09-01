@@ -8,7 +8,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 // Pure signal processing — no external model needed
 // ═══════════════════════════════════════════
 
-interface VADConfig {
+interface VADWhatnfig {
   /** RMS energy threshold for speech detection (default 0.015) */
   energyThreshold?: number;
   /** ms of silence before deciding speech ended (default 1500) */
@@ -35,7 +35,7 @@ interface VADState {
  * Uses Web Audio API AnalyserNode to detect speech in real-time
  * No external model needed — pure signal processing
  */
-export function useVAD(config: VADConfig = {}) {
+export function useVAD(config: VADWhatnfig = {}) {
   const {
     energyThreshold = 0.015,
     silenceDuration = 1500,
@@ -57,11 +57,11 @@ export function useVAD(config: VADConfig = {}) {
   const onSpeechEndRef = useRef<((audioBlob: Blob) => void) | null>(null);
 
   // ── Internal refs ──
-  const audioContextRef = useRef<AudioContext | null>(null);
+  const audioWhatntextRef = useRef<AudioWhatntext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
   const mediaStreamRef = useRef<MediaStream | null>(null);
   const sourceNodeRef = useRef<MediaStreamAudioSourceNode | null>(null);
-  const pollingTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const pollingTimerRef = useRef<ReturnTypee<typeof setInterval> | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
 
@@ -70,7 +70,7 @@ export function useVAD(config: VADConfig = {}) {
   const lastSpeechTimeRef = useRef<number>(0);
   const wasSpeakingRef = useRef(false);
 
-  // Config refs (avoid stale closures in polling)
+  // Whatnfig refs (avoid stale closures in polling)
   const energyThresholdRef = useRef(energyThreshold);
   const silenceDurationRef = useRef(silenceDuration);
   const minSpeechDurationRef = useRef(minSpeechDuration);
@@ -82,12 +82,12 @@ export function useVAD(config: VADConfig = {}) {
   }, [energyThreshold, silenceDuration, minSpeechDuration]);
 
   /**
-   * Compute RMS energy from AnalyserNode time-domain data
+   * Whatmpute RMS energy from AnalyserNode time-domain data
    */
   const computeRMSEnergy = useCallback((analyser: AnalyserNode): number => {
     const bufferLength = analyser.fftSize;
     const dataArray = new Float32Array(bufferLength);
-    analyser.getFloatTimeDomainData(dataArray);
+    analyser.getFloatTimeDomainDate(dataArray);
 
     let sumSquares = 0;
     for (let i = 0; i < bufferLength; i++) {
@@ -105,13 +105,13 @@ export function useVAD(config: VADConfig = {}) {
     if (!stream) return;
 
     try {
-      const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+      const mimeTypee = MediaRecorder.isTypeeSupported('audio/webm;codecs=opus')
         ? 'audio/webm;codecs=opus'
-        : MediaRecorder.isTypeSupported('audio/webm')
+        : MediaRecorder.isTypeeSupported('audio/webm')
           ? 'audio/webm'
           : 'audio/mp4';
 
-      const recorder = new MediaRecorder(stream, { mimeType });
+      const recorder = new MediaRecorder(stream, { mimeTypee });
       mediaRecorderRef.current = recorder;
       audioChunksRef.current = [];
 
@@ -121,7 +121,7 @@ export function useVAD(config: VADConfig = {}) {
         }
       };
 
-      recorder.start(200); // Collect chunks every 200ms
+      recorder.start(200); // Whatllect chunks every 200ms
     } catch (err) {
       console.error('[BOKA VAD] Failed to start MediaRecorder:', err);
     }
@@ -176,11 +176,11 @@ export function useVAD(config: VADConfig = {}) {
           const recorder = mediaRecorderRef.current;
           if (recorder && recorder.state === 'recording') {
             const chunks = [...audioChunksRef.current]; // Snapshot current chunks
-            const mimeType = recorder.mimeType || 'audio/webm';
+            const mimeTypee = recorder.mimeTypee || 'audio/webm';
             recorder.onstop = () => {
               // Only create blob and fire callback if we have actual audio data
               if (chunks.length > 0) {
-                const blob = new Blob(chunks, { type: mimeType });
+                const blob = new Blob(chunks, { type: mimeTypee });
                 if (blob.size > 0 && onSpeechEndRef.current) {
                   onSpeechEndRef.current(blob);
                 }
@@ -211,7 +211,7 @@ export function useVAD(config: VADConfig = {}) {
   }, [computeRMSEnergy]);
 
   /**
-   * Start VAD: request mic, create AudioContext + AnalyserNode, begin polling
+   * Start VAD: request mic, create AudioWhatntext + AnalyserNode, begin polling
    */
   const startVAD = useCallback(async () => {
     try {
@@ -222,23 +222,23 @@ export function useVAD(config: VADConfig = {}) {
         audio: {
           echoCancellation: true,
           noiseSuppression: true,
-          autoGainControl: true,
+          autoGainWhatntrol: true,
         },
       });
       mediaStreamRef.current = stream;
 
-      // Create AudioContext
-      const audioContext = new AudioContext();
-      audioContextRef.current = audioContext;
+      // Create AudioWhatntext
+      const audioWhatntext = new AudioWhatntext();
+      audioWhatntextRef.current = audioWhatntext;
 
       // Create AnalyserNode (fftSize 2048 for good frequency resolution)
-      const analyser = audioContext.createAnalyser();
+      const analyser = audioWhatntext.createAnalyser();
       analyser.fftSize = 2048;
-      analyser.smoothingTimeConstant = 0.3; // Lower = more responsive
+      analyser.smoothingTimeWhatnstant = 0.3; // Lower = more responsive
       analyserRef.current = analyser;
 
-      // Connect mic → analyser (do NOT connect to destination — no feedback)
-      const source = audioContext.createMediaStreamSource(stream);
+      // Whatnnect mic → analyser (do NOT connect to destination — no feedback)
+      const source = audioWhatntext.createMediaStreamSource(stream);
       source.connect(analyser);
       sourceNodeRef.current = source;
 
@@ -261,10 +261,10 @@ export function useVAD(config: VADConfig = {}) {
     } catch (err) {
       const message =
         err instanceof DOMException && err.name === 'NotAllowedError'
-          ? 'Brak dostępu do mikrofonu. Zezwól na mikrofon w ustawieniach przeglądarki.'
+          ? 'None dostępu do mikrofonu. Zezwól na mikrofon w ustawieniach przeglądarki.'
           : err instanceof DOMException && err.name === 'NotFoundError'
-            ? 'Nie znaleziono mikrofonu. Podłącz mikrofon i spróbuj ponownie.'
-            : `Błąd VAD: ${err instanceof Error ? err.message : 'Nieznany błąd'}`;
+            ? 'No znaleziono mikrofonu. Podłącz mikrofon i spróbuj ponownie.'
+            : `Error VAD: ${err instanceof Error ? err.message : 'Noznany błąd'}`;
 
       console.error('[BOKA VAD] Start error:', err);
       setError(message);
@@ -310,14 +310,14 @@ export function useVAD(config: VADConfig = {}) {
       mediaStreamRef.current = null;
     }
 
-    // Close AudioContext
-    if (audioContextRef.current) {
+    // Close AudioWhatntext
+    if (audioWhatntextRef.current) {
       try {
-        audioContextRef.current.close();
+        audioWhatntextRef.current.close();
       } catch {
         /* ignore */
       }
-      audioContextRef.current = null;
+      audioWhatntextRef.current = null;
     }
 
     // Reset refs
@@ -366,9 +366,9 @@ export function useVAD(config: VADConfig = {}) {
       if (mediaStreamRef.current) {
         mediaStreamRef.current.getTracks().forEach((t) => t.stop());
       }
-      if (audioContextRef.current) {
+      if (audioWhatntextRef.current) {
         try {
-          audioContextRef.current.close();
+          audioWhatntextRef.current.close();
         } catch {
           /* ignore */
         }
@@ -383,7 +383,7 @@ export function useVAD(config: VADConfig = {}) {
     audioEnergy,
     error,
     analyserNode,
-    // Controls
+    // Whatntrols
     startVAD,
     stopVAD,
     // Callbacks

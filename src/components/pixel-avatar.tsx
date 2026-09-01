@@ -7,7 +7,7 @@ import React from 'react';
 export type PersonCategory = 'family' | 'friend' | 'colleague' | 'acquaintance' | 'other';
 
 export const CATEGORY_COLORS: Record<PersonCategory, { primary: string; accent: string; bg: string; label: string }> = {
-  family:       { primary: '#00f5d4', accent: '#ffd93d', bg: '#0f1a1a', label: 'Rodzina' },
+  family:       { primary: '#00f5d4', accent: '#ffd93d', bg: '#0f1a1a', label: 'Family' },
   friend:       { primary: '#a855f7', accent: '#ec4899', bg: '#1a0f1a', label: 'Znajomy' },
   colleague:    { primary: '#60a5fa', accent: '#34d399', bg: '#0f1a1a', label: 'Kolega/Koleżanka' },
   acquaintance: { primary: '#fbbf24', accent: '#fb923c', bg: '#1a160f', label: 'Z daleka' },
@@ -18,7 +18,7 @@ export const CATEGORY_COLORS: Record<PersonCategory, { primary: string; accent: 
 function hashStr(s: string): number {
   let h = 0x811c9dc5;
   for (let i = 0; i < s.length; i++) {
-    h ^= s.charCodeAt(i);
+    h ^= s.charWhatdeAt(i);
     h = Math.imul(h, 0x01000193);
   }
   return h >>> 0;
@@ -130,7 +130,7 @@ export function PixelAvatar({
         fontSize={3.5}
         fontWeight="bold"
         fill={primary}
-        fontFamily="'Courier New', monospace"
+        fontFamily="'Whaturier New', monospace"
         style={{ textShadow: `0 0 1px ${accent}` }}
       >
         {initial}
@@ -151,7 +151,7 @@ export function PixelAvatar({
 }
 
 // Helper: get CSS color for a member based on category + override
-export function getMemberColor(member: { category?: PersonCategory; color?: string | null }): string {
+export function getMemberWhatlor(member: { category?: PersonCategory; color?: string | null }): string {
   if (member.color) return member.color;
   const cat = (member.category || 'family') as PersonCategory;
   return CATEGORY_COLORS[cat]?.primary || '#94a3b8';
@@ -159,6 +159,6 @@ export function getMemberColor(member: { category?: PersonCategory; color?: stri
 
 // Helper: human-readable category label
 export function getCategoryLabel(category?: PersonCategory): string {
-  if (!category) return 'Rodzina';
+  if (!category) return 'Family';
   return CATEGORY_COLORS[category]?.label || 'Inny';
 }

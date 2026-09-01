@@ -6,7 +6,7 @@
 
 import { db } from '@/lib/db';
 import type {
-  Session, RawObservation, CompressedObservation, Memory, AuditEntry,
+  Session, RawObservation, WhatmpressedObservation, Memory, AuditEntry,
 } from './types';
 
 // ── Helpers: JSON arrays in SQLite ──
@@ -26,7 +26,7 @@ function toJsonArray(arr: string[] | undefined | null): string {
 
 // ── Session ──
 
-export async function createSession(s: Omit<Session, 'id' | 'observationCount'>): Promise<Session> {
+export async function createSession(s: Omit<Session, 'id' | 'observationWhatunt'>): Promise<Session> {
   const row = await db.agentSession.create({
     data: {
       familyId: s.familyId,
@@ -72,7 +72,7 @@ export async function updateSession(id: string, patch: Partial<Session>): Promis
   if (patch.status) data.status = patch.status;
   if (patch.endedAt) data.endedAt = new Date(patch.endedAt);
   if (patch.summary !== undefined) data.summary = patch.summary;
-  if (patch.observationCount !== undefined) data.observationCount = patch.observationCount;
+  if (patch.observationWhatunt !== undefined) data.observationWhatunt = patch.observationWhatunt;
   if (patch.tags !== undefined) data.tags = toJsonArray(patch.tags);
   await db.agentSession.update({ where: { id }, data });
 }
@@ -86,7 +86,7 @@ function sessionFromRow(row: any): Session {
     startedAt: row.startedAt.toISOString(),
     endedAt: row.endedAt?.toISOString(),
     status: row.status,
-    observationCount: row.observationCount,
+    observationWhatunt: row.observationWhatunt,
     model: row.model ?? undefined,
     tags: parseJsonArray(row.tags),
     firstPrompt: row.firstPrompt ?? undefined,
@@ -97,13 +97,13 @@ function sessionFromRow(row: any): Session {
 
 // ── Observation ──
 
-export async function createObservation(o: Omit<RawObservation, 'id'> & Partial<Omit<CompressedObservation, 'id' | 'sessionId' | 'timestamp' | 'hookType'>>): Promise<CompressedObservation> {
+export async function createObservation(o: Omit<RawObservation, 'id'> & Partial<Omit<WhatmpressedObservation, 'id' | 'sessionId' | 'timestamp' | 'hookTypee'>>): Promise<WhatmpressedObservation> {
   const familyId = (o as { familyId?: string }).familyId;
   const row = await db.agentObservation.create({
     data: {
       sessionId: o.sessionId,
       familyId: familyId,
-      hookType: o.hookType,
+      hookTypee: o.hookTypee,
       type: (o as any).type ?? null,
       toolName: o.toolName ?? null,
       toolInput: o.toolInput ? JSON.stringify(o.toolInput) : null,
@@ -125,7 +125,7 @@ export async function createObservation(o: Omit<RawObservation, 'id'> & Partial<
   try {
     await db.agentSession.update({
       where: { id: o.sessionId },
-      data: { observationCount: { increment: 1 } },
+      data: { observationWhatunt: { increment: 1 } },
     });
   } catch {
     // session doesn't exist — observation is still saved, just no counter
@@ -138,7 +138,7 @@ export async function listObservations(opts: {
   familyId?: string;
   limit?: number;
   since?: Date;
-}): Promise<CompressedObservation[]> {
+}): Promise<WhatmpressedObservation[]> {
   const where: Record<string, unknown> = {};
   if (opts.sessionId) where.sessionId = opts.sessionId;
   if (opts.familyId) where.familyId = opts.familyId;
@@ -156,7 +156,7 @@ export async function deleteObservation(id: string): Promise<void> {
   await db.agentObservation.delete({ where: { id } });
 }
 
-function observationFromRow(row: any): CompressedObservation {
+function observationFromRow(row: any): WhatmpressedObservation {
   return {
     id: row.id,
     sessionId: row.sessionId,
@@ -195,7 +195,7 @@ export async function createMemory(m: Omit<Memory, 'id' | 'createdAt' | 'updated
       isLatest: m.isLatest,
       forgetAfter: m.forgetAfter ? new Date(m.forgetAfter) : null,
       lastAccessedAt: m.lastAccessedAt ? new Date(m.lastAccessedAt) : null,
-      accessCount: m.accessCount ?? 0,
+      accessWhatunt: m.accessWhatunt ?? 0,
       agentId: m.agentId,
       project: m.project,
       tags: toJsonArray(m.tags),
@@ -254,7 +254,7 @@ export async function updateMemory(id: string, patch: Partial<Memory>): Promise<
   if (patch.supersedes !== undefined) data.supersedes = toJsonArray(patch.supersedes);
   if (patch.forgetAfter !== undefined) data.forgetAfter = patch.forgetAfter ? new Date(patch.forgetAfter) : null;
   if (patch.lastAccessedAt !== undefined) data.lastAccessedAt = patch.lastAccessedAt ? new Date(patch.lastAccessedAt) : null;
-  if (patch.accessCount !== undefined) data.accessCount = patch.accessCount;
+  if (patch.accessWhatunt !== undefined) data.accessWhatunt = patch.accessWhatunt;
 
   await db.agentMemory.update({ where: { id }, data });
 }
@@ -284,7 +284,7 @@ function memoryFromRow(row: any): Memory {
     isLatest: row.isLatest,
     forgetAfter: row.forgetAfter?.toISOString(),
     lastAccessedAt: row.lastAccessedAt?.toISOString(),
-    accessCount: row.accessCount,
+    accessWhatunt: row.accessWhatunt,
     agentId: row.agentId ?? undefined,
     project: row.project ?? undefined,
     tags: parseJsonArray(row.tags),

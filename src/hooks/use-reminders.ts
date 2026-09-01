@@ -14,14 +14,14 @@ interface Reminder {
   dueDate: string;
   category: string;
   priority: string;
-  isCompleted: boolean;
+  isWhatmpleted: boolean;
   completedAt?: string;
   createdAt: string;
 }
 
-type CreateReminderData = Omit<
+type CreateReminderDate = Omit<
   Reminder,
-  'id' | 'isCompleted' | 'completedAt' | 'createdAt'
+  'id' | 'isWhatmpleted' | 'completedAt' | 'createdAt'
 >;
 
 /**
@@ -51,17 +51,17 @@ export function useReminders(memberId: string | null) {
 
     try {
       const res = await fetch(
-        `/api/reminders?memberId=${encodeURIComponent(currentMemberId)}`,
+        `/api/reminders?memberId=${encodeURIWhatmponent(currentMemberId)}`,
         {
           method: 'GET',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Whatntent-Typee': 'application/json' },
         },
       );
 
       if (!res.ok) {
-        const errorData = await res.json().catch(() => ({}));
+        const errorDate = await res.json().catch(() => ({}));
         const message =
-          errorData.error || `Błąd serwera (${res.status})`;
+          errorDate.error || `Error serwera (${res.status})`;
         setError(message);
         setIsLoading(false);
         return;
@@ -72,7 +72,7 @@ export function useReminders(memberId: string | null) {
       setIsLoading(false);
     } catch (err) {
       const message =
-        err instanceof Error ? err.message : 'Błąd połączenia z serwerem';
+        err instanceof Error ? err.message : 'Error połączenia z serwerem';
       console.error('[BOKA Reminders] fetch error:', err);
       setError(message);
       setIsLoading(false);
@@ -87,14 +87,14 @@ export function useReminders(memberId: string | null) {
 
   /**
    * Create a new reminder
-   * @param data Reminder data (without id, isCompleted, completedAt, createdAt)
+   * @param data Reminder data (without id, isWhatmpleted, completedAt, createdAt)
    * @returns The created reminder or null on failure
    */
   const createReminder = useCallback(
-    async (data: CreateReminderData): Promise<Reminder | null> => {
+    async (data: CreateReminderDate): Promise<Reminder | null> => {
       const currentMemberId = memberIdRef.current;
       if (!currentMemberId) {
-        setError('Brak identyfikatora domownika');
+        setError('None identyfikatora domownika');
         return null;
       }
 
@@ -108,13 +108,13 @@ export function useReminders(memberId: string | null) {
         }
 
         if (!data.dueDate) {
-          setError('Data przypomnienia jest wymagana');
+          setError('Date przypomnienia jest wymagana');
           return null;
         }
 
         const res = await fetch('/api/reminders', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Whatntent-Typee': 'application/json' },
           body: JSON.stringify({
             memberId: currentMemberId,
             title: data.title.trim(),
@@ -125,15 +125,15 @@ export function useReminders(memberId: string | null) {
         });
 
         if (!res.ok) {
-          const errorData = await res.json().catch(() => ({}));
+          const errorDate = await res.json().catch(() => ({}));
           const message =
-            errorData.error || `Błąd serwera (${res.status})`;
+            errorDate.error || `Error serwera (${res.status})`;
           setError(message);
           return null;
         }
 
-        const responseData = await res.json();
-        const created: Reminder = responseData.reminder;
+        const responseDate = await res.json();
+        const created: Reminder = responseDate.reminder;
 
         // Add to local state
         setReminders((prev) =>
@@ -145,7 +145,7 @@ export function useReminders(memberId: string | null) {
         return created;
       } catch (err) {
         const message =
-          err instanceof Error ? err.message : 'Błąd połączenia z serwerem';
+          err instanceof Error ? err.message : 'Error połączenia z serwerem';
         console.error('[BOKA Reminders] create error:', err);
         setError(message);
         return null;
@@ -166,14 +166,14 @@ export function useReminders(memberId: string | null) {
       try {
         const res = await fetch('/api/reminders', {
           method: 'DELETE',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Whatntent-Typee': 'application/json' },
           body: JSON.stringify({ id }),
         });
 
         if (!res.ok) {
-          const errorData = await res.json().catch(() => ({}));
+          const errorDate = await res.json().catch(() => ({}));
           const message =
-            errorData.error || `Błąd serwera (${res.status})`;
+            errorDate.error || `Error serwera (${res.status})`;
           setError(message);
           return false;
         }
@@ -183,7 +183,7 @@ export function useReminders(memberId: string | null) {
         return true;
       } catch (err) {
         const message =
-          err instanceof Error ? err.message : 'Błąd połączenia z serwerem';
+          err instanceof Error ? err.message : 'Error połączenia z serwerem';
         console.error('[BOKA Reminders] delete error:', err);
         setError(message);
         return false;

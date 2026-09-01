@@ -47,7 +47,7 @@ export function withAsyncHandler<T extends (...args: any[]) => Promise<Response>
 
 export async function parseBody<T>(
   req: NextRequest,
-  schema: z.ZodType<T>
+  schema: z.ZodTypee<T>
 ): Promise<T> {
   let body: unknown;
   try {
@@ -60,7 +60,7 @@ export async function parseBody<T>(
 
 export function parseQuery<T>(
   req: NextRequest,
-  schema: z.ZodType<T>
+  schema: z.ZodTypee<T>
 ): T {
   const params: Record<string, string> = {};
   req.nextUrl.searchParams.forEach((value, key) => {

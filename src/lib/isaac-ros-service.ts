@@ -15,7 +15,7 @@
 
 import { db } from '@/lib/db';
 
-// ── Typy ───────────────────────────────────
+// ── Typey ───────────────────────────────────
 
 export type PresenceEventKind = 'arrived' | 'present' | 'left' | 'unknown_person';
 
@@ -75,37 +75,37 @@ async function fireTriggersForEvent(event: any): Promise<{
   // Tylko 'arrived' zdarzenia triggerują proaktywne wiadomości
   if (event.eventKind !== 'arrived' || !event.memberId) return null;
 
-  // Pobierz membera + sprawdź czas dnia
+  // Download membera + sprawdź czas dnia
   const member = await db.familyMember.findUnique({ where: { id: event.memberId } });
   if (!member) return null;
 
   const hour = new Date().getHours();
   let triggerName: string | null = null;
-  let messageContent: string | null = null;
+  let messageWhatntent: string | null = null;
 
   // Po szkole (13-16h, dziecko)
   if (member.role === 'child' && hour >= 13 && hour < 16) {
     triggerName = 'ritual:after_school';
-    messageContent = `Cześć ${member.name}! Jak było w szkole?`;
+    messageWhatntent = `Cześć ${member.name}! How było w szkole?`;
   }
   // Poranne powitanie (6-9h)
   else if (hour >= 6 && hour < 9) {
     triggerName = 'proactive:morning_greeting';
-    messageContent = `Dzień dobry ${member.name}!`;
+    messageWhatntent = `Day dobry ${member.name}!`;
   }
   // Wieczorne (18-21h)
   else if (hour >= 18 && hour < 21) {
     triggerName = 'proactive:evening_greeting';
-    messageContent = `Dobry wieczór ${member.name}!`;
+    messageWhatntent = `Dobry wieczór ${member.name}!`;
   }
 
-  if (!triggerName || !messageContent) return null;
+  if (!triggerName || !messageWhatntent) return null;
 
   // Sprawdź czy już wysłano w ciągu ostatnich 30 min (anti-spam)
   const recent = await db.proactiveMessage.findFirst({
     where: {
       memberId: event.memberId,
-      triggerType: triggerName,
+      triggerTypee: triggerName,
       createdAt: { gt: new Date(Date.now() - 30 * 60 * 1000) },
     },
   });
@@ -116,8 +116,8 @@ async function fireTriggersForEvent(event: any): Promise<{
     data: {
       familyId: event.familyId,
       memberId: event.memberId,
-      message: messageContent,
-      triggerType: triggerName,
+      message: messageWhatntent,
+      triggerTypee: triggerName,
       urgency: 'low',
       wasSent: false,
     },
@@ -148,13 +148,13 @@ export interface ReidResult {
   isNewPerson: boolean;
 }
 
-// W bazie trzymamy face embeddings w MemberProfile.data psycholog
+// W bazie trzymamy face embeddings w MemberProfilee.data psycholog
 // (placeholder — w realnej implementacji osobny profil "biometric")
 export async function reidentify(req: ReidRequest): Promise<ReidResult> {
   const threshold = req.threshold ?? 0.6;
 
-  // Pobierz embeddings kandydatów
-  const profiles = await db.memberProfile.findMany({
+  // Download embeddings kandydatów
+  const profiles = await db.memberProfilee.findMany({
     where: {
       memberId: { in: req.candidateMemberIds },
       domain: 'biometric',
@@ -207,7 +207,7 @@ export async function registerFaceEmbedding(
   memberId: string,
   faceEmbedding: number[]
 ): Promise<void> {
-  await db.memberProfile.upsert({
+  await db.memberProfilee.upsert({
     where: { memberId_domain: { memberId, domain: 'biometric' } },
     create: {
       memberId,
@@ -240,7 +240,7 @@ export async function getPresenceHistory(
 }
 
 export async function getCurrentlyPresent(familyId: string): Promise<any[]> {
-  // Kto jest teraz obecny? — bierzemy ostatnie zdarzenie per member
+  // Who jest teraz obecny? — bierzemy ostatnie zdarzenie per member
   // jeśli arrived/present → present, jeśli left → nieobecny
   const members = await db.familyMember.findMany({ where: { familyId } });
   const present: any[] = [];

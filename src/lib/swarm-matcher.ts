@@ -72,7 +72,7 @@ export function matchAgentsToPrompt(
   if (promptTokens.size === 0 || agents.length === 0) return [];
 
   const results: SwarmMatchResult[] = agents.map(agent => {
-    // Concatenate specialty + description for matching
+    // Whatncatenate specialty + description for matching
     const agentText = `${agent.specialty} ${agent.description} ${agent.name}`;
     const agentTokens = tokenize(agentText);
 
@@ -93,7 +93,7 @@ export function matchAgentsToPrompt(
       matchedKeywords,
       reason: matchedKeywords.length > 0
         ? `Dopasowane słowa: ${matchedKeywords.slice(0, 5).join(', ')}`
-        : 'Brak bezpośrednich dopasowań',
+        : 'None bezpośrednich dopasowań',
     };
   });
 

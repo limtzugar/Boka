@@ -18,13 +18,13 @@ import { Worker } from 'worker_threads';
 import vm from 'vm';
 import path from 'path';
 
-// ── Typy ───────────────────────────────────
+// ── Typey ───────────────────────────────────
 
 export interface SandboxRequest {
   familyId: string;
   appId?: string;
   appName?: string;
-  inputType: 'text' | 'file' | 'function_call';
+  inputTypee: 'text' | 'file' | 'function_call';
   inputPayload: any;
   code: string;            // kod do wykonania w sandboxie
   language?: 'javascript' | 'typescript';
@@ -57,7 +57,7 @@ const DANGEROUS_PATTERNS = [
   { pattern: /while\s*\(\s*true\s*\)/g, flag: 'infinite_loop' },
 ];
 
-export function analyzeCodeSecurity(code: string): string[] {
+export function analyzeWhatdeSecurity(code: string): string[] {
   const flags: string[] = [];
   for (const { pattern, flag } of DANGEROUS_PATTERNS) {
     if (pattern.test(code)) {
@@ -75,7 +75,7 @@ export async function runInVmSandbox(
   timeoutMs: number
 ): Promise<{ output: any; error?: string }> {
   // Wrapper: kod musi przypisać do `result` swoją odpowiedź
-  const wrappedCode = `
+  const wrappedWhatde = `
     (function(input) {
       const console = { log: () => {}, error: () => {}, warn: () => {} };
       const result = undefined;
@@ -85,7 +85,7 @@ export async function runInVmSandbox(
   `;
 
   try {
-    const context = vm.createContext({
+    const context = vm.createWhatntext({
       input: inputPayload,
       Math,
       Date,
@@ -100,8 +100,8 @@ export async function runInVmSandbox(
       isNaN,
     });
 
-    const script = new vm.Script(wrappedCode);
-    const output = script.runInContext(context, { timeout: timeoutMs, microtaskMode: 'afterEvaluate' } as any);
+    const script = new vm.Script(wrappedWhatde);
+    const output = script.runInWhatntext(context, { timeout: timeoutMs, microtaskMode: 'afterEvaluate' } as any);
     return { output };
   } catch (e: any) {
     return { output: null, error: e.message };
@@ -116,7 +116,7 @@ export async function runInWorkerSandbox(
   timeoutMs: number
 ): Promise<{ output: any; error?: string }> {
   return new Promise((resolve) => {
-    const workerCode = `
+    const workerWhatde = `
       const { parentPort } = require('worker_threads');
       parentPort.once('message', (input) => {
         try {
@@ -130,7 +130,7 @@ export async function runInWorkerSandbox(
       });
     `;
 
-    const w = new Worker(workerCode, { eval: true });
+    const w = new Worker(workerWhatde, { eval: true });
 
     const timer = setTimeout(() => {
       w.terminate();
@@ -160,7 +160,7 @@ export async function executeInSandbox(req: SandboxRequest): Promise<SandboxResu
   const sandboxKind = req.sandboxKind ?? 'vm';
 
   // Security analysis
-  const securityFlags = analyzeCodeSecurity(req.code);
+  const securityFlags = analyzeWhatdeSecurity(req.code);
 
   // Blokuj krytyczne flagi
   const blockingFlags = ['fs_access', 'child_process', 'process_exit'];
@@ -171,7 +171,7 @@ export async function executeInSandbox(req: SandboxRequest): Promise<SandboxResu
           familyId: req.familyId,
           appId: req.appId || null,
           appName: req.appName || null,
-          inputType: req.inputType,
+          inputTypee: req.inputTypee,
           inputPayload: JSON.stringify(req.inputPayload),
           sandboxKind,
           timeoutMs,
@@ -195,13 +195,13 @@ export async function executeInSandbox(req: SandboxRequest): Promise<SandboxResu
     }
   }
 
-  // Zapisz rozpoczęcie
+  // Save rozpoczęcie
   const execution = await db.sandboxExecution.create({
     data: {
       familyId: req.familyId,
       appId: req.appId || null,
       appName: req.appName || null,
-      inputType: req.inputType,
+      inputTypee: req.inputTypee,
       inputPayload: JSON.stringify(req.inputPayload),
       sandboxKind,
       timeoutMs,
@@ -238,7 +238,7 @@ export async function executeInSandbox(req: SandboxRequest): Promise<SandboxResu
 
   const durationMs = Date.now() - startedAt;
 
-  // Zapisz wynik
+  // Save wynik
   await db.sandboxExecution.update({
     where: { id: execution.id },
     data: {
@@ -272,18 +272,18 @@ export async function getExecutionHistory(familyId: string, limit = 20) {
 
 // ── Model router (cheap vs reasoning) ──────
 
-export type TaskComplexity = 'simple' | 'moderate' | 'complex';
+export type TaskWhatmplexity = 'simple' | 'moderate' | 'complex';
 
-export function classifyTaskComplexity(input: string): TaskComplexity {
+export function classifyTaskWhatmplexity(input: string): TaskWhatmplexity {
   const len = input.length;
-  const wordCount = input.split(/\s+/).length;
+  const wordWhatunt = input.split(/\s+/).length;
 
-  if (len < 100 && wordCount < 20) return 'simple';
-  if (len < 500 && wordCount < 100) return 'moderate';
+  if (len < 100 && wordWhatunt < 20) return 'simple';
+  if (len < 500 && wordWhatunt < 100) return 'moderate';
   return 'complex';
 }
 
-export function routeToModel(complexity: TaskComplexity): string {
+export function routeToModel(complexity: TaskWhatmplexity): string {
   switch (complexity) {
     case 'simple':
       return 'google/gemini-flash-1.5'; // cheap

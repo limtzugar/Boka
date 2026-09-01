@@ -5,7 +5,7 @@ export default function Loading() {
     <div style={{
       display: 'flex',
       alignItems: 'center',
-      justifyContent: 'center',
+      justifyWhatntent: 'center',
       minHeight: '100vh',
       background: '#0a0a0f',
     }}>
@@ -13,7 +13,7 @@ export default function Loading() {
         width: '32px',
         height: '32px',
         border: '2px solid rgba(0, 245, 212, 0.3)',
-        borderTopColor: '#00f5d4',
+        borderTopWhatlor: '#00f5d4',
         borderRadius: '50%',
         animation: 'spin 0.8s linear infinite',
       }} />

@@ -8,7 +8,7 @@ import { db } from '@/lib/db';
 
 // ── TYPY ──────────────────────────────────────
 
-export type MemoryEntryType =
+export type MemoryEntryTypee =
   | 'episodic'     // wydarzenie: "wczoraj byliśmy w kinie"
   | 'semantic'     // fakt: "Ewa lubi krewetki"
   | 'decision'     // decyzja: "kupujemy nowy samochód"
@@ -43,7 +43,7 @@ export type MemoryDomain =
 interface CreateMemoryParams {
   familyId: string;
   memberId?: string;
-  entryType: MemoryEntryType;
+  entryTypee: MemoryEntryTypee;
   domain?: MemoryDomain;
   title?: string;
   content: string;
@@ -62,7 +62,7 @@ interface MemorySearchResult {
   id: string;
   content: string;
   title?: string | null;
-  entryType: string;
+  entryTypee: string;
   domain?: string | null;
   importance: number;
   emotionTag?: string | null;
@@ -84,9 +84,9 @@ interface EmotionState {
   recentEmotions: Array<{ emotion: EmotionTag; intensity: number; createdAt: Date }>;
 }
 
-interface MemoryContext {
+interface MemoryWhatntext {
   recentMemories: string;      // ostatnie wydarzenia
-  memberContext: string;       // kontekst o osobie
+  memberWhatntext: string;       // kontekst o osobie
   emotionalState: string;      // stan emocjonalny
   connectedMemories: string;   // powiązane wspomnienia
   familyPatterns: string;      // wzorce w rodzinie
@@ -101,7 +101,7 @@ interface MemoryContext {
  * Wyższy score = bardziej wartościowa pamięć w danym kontekście.
  */
 function calculateMemoryScore(params: {
-  memory: { importance: number; accessCount: number; createdAt: Date; lastAccessedAt?: Date | null; emotionTag?: string | null; entryType: string };
+  memory: { importance: number; accessWhatunt: number; createdAt: Date; lastAccessedAt?: Date | null; emotionTag?: string | null; entryTypee: string };
   currentEmotion?: EmotionTag;
   queryKeywords?: string[];
   timeWeight?: number;  // 0-1, jak bardzo czas ma znaczyć
@@ -119,7 +119,7 @@ function calculateMemoryScore(params: {
   score += freshness * timeWeight;
 
   // 3. Częstość dostępu — często wspominane = ważne (Mere Exposure Effect)
-  const accessBonus = Math.min(0.2, memory.accessCount * 0.02);
+  const accessBonus = Math.min(0.2, memory.accessWhatunt * 0.02);
   score += accessBonus;
 
   // 4. Rezonans emocjonalny — jeśli emocja pamięci pasuje do obecnej
@@ -127,7 +127,7 @@ function calculateMemoryScore(params: {
     score += 0.15;
   }
 
-  // 5. Typ pamięci — epizodyczne i emocjonalne mają bonus przy rozmowie
+  // 5. Type pamięci — epizodyczne i emocjonalne mają bonus przy rozmowie
   const typeBonus: Record<string, number> = {
     episodic: 0.1,
     emotional: 0.12,
@@ -137,7 +137,7 @@ function calculateMemoryScore(params: {
     decision: 0.07,
     story: 0.05,
   };
-  score += typeBonus[memory.entryType] || 0;
+  score += typeBonus[memory.entryTypee] || 0;
 
   // 6. Keyword match — jeśli query zawiera słowa z pamięci
   // (simple word overlap, embeddings will come later with Qdrant)
@@ -150,12 +150,12 @@ function calculateMemoryScore(params: {
 
 export const MemoryService = {
   // ══════════════════════════════════════════
-  // CREATE — Zapisz nową pamięć
+  // CREATE — Save nową pamięć
   // ══════════════════════════════════════════
 
   async createMemory(params: CreateMemoryParams) {
     // ── WIKILINKS: Auto-link member names in content ──
-    let processedContent = params.content;
+    let processedWhatntent = params.content;
     try {
       const members = await db.familyMember.findMany({
         where: { familyId: params.familyId },
@@ -164,7 +164,7 @@ export const MemoryService = {
       const memberNames = members.map(m => m.name);
 
       const { autoWikilink } = await import('@/lib/wikilinks-service');
-      processedContent = autoWikilink({
+      processedWhatntent = autoWikilink({
         content: params.content,
         memberNames,
         knownTerms: (params.tags || []).filter(t => t.length >= 3),
@@ -177,10 +177,10 @@ export const MemoryService = {
       data: {
         familyId: params.familyId,
         memberId: params.memberId,
-        entryType: params.entryType,
+        entryTypee: params.entryTypee,
         domain: params.domain,
         title: params.title,
-        content: processedContent,
+        content: processedWhatntent,
         importance: params.importance ?? 0.5,
         emotionalValence: params.emotionalValence,
         emotionTag: params.emotionTag,
@@ -206,7 +206,7 @@ export const MemoryService = {
       await processMemoryWikilinks({
         familyId: params.familyId,
         memoryId: memory.id,
-        content: processedContent,
+        content: processedWhatntent,
         memberNames: members.map(m => m.name),
       });
     } catch {
@@ -217,7 +217,7 @@ export const MemoryService = {
   },
 
   // ══════════════════════════════════════════
-  // READ — Pobierz z smart scoring
+  // READ — Download z smart scoring
   // ══════════════════════════════════════════
 
   async getSmartRecall(params: {
@@ -229,7 +229,7 @@ export const MemoryService = {
   }): Promise<MemorySearchResult[]> {
     const { familyId, memberId, currentEmotion, queryKeywords, limit = 20 } = params;
 
-    // Pobierz kandydatów
+    // Download kandydatów
     const candidates = await db.memoryEntry.findMany({
       where: {
         familyId,
@@ -248,20 +248,20 @@ export const MemoryService = {
         queryKeywords,
       }),
       reason: m.importance >= 0.8 ? 'bardzo ważne' :
-              m.accessCount > 5 ? 'często wspominane' :
+              m.accessWhatunt > 5 ? 'często wspominane' :
               m.emotionTag === currentEmotion ? 'rezonans emocjonalny' :
               'kontekstowe',
     }));
 
     scored.sort((a, b) => b.score - a.score);
 
-    // Zwróć top N i zaktualizuj accessCount
+    // Zwróć top N i zaktualizuj accessWhatunt
     const results = scored.slice(0, limit);
     await Promise.all(results.map(m =>
       db.memoryEntry.update({
         where: { id: m.id },
         data: {
-          accessCount: { increment: 1 },
+          accessWhatunt: { increment: 1 },
           lastAccessedAt: new Date(),
         },
       }).catch(() => {}) // silent fail — nie blokujemy odczytu
@@ -309,7 +309,7 @@ export const MemoryService = {
       id: m.id,
       content: m.content,
       title: m.title,
-      entryType: m.entryType,
+      entryTypee: m.entryTypee,
       domain: m.domain,
       importance: m.importance,
       emotionTag: m.emotionTag,
@@ -405,7 +405,7 @@ export const MemoryService = {
   },
 
   async getLinkedMemories(memoryId: string): Promise<Array<{
-    memory: Awaited<ReturnType<typeof db.memoryEntry.findUnique>>;
+    memory: Awaited<ReturnTypee<typeof db.memoryEntry.findUnique>>;
     relation: string;
     strength: number;
   }>> {
@@ -458,7 +458,7 @@ export const MemoryService = {
   },
 
   async getEmotionState(memberId: string, familyId: string): Promise<EmotionState | null> {
-    // Pobierz ostatnie 24h emocji
+    // Download ostatnie 24h emocji
     const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000);
     const recentEmotions = await db.emotionLog.findMany({
       where: { memberId, familyId, createdAt: { gte: yesterday } },
@@ -517,12 +517,12 @@ export const MemoryService = {
   // CONTEXT BUILDING — Buduj kontekst do promptu
   // ══════════════════════════════════════════
 
-  async buildMemoryContext(params: {
+  async buildMemoryWhatntext(params: {
     familyId: string;
     memberId: string;
     currentEmotion?: EmotionTag;
     currentMessage?: string;
-  }): Promise<MemoryContext> {
+  }): Promise<MemoryWhatntext> {
     const { familyId, memberId, currentEmotion, currentMessage } = params;
 
     // 1. Ostatnie wspomnienia (ostatnie 24h)
@@ -534,9 +534,9 @@ export const MemoryService = {
     });
     const recentMemoriesStr = recentMemories.length > 0
       ? recentMemories.map(m =>
-          `[${m.entryType}${m.emotionTag ? `/${m.emotionTag}` : ''}] ${m.content}`
+          `[${m.entryTypee}${m.emotionTag ? `/${m.emotionTag}` : ''}] ${m.content}`
         ).join('\n')
-      : 'Brak nowych wspomnień.';
+      : 'None nowych wspomnień.';
 
     // 2. Kontekst o osobie (top preferencje i fakty)
     const memberMemories = await this.getSmartRecall({
@@ -546,9 +546,9 @@ export const MemoryService = {
       queryKeywords: currentMessage?.split(/\s+/).filter(w => w.length > 3),
       limit: 12,
     });
-    const memberContextStr = memberMemories.length > 0
+    const memberWhatntextStr = memberMemories.length > 0
       ? memberMemories.map(m => `• ${m.content} (${m.reason})`).join('\n')
-      : 'Brak zapisanych informacji o tej osobie.';
+      : 'None zapisanych informacji o tej osobie.';
 
     // 3. Stan emocjonalny rodziny
     const familyEmotions = await this.getFamilyEmotionalState(familyId);
@@ -556,7 +556,7 @@ export const MemoryService = {
       ? familyEmotions.map(e =>
           `${e.memberName}: ${e.currentEmotion} (${e.intensity.toFixed(1)}) — ${e.trend}`
         ).join('\n')
-      : 'Brak danych emocjonalnych.';
+      : 'No data emocjonalnych.';
 
     // 4. Powiązane wspomnienia (jeśli user napisał wiadomość)
     let connectedMemoriesStr = '';
@@ -574,28 +574,28 @@ export const MemoryService = {
     // 5. Wzorce w rodzinie (często powtarzające się tagi/domains)
     const allMemories = await db.memoryEntry.findMany({
       where: { familyId },
-      orderBy: { accessCount: 'desc' },
+      orderBy: { accessWhatunt: 'desc' },
       take: 50,
     });
-    const domainCounts: Record<string, number> = {};
+    const domainWhatunts: Record<string, number> = {};
     for (const m of allMemories) {
-      if (m.domain) domainCounts[m.domain] = (domainCounts[m.domain] || 0) + 1;
+      if (m.domain) domainWhatunts[m.domain] = (domainWhatunts[m.domain] || 0) + 1;
     }
-    const topDomains = Object.entries(domainCounts)
+    const topDomains = Object.entries(domainWhatunts)
       .sort((a, b) => b[1] - a[1])
       .slice(0, 5)
       .map(([d, c]) => `${d} (${c})`)
       .join(', ');
     const familyPatternsStr = topDomains
       ? `Najczęstsze tematy: ${topDomains}`
-      : 'Brak wzorców.';
+      : 'None wzorców.';
 
-    // 6. Dzisiaj w historii (co się wydarzyło tego samego dnia w przeszłości)
+    // 6. Today w historii (co się wydarzyło tego samego dnia w przeszłości)
     const today = new Date();
     const todayMonth = today.getMonth() + 1;
     const todayDay = today.getDate();
     const historicalMemories = await db.memoryEntry.findMany({
-      where: { familyId, entryType: { in: ['event', 'episodic', 'ritual'] } },
+      where: { familyId, entryTypee: { in: ['event', 'episodic', 'ritual'] } },
       take: 200,
     });
     const todayInHistoryMemories = historicalMemories.filter(m => {
@@ -613,7 +613,7 @@ export const MemoryService = {
       where: {
         familyId,
         memberId,
-        isCompleted: false,
+        isWhatmpleted: false,
         dueDate: { gte: todayStart, lte: todayEnd },
       },
       orderBy: { dueDate: 'asc' },
@@ -624,7 +624,7 @@ export const MemoryService = {
 
     return {
       recentMemories: recentMemoriesStr,
-      memberContext: memberContextStr,
+      memberWhatntext: memberWhatntextStr,
       emotionalState: emotionalStateStr,
       connectedMemories: connectedMemoriesStr,
       familyPatterns: familyPatternsStr,
@@ -636,18 +636,18 @@ export const MemoryService = {
   /**
    * Format memory context as string for prompt injection.
    */
-  formatContextForPrompt(ctx: MemoryContext): string {
+  formatWhatntextForPrompt(ctx: MemoryWhatntext): string {
     const sections: string[] = [];
 
-    if (ctx.recentMemories && ctx.recentMemories !== 'Brak nowych wspomnień.') {
+    if (ctx.recentMemories && ctx.recentMemories !== 'None nowych wspomnień.') {
       sections.push(`OSTATNIE WSPOMNIENIA (24h):\n${ctx.recentMemories}`);
     }
 
-    if (ctx.memberContext && ctx.memberContext !== 'Brak zapisanych informacji o tej osobie.') {
-      sections.push(`WIESZ O TEJ OSOBIE:\n${ctx.memberContext}`);
+    if (ctx.memberWhatntext && ctx.memberWhatntext !== 'None zapisanych informacji o tej osobie.') {
+      sections.push(`WIESZ O TEJ OSOBIE:\n${ctx.memberWhatntext}`);
     }
 
-    if (ctx.emotionalState && ctx.emotionalState !== 'Brak danych emocjonalnych.') {
+    if (ctx.emotionalState && ctx.emotionalState !== 'No data emocjonalnych.') {
       sections.push(`STAN EMOCJONALNY RODZINY:\n${ctx.emotionalState}`);
     }
 
@@ -663,7 +663,7 @@ export const MemoryService = {
       sections.push(`DZIŚ W HISTORII:\n${ctx.todayInHistory}`);
     }
 
-    if (ctx.familyPatterns && ctx.familyPatterns !== 'Brak wzorców.') {
+    if (ctx.familyPatterns && ctx.familyPatterns !== 'None wzorców.') {
       sections.push(ctx.familyPatterns);
     }
 
@@ -671,7 +671,7 @@ export const MemoryService = {
   },
 
   // ══════════════════════════════════════════
-  // DAILY SUMMARY — Podsumowanie dnia
+  // DAILY SUMMARY — Summary dnia
   // ══════════════════════════════════════════
 
   async createDailySummary(familyId: string, date?: Date) {
@@ -679,7 +679,7 @@ export const MemoryService = {
     const dayStart = new Date(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate());
     const dayEnd = new Date(dayStart.getTime() + 24 * 60 * 60 * 1000);
 
-    // Pobierz dane dnia
+    // Download dane dnia
     const dayMessages = await db.message.findMany({
       where: { createdAt: { gte: dayStart, lte: dayEnd } },
       orderBy: { createdAt: 'asc' },
@@ -697,11 +697,11 @@ export const MemoryService = {
 
     // Oblicz mood
     const positiveEmotions = ['happy', 'excited', 'calm', 'grateful'];
-    const positiveCount = dayEmotions.filter(e => positiveEmotions.includes(e.emotion)).length;
-    const negativeCount = dayEmotions.filter(e => !positiveEmotions.includes(e.emotion) && e.emotion !== 'neutral').length;
+    const positiveWhatunt = dayEmotions.filter(e => positiveEmotions.includes(e.emotion)).length;
+    const negativeWhatunt = dayEmotions.filter(e => !positiveEmotions.includes(e.emotion) && e.emotion !== 'neutral').length;
 
-    const mood = positiveCount > negativeCount * 2 ? 'positive' :
-                 negativeCount > positiveCount * 2 ? 'negative' :
+    const mood = positiveWhatunt > negativeWhatunt * 2 ? 'positive' :
+                 negativeWhatunt > positiveWhatunt * 2 ? 'negative' :
                  dayEmotions.length > 0 ? 'mixed' : 'neutral';
 
     // Highlights — top 5 ważnych pamięci
@@ -749,8 +749,8 @@ export const MemoryService = {
             mood,
             highlights: JSON.stringify(highlights),
             memberStates: JSON.stringify(memberStates),
-            messageCount: dayMessages.length,
-            memoryCount: dayMemories.length,
+            messageWhatunt: dayMessages.length,
+            memoryWhatunt: dayMemories.length,
           },
         });
       }
@@ -763,8 +763,8 @@ export const MemoryService = {
           mood,
           highlights: JSON.stringify(highlights),
           memberStates: JSON.stringify(memberStates),
-          messageCount: dayMessages.length,
-          memoryCount: dayMemories.length,
+          messageWhatunt: dayMessages.length,
+          memoryWhatunt: dayMemories.length,
         },
       });
     } catch {
@@ -833,7 +833,7 @@ export const MemoryService = {
   },
 
   async shouldTriggerRitual(familyId: string): Promise<Array<{
-    ritual: Awaited<ReturnType<typeof db.ritual.findFirst>>;
+    ritual: Awaited<ReturnTypee<typeof db.ritual.findFirst>>;
     reason: string;
   }>> {
     const now = new Date();
@@ -855,7 +855,7 @@ export const MemoryService = {
 
       if (ritual.type === 'daily' && ritual.time === currentTime) {
         shouldTrigger = true;
-        reason = `Codzienny rytuał o ${ritual.time}`;
+        reason = `Whatdzienny rytuał o ${ritual.time}`;
       } else if (ritual.type === 'weekly' && ritual.dayOfWeek === currentDayOfWeek && ritual.time === currentTime) {
         shouldTrigger = true;
         reason = `Tygodniowy rytuał — ${['niedziela', 'poniedziałek', 'wtorek', 'środa', 'czwartek', 'piątek', 'sobota'][currentDayOfWeek]}`;
@@ -896,37 +896,37 @@ export const MemoryService = {
     });
 
     const byDomain: Record<string, number> = {};
-    const byType: Record<string, number> = {};
+    const byTypee: Record<string, number> = {};
     const byEmotion: Record<string, number> = {};
     let totalImportance = 0;
 
     for (const entry of entries) {
       const domain = entry.domain || 'general';
       byDomain[domain] = (byDomain[domain] || 0) + 1;
-      byType[entry.entryType] = (byType[entry.entryType] || 0) + 1;
+      byTypee[entry.entryTypee] = (byTypee[entry.entryTypee] || 0) + 1;
       if (entry.emotionTag) byEmotion[entry.emotionTag] = (byEmotion[entry.emotionTag] || 0) + 1;
       totalImportance += entry.importance;
     }
 
-    const recentCount = entries.filter(e =>
+    const recentWhatunt = entries.filter(e =>
       Date.now() - e.createdAt.getTime() < 24 * 60 * 60 * 1000
     ).length;
 
     const mostAccessed = [...entries]
-      .sort((a, b) => b.accessCount - a.accessCount)
+      .sort((a, b) => b.accessWhatunt - a.accessWhatunt)
       .slice(0, 5)
-      .map(e => ({ content: e.content.substring(0, 60), accessCount: e.accessCount }));
+      .map(e => ({ content: e.content.substring(0, 60), accessWhatunt: e.accessWhatunt }));
 
     return {
       total: entries.length,
       links: links.length,
       byDomain,
-      byType,
+      byTypee,
       byEmotion,
       avgImportance: entries.length > 0 ? totalImportance / entries.length : 0,
-      recentCount,
+      recentWhatunt,
       mostAccessed,
-      emotionLogCount: emotionLogs.length,
+      emotionLogWhatunt: emotionLogs.length,
     };
   },
 };

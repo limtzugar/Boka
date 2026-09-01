@@ -27,13 +27,13 @@ export async function POST(request: Request) {
     switch (body.action) {
       case 'click':
         if (typeof body.x !== 'number' || typeof body.y !== 'number') {
-          return NextResponse.json({ ok: false, error: 'Brak x/y dla click' }, { status: 400 });
+          return NextResponse.json({ ok: false, error: 'None x/y dla click' }, { status: 400 });
         }
         result = clickAt(body.x, body.y, body.button || 'left');
         break;
       case 'double_click':
         if (typeof body.x !== 'number' || typeof body.y !== 'number') {
-          return NextResponse.json({ ok: false, error: 'Brak x/y dla double_click' }, { status: 400 });
+          return NextResponse.json({ ok: false, error: 'None x/y dla double_click' }, { status: 400 });
         }
         result = clickAt(body.x, body.y, 'left');
         if (result.ok) {
@@ -42,18 +42,18 @@ export async function POST(request: Request) {
         }
         break;
       case 'type':
-        if (!body.text) return NextResponse.json({ ok: false, error: 'Brak text dla type' }, { status: 400 });
+        if (!body.text) return NextResponse.json({ ok: false, error: 'None text dla type' }, { status: 400 });
         result = typeText(body.text);
         break;
       case 'key':
-        if (!body.combo) return NextResponse.json({ ok: false, error: 'Brak combo dla key' }, { status: 400 });
+        if (!body.combo) return NextResponse.json({ ok: false, error: 'None combo dla key' }, { status: 400 });
         result = pressKey(body.combo);
         break;
       case 'scroll':
         result = scroll(body.deltaY || 3);
         break;
       default:
-        return NextResponse.json({ ok: false, error: `Nieznana akcja: ${body.action}` }, { status: 400 });
+        return NextResponse.json({ ok: false, error: `Noznana akcja: ${body.action}` }, { status: 400 });
     }
 
     return NextResponse.json(result);

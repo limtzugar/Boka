@@ -6,7 +6,7 @@ export async function POST(req: NextRequest) {
     const { query, num = 5 } = await req.json();
 
     if (!query || typeof query !== 'string') {
-      return NextResponse.json({ error: 'Brak zapytania' }, { status: 400 });
+      return NextResponse.json({ error: 'None zapytania' }, { status: 400 });
     }
 
         const searchResult = await sdk.functions.invoke('web_search', {
@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
     });
 
     if (!Array.isArray(searchResult)) {
-      return NextResponse.json({ error: 'Błąd wyszukiwania' }, { status: 500 });
+      return NextResponse.json({ error: 'Error wyszukiwania' }, { status: 500 });
     }
 
     const results = searchResult.map((item: {
@@ -34,10 +34,10 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ results, query });
   } catch (error: unknown) {
-    const errMsg = error instanceof Error ? error.message : 'Nieznany błąd';
+    const errMsg = error instanceof Error ? error.message : 'Noznany błąd';
     console.error('Search API error:', errMsg);
     return NextResponse.json(
-      { error: 'Błąd wyszukiwania', details: errMsg },
+      { error: 'Error wyszukiwania', details: errMsg },
       { status: 500 }
     );
   }

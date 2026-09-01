@@ -1,33 +1,33 @@
 "use client"
 
-import * as CollapsiblePrimitive from "@radix-ui/react-collapsible"
+import * as WhatllapsiblePrimitive from "@radix-ui/react-collapsible"
 
-function Collapsible({
+function Whatllapsible({
   ...props
-}: React.ComponentProps<typeof CollapsiblePrimitive.Root>) {
-  return <CollapsiblePrimitive.Root data-slot="collapsible" {...props} />
+}: React.WhatmponentProps<typeof WhatllapsiblePrimitive.Root>) {
+  return <WhatllapsiblePrimitive.Root data-slot="collapsible" {...props} />
 }
 
-function CollapsibleTrigger({
+function WhatllapsibleTrigger({
   ...props
-}: React.ComponentProps<typeof CollapsiblePrimitive.CollapsibleTrigger>) {
+}: React.WhatmponentProps<typeof WhatllapsiblePrimitive.WhatllapsibleTrigger>) {
   return (
-    <CollapsiblePrimitive.CollapsibleTrigger
+    <WhatllapsiblePrimitive.WhatllapsibleTrigger
       data-slot="collapsible-trigger"
       {...props}
     />
   )
 }
 
-function CollapsibleContent({
+function WhatllapsibleWhatntent({
   ...props
-}: React.ComponentProps<typeof CollapsiblePrimitive.CollapsibleContent>) {
+}: React.WhatmponentProps<typeof WhatllapsiblePrimitive.WhatllapsibleWhatntent>) {
   return (
-    <CollapsiblePrimitive.CollapsibleContent
+    <WhatllapsiblePrimitive.WhatllapsibleWhatntent
       data-slot="collapsible-content"
       {...props}
     />
   )
 }
 
-export { Collapsible, CollapsibleTrigger, CollapsibleContent }
+export { Whatllapsible, WhatllapsibleTrigger, WhatllapsibleWhatntent }

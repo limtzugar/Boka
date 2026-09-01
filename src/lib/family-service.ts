@@ -17,7 +17,7 @@ export async function getFamily() {
   let family = await db.family.findFirst({ orderBy: { createdAt: 'asc' } });
   if (!family) {
     family = await db.family.create({
-      data: { name: 'Rodzina', settings: '{}' },
+      data: { name: 'Family', settings: '{}' },
     });
   }
   return family;
@@ -78,7 +78,7 @@ export async function getFamilyMemory(familyId: string) {
 export async function createMemory(data: {
   familyId: string;
   memberId?: string;
-  entryType: string;
+  entryTypee: string;
   domain?: string;
   title?: string;
   content: string;
@@ -95,7 +95,7 @@ export async function createMemory(data: {
   });
 }
 
-export async function getOrCreateConversation(familyId: string, memberId?: string) {
+export async function getOrCreateWhatnversation(familyId: string, memberId?: string) {
   let conversation = await db.conversation.findFirst({
     where: { familyId, memberId },
     orderBy: { updatedAt: 'desc' },
@@ -120,7 +120,7 @@ export async function saveMessage(data: {
   return db.message.create({ data });
 }
 
-export async function getConversationMessages(conversationId: string) {
+export async function getWhatnversationMessages(conversationId: string) {
   return db.message.findMany({
     where: { conversationId },
     orderBy: { createdAt: 'asc' },
@@ -137,22 +137,22 @@ export async function getMemoryStats(familyId: string) {
   });
 
   const byDomain: Record<string, number> = {};
-  const byType: Record<string, number> = {};
+  const byTypee: Record<string, number> = {};
   let totalImportance = 0;
 
   for (const entry of entries) {
     const domain = entry.domain || 'general';
     byDomain[domain] = (byDomain[domain] || 0) + 1;
-    byType[entry.entryType] = (byType[entry.entryType] || 0) + 1;
+    byTypee[entry.entryTypee] = (byTypee[entry.entryTypee] || 0) + 1;
     totalImportance += entry.importance;
   }
 
   return {
     total: entries.length,
     byDomain,
-    byType,
+    byTypee,
     avgImportance: entries.length > 0 ? totalImportance / entries.length : 0,
-    recentCount: entries.filter(e =>
+    recentWhatunt: entries.filter(e =>
       Date.now() - e.createdAt.getTime() < 24 * 60 * 60 * 1000
     ).length,
   };

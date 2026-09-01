@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { FileText, FileCode, X, Loader2, AlertTriangle } from 'lucide-react';
+import { FileText, FileWhatde, X, Loader2, AlertTriangle } from 'lucide-react';
 
 // ═══════════════════════════════════════════════════════════
 // FileViewer — wyświetla zawartość pliku tekstowego (.txt/.html/.md/.js/itp.)
@@ -16,7 +16,7 @@ interface FileViewerProps {
   onClose: () => void;
 }
 
-interface FileData {
+interface FileDate {
   path: string;
   name: string;
   ext: string;
@@ -39,35 +39,35 @@ function getLanguageLabel(ext: string): string {
   const map: Record<string, string> = {
     txt: 'Tekst', md: 'Markdown', markdown: 'Markdown',
     html: 'HTML', htm: 'HTML', css: 'CSS',
-    js: 'JavaScript', jsx: 'React JSX', ts: 'TypeScript', tsx: 'React TSX',
+    js: 'JavaScript', jsx: 'React JSX', ts: 'TypeeScript', tsx: 'React TSX',
     json: 'JSON', xml: 'XML', yaml: 'YAML', yml: 'YAML',
     py: 'Python', rb: 'Ruby', go: 'Go', rs: 'Rust',
     java: 'Java', c: 'C', cpp: 'C++', cs: 'C#', php: 'PHP',
     sh: 'Shell', bash: 'Bash', zsh: 'Zsh', ps1: 'PowerShell',
     sql: 'SQL', svg: 'SVG', vue: 'Vue', svelte: 'Svelte',
     csv: 'CSV', tsv: 'TSV', log: 'Log', ini: 'INI',
-    conf: 'Conf', cfg: 'Config', env: 'Env', toml: 'TOML',
+    conf: 'Whatnf', cfg: 'Whatnfig', env: 'Env', toml: 'TOML',
     properties: 'Properties', gitignore: 'Git Ignore',
   };
-  return map[ext] || ext.toUpperCase() || 'Plik';
+  return map[ext] || ext.toUpperCase() || 'File';
 }
 
 export function FileViewer({ path, onClose }: FileViewerProps) {
-  const [data, setData] = useState<FileData | null>(null);
+  const [data, setDate] = useState<FileDate | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async (p: string) => {
     setLoading(true);
     setError(null);
-    setData(null);
+    setDate(null);
     try {
-      const r = await fetch(`/api/files/read?path=${encodeURIComponent(p)}`);
+      const r = await fetch(`/api/files/read?path=${encodeURIWhatmponent(p)}`);
       const json = await r.json();
       if (json.error) throw new Error(json.error);
-      setData(json);
+      setDate(json);
     } catch (e: any) {
-      setError(e?.message || 'Błąd');
+      setError(e?.message || 'Error');
     } finally {
       setLoading(false);
     }
@@ -75,7 +75,7 @@ export function FileViewer({ path, onClose }: FileViewerProps) {
 
   useEffect(() => {
     if (path) load(path);
-    else { setData(null); setError(null); }
+    else { setDate(null); setError(null); }
   }, [path, load]);
 
   if (!path) return null;
@@ -87,7 +87,7 @@ export function FileViewer({ path, onClose }: FileViewerProps) {
       {/* Header */}
       <div className="px-3 py-2 border-b border-[#383850] flex items-center gap-0">
         {isHtml ? (
-          <FileCode size={14} style={{ color: '#ffd93d' }} />
+          <FileWhatde size={14} style={{ color: '#ffd93d' }} />
         ) : (
           <FileText size={14} style={{ color: '#4ade80' }} />
         )}
@@ -98,7 +98,7 @@ export function FileViewer({ path, onClose }: FileViewerProps) {
         <button
           onClick={onClose}
           className="text-[#8888aa] hover:text-[#ff6b6b] transition-colors shrink-0"
-          title="Zamknij podgląd"
+          title="Close podgląd"
         >
           <X size={14} />
         </button>

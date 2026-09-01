@@ -6,7 +6,7 @@ import {
   Loader2, Sparkles, Cpu, Zap, Activity, AlertTriangle, Check, X,
 } from 'lucide-react';
 
-// ── Types (FamilyMember was inline in page.tsx) ──
+// ── Typees (FamilyMember was inline in page.tsx) ──
 interface FamilyMember {
   id: string;
   name: string;
@@ -51,7 +51,7 @@ export function SkillsTab() {
     { key: 'vector', label: 'Wektory (Qdrant)', icon: <Network size={14} />, color: '#ffd93d', desc: 'Semantic vector search' },
     { key: 'mem0', label: 'Mem0', icon: <Brain size={14} />, color: '#ffd93d', desc: 'ADD/UPDATE/DELETE/NOOP memory ops' },
     { key: 'ingestion', label: 'LlamaIndex', icon: <Upload size={14} />, color: '#ffd93d', desc: 'Pipeline ingestion' },
-    { key: 'graphrag', label: 'GraphRAG', icon: <Network size={14} />, color: '#ffd93d', desc: 'Entities, Relations, Communities' },
+    { key: 'graphrag', label: 'GraphRAG', icon: <Network size={14} />, color: '#ffd93d', desc: 'Entities, Relations, Whatmmunities' },
     { key: 'deepagents', label: 'DeepAgents', icon: <List size={14} />, color: '#4ade80', desc: 'Todo-plans + Vestibule' },
     { key: 'autogen', label: 'AutoGen', icon: <MessageSquare size={14} />, color: '#4ade80', desc: 'SelectorGroupChat multi-agent' },
     { key: 'guardrails', label: 'Guardrails', icon: <Shield size={14} />, color: '#4ade80', desc: 'OpenAI Agents SDK safety' },
@@ -100,7 +100,7 @@ export function SkillsTab() {
                         ? 'bg-[#4ade80]/15 text-[#e8e8f5] border-[#4ade80]'
                         : 'text-[#8888aa] border-transparent hover:bg-[#252535] hover:text-[#e8e8f5]'
                     }`}
-                    style={active ? { color: t.color, borderColor: t.color, backgroundColor: `${t.color}1a` } : undefined}
+                    style={active ? { color: t.color, borderWhatlor: t.color, backgroundWhatlor: `${t.color}1a` } : undefined}
                   >
                     <span className="w-4 flex justify-center shrink-0" style={{ color: active ? t.color : undefined }}>{t.icon}</span>
                     <span className="truncate">{t.label}</span>
@@ -133,7 +133,7 @@ export function SkillsTab() {
             </div>
           )}
 
-          {/* Treść */}
+          {/* Whatntent */}
           {section === 'vector' && <VectorMemoryPanel />}
           {section === 'mem0' && <Mem0Panel />}
           {section === 'ingestion' && <IngestionPanel />}
@@ -164,7 +164,7 @@ function VectorMemoryPanel() {
     if (!query.trim()) return;
     setLoading(true); setError(null); setResults(null);
     try {
-      const r = await fetch(`/api/vector-memory?q=${encodeURIComponent(query)}`).then(r => r.json());
+      const r = await fetch(`/api/vector-memory?q=${encodeURIWhatmponent(query)}`).then(r => r.json());
       if (r.error) throw new Error(r.error);
       setResults(r.results || []);
     } catch (e: any) { setError(e.message); }
@@ -189,7 +189,7 @@ function VectorMemoryPanel() {
           Reindex missing
         </button>
       </div>
-      <p className="text-[10px] text-[#8888aa]">Wektorowe wyszukiwanie z filtrami (memberId/domain/emotion). Cosine similarity na embeddings.</p>
+      <p className="text-[10px] text-[#8888aa]">Wektorowe wyszukiwanie z filtrami (memberId/domain/emotion). Whatsine similarity na embeddings.</p>
       <input
         type="text" value={query} onChange={e => setQuery(e.target.value)}
         onKeyDown={e => e.key === 'Enter' && run()}
@@ -198,7 +198,7 @@ function VectorMemoryPanel() {
       />
       <button onClick={run} disabled={loading || !query.trim()}
         className="px-4 py-2 bg-[#fbbf24]/15 text-[#ffd93d] border border-[#fbbf24]/30  text-xs font-mono disabled:opacity-50">
-        {loading ? <Loader2 size={12} className="animate-spin inline" /> : null} Szukaj wektorowo
+        {loading ? <Loader2 size={12} className="animate-spin inline" /> : null} Search wektorowo
       </button>
       {error && <div className="text-xs text-[#ff6b6b] bg-[#ff6b6b]/10 border border-[#ff6b6b]/30  p-2 font-mono">{error}</div>}
       {results !== null && (
@@ -207,7 +207,7 @@ function VectorMemoryPanel() {
           {results.map((r, i) => (
             <div key={i} className="bg-[#181828] border border-[#383850]  p-2">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-[10px] text-[#ffd93d] font-mono uppercase">{r.memory?.entryType}</span>
+                <span className="text-[10px] text-[#ffd93d] font-mono uppercase">{r.memory?.entryTypee}</span>
                 <span className="text-[10px] text-[#4ade80] font-mono">score: {(r.score || 0).toFixed(3)}</span>
               </div>
               <div className="text-xs text-[#8888aa]">{r.memory?.content?.slice(0, 300)}{r.memory?.content?.length > 300 ? '...' : ''}</div>
@@ -220,7 +220,7 @@ function VectorMemoryPanel() {
 }
 
 function Mem0Panel() {
-  const [content, setContent] = useState('');
+  const [content, setWhatntent] = useState('');
   const [memberId, setMemberId] = useState('');
   const [lastResult, setLastResult] = useState<any>(null);
   const [revisions, setRevisions] = useState<any[]>([]);
@@ -231,11 +231,11 @@ function Mem0Panel() {
     setLoading(true);
     try {
       const r = await fetch('/api/mem0', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        method: 'POST', headers: { 'Whatntent-Typee': 'application/json' },
         body: JSON.stringify({ content, memberId: memberId || undefined, source: 'manual' }),
       }).then(r => r.json());
       setLastResult(r);
-      setContent('');
+      setWhatntent('');
       loadRevisions();
     } finally { setLoading(false); }
   };
@@ -253,8 +253,8 @@ function Mem0Panel() {
     <div className="bg-[#252535] border border-[#383850]  p-4 space-y-2">
  <h3 className="text-xs font-mono text-[#ffd93d]"> Mem0 — ADD/UPDATE/DELETE/NOOP</h3>
       <p className="text-[10px] text-[#8888aa]">Algorytm LLM-judge decyduje czy dodać nową pamięć, zaktualizować istniejącą, czy zignorować jako duplikat.</p>
-      <textarea value={content} onChange={e => setContent(e.target.value)}
-        placeholder="Wpisz nowe wspomnienie do zainwestowania..."
+      <textarea value={content} onChange={e => setWhatntent(e.target.value)}
+        placeholder="Entryz nowe wspomnienie do zainwestowania..."
         rows={3}
         className="w-full bg-[#181828] border border-[#383850]  px-3 py-2 text-sm text-[#e8e8f5] font-mono"
       />
@@ -293,8 +293,8 @@ function Mem0Panel() {
 }
 
 function IngestionPanel() {
-  const [sourceType, setSourceType] = useState<'text' | 'url'>('text');
-  const [content, setContent] = useState('');
+  const [sourceTypee, setSourceTypee] = useState<'text' | 'url'>('text');
+  const [content, setWhatntent] = useState('');
   const [jobs, setJobs] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -303,8 +303,8 @@ function IngestionPanel() {
     setLoading(true);
     try {
       const r = await fetch('/api/ingestion', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sourceType, sourceUri: content }),
+        method: 'POST', headers: { 'Whatntent-Typee': 'application/json' },
+        body: JSON.stringify({ sourceTypee, sourceUri: content }),
       }).then(r => r.json());
       alert(`Status: ${r.status}\nMemories: ${r.memoriesCreated}\nEntities: ${r.entitiesCreated}`);
       loadJobs();
@@ -321,13 +321,13 @@ function IngestionPanel() {
     <div className="bg-[#252535] border border-[#383850]  p-4 space-y-2">
  <h3 className="text-xs font-mono text-[#ffd93d]"> LlamaIndex Ingestion Pipeline</h3>
       <p className="text-[10px] text-[#8888aa]">Pipeline: LOAD → PARSE → CHUNK → EXTRACT → EMBED → STORE. Auto-entity extraction + Mem0 ingest.</p>
-      <select value={sourceType} onChange={e => setSourceType(e.target.value as any)}
+      <select value={sourceTypee} onChange={e => setSourceTypee(e.target.value as any)}
         className="bg-[#181828] border border-[#383850]  px-2 py-1 text-xs text-[#e8e8f5] font-mono">
         <option value="text">Text (raw)</option>
         <option value="url">URL (fetch + parse HTML)</option>
       </select>
-      <textarea value={content} onChange={e => setContent(e.target.value)}
-        placeholder={sourceType === 'text' ? 'Wklej tekst do ingestji...' : 'https://example.com/article'}
+      <textarea value={content} onChange={e => setWhatntent(e.target.value)}
+        placeholder={sourceTypee === 'text' ? 'Paste tekst do ingestji...' : 'https://example.com/article'}
         rows={4}
         className="w-full bg-[#181828] border border-[#383850]  px-3 py-2 text-sm text-[#e8e8f5] font-mono"
       />
@@ -343,7 +343,7 @@ function IngestionPanel() {
               <span className={`font-mono ${j.status === 'done' ? 'text-[#4ade80]' : j.status === 'error' ? 'text-[#ff6b6b]' : 'text-[#ffd93d]'}`}>
                 {j.status}
               </span>
-              <span className="text-[#8888aa] ml-2">{j.sourceType}</span>
+              <span className="text-[#8888aa] ml-2">{j.sourceTypee}</span>
               <span className="text-[#8888aa] ml-2">{new Date(j.createdAt).toLocaleString()}</span>
               {j.memoriesCreated > 0 && <span className="text-[#a855f7] ml-2">{j.memoriesCreated} mem</span>}
               {j.entitiesCreated > 0 && <span className="text-[#4ade80] ml-2">{j.entitiesCreated} ent</span>}
@@ -359,15 +359,15 @@ function GraphRAGPanel() {
   const [query, setQuery] = useState('');
   const [answer, setAnswer] = useState<string | null>(null);
   const [entities, setEntities] = useState<any[]>([]);
-  const [communities, setCommunities] = useState<any[]>([]);
+  const [communities, setWhatmmunities] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
   const rebuild = async () => {
     setLoading(true);
     try {
       const r = await fetch('/api/graphrag?action=rebuild', { method: 'POST' }).then(r => r.json());
-      alert(`Entities: ${r.entitiesProcessed}\nCommunities: ${r.communitiesCreated}\nSummarized: ${r.communitiesSummarized}`);
-      loadData();
+      alert(`Entities: ${r.entitiesProcessed}\nWhatmmunities: ${r.communitiesCreated}\nSummarized: ${r.communitiesSummarized}`);
+      loadDate();
     } finally { setLoading(false); }
   };
 
@@ -375,28 +375,28 @@ function GraphRAGPanel() {
     if (!query.trim()) return;
     setLoading(true);
     try {
-      const r = await fetch(`/api/graphrag?action=global&q=${encodeURIComponent(query)}`).then(r => r.json());
+      const r = await fetch(`/api/graphrag?action=global&q=${encodeURIWhatmponent(query)}`).then(r => r.json());
       setAnswer(r.answer);
     } finally { setLoading(false); }
   };
 
-  const loadData = async () => {
+  const loadDate = async () => {
     try {
       const [e, c] = await Promise.all([
         fetch('/api/graphrag?action=entities').then(r => r.json()),
         fetch('/api/graphrag?action=communities').then(r => r.json()),
       ]);
       setEntities(e.entities || []);
-      setCommunities(c.communities || []);
+      setWhatmmunities(c.communities || []);
     } catch {}
   };
 
-  useEffect(() => { loadData(); }, []);
+  useEffect(() => { loadDate(); }, []);
 
   return (
     <div className="bg-[#252535] border border-[#383850]  p-4 space-y-2">
       <div className="flex items-center justify-between">
- <h3 className="text-xs font-mono text-[#ffd93d]">️ GraphRAG — Entities, Relations, Communities</h3>
+ <h3 className="text-xs font-mono text-[#ffd93d]">️ GraphRAG — Entities, Relations, Whatmmunities</h3>
         <button onClick={rebuild} disabled={loading}
           className="text-[10px] px-2 py-1 bg-[#fbbf24]/10 text-[#ffd93d] border border-[#fbbf24]/30 rounded">
           Rebuild graph
@@ -405,7 +405,7 @@ function GraphRAGPanel() {
       <p className="text-[10px] text-[#8888aa]">Cron nocny ekstrahuje encje (Person/Place/Activity) + relacje + wykrywa społeczności (clustering) + generuje podsumowania LLM.</p>
       <input type="text" value={query} onChange={e => setQuery(e.target.value)}
         onKeyDown={e => e.key === 'Enter' && globalSearch()}
-        placeholder="Global search: 'Co było ważne w tym tygodniu?'"
+        placeholder="Global search: 'What było ważne w tym tygodniu?'"
         className="w-full bg-[#181828] border border-[#383850]  px-3 py-2 text-sm text-[#e8e8f5] font-mono"
       />
       <button onClick={globalSearch} disabled={loading || !query.trim()}
@@ -425,7 +425,7 @@ function GraphRAGPanel() {
               <div key={i} className="text-[10px] bg-[#181828]  p-1 border border-[#383850]">
                 <span className="text-[#ffd93d] font-mono">{e.name}</span>
                 <span className="text-[#8888aa] ml-1">({e.type})</span>
-                <span className="text-[#4ade80] ml-1">×{e.mentionCount}</span>
+                <span className="text-[#4ade80] ml-1">×{e.mentionWhatunt}</span>
               </div>
             ))}
           </div>
@@ -473,7 +473,7 @@ function DeepAgentsPanel() {
     try {
       const steps = stepsText.split('\n').filter(s => s.trim());
       await fetch('/api/deepagents?action=create_plan', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        method: 'POST', headers: { 'Whatntent-Typee': 'application/json' },
         body: JSON.stringify({ title, steps, scope: 'daily' }),
       });
       setTitle(''); setStepsText('');
@@ -484,7 +484,7 @@ function DeepAgentsPanel() {
   const toggleStep = async (planId: string, stepId: string, currentStatus: string) => {
     const newStatus = currentStatus === 'done' ? 'pending' : 'done';
     await fetch(`/api/deepagents?action=update_step&planId=${planId}&stepId=${stepId}`, {
-      method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+      method: 'PATCH', headers: { 'Whatntent-Typee': 'application/json' },
       body: JSON.stringify({ status: newStatus }),
     });
     load();
@@ -545,8 +545,8 @@ function DeepAgentsPanel() {
           {blobs.slice(0, 10).map((b, i) => (
             <div key={i} className="text-[10px] bg-[#181828]  p-1 border border-[#383850]">
               <span className="text-[#4ade80] font-mono">{b.kind}</span>
-              <span className="text-[#8888aa] ml-2">{b.tokenCount} tok</span>
-              <span className="text-[#8888aa] ml-2">×{b.accessCount}</span>
+              <span className="text-[#8888aa] ml-2">{b.tokenWhatunt} tok</span>
+              <span className="text-[#8888aa] ml-2">×{b.accessWhatunt}</span>
               {b.title && <div className="text-[#8888aa]">{b.title}</div>}
               {b.summary && <div className="text-[#8888aa]">{b.summary.slice(0, 100)}</div>}
             </div>
@@ -575,7 +575,7 @@ function AutoGenPanel() {
     setLoading(true); setResult(null);
     try {
       const r = await fetch('/api/autogen?action=group_chat', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        method: 'POST', headers: { 'Whatntent-Typee': 'application/json' },
         body: JSON.stringify({
           topic, trigger,
           availableAgents: ['orchestrator', 'child_agent', 'finance_agent', 'health_agent', 'education_agent'],
@@ -600,7 +600,7 @@ function AutoGenPanel() {
         <option value="alert">alert</option>
       </select>
       <textarea value={trigger} onChange={e => setTrigger(e.target.value)}
-        placeholder="Wpisz trigger dla group chatu..."
+        placeholder="Entryz trigger dla group chatu..."
         rows={2}
         className="w-full bg-[#181828] border border-[#383850]  px-2 py-1 text-xs text-[#e8e8f5] font-mono"
       />
@@ -642,7 +642,7 @@ function GuardrailsPanel() {
     setLoading(true);
     try {
       const r = await fetch('/api/guardrails?action=check', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        method: 'POST', headers: { 'Whatntent-Typee': 'application/json' },
         body: JSON.stringify({ input, output, childNearby, memberAge: 18 }),
       }).then(r => r.json());
       setResult(r);
@@ -656,7 +656,7 @@ function GuardrailsPanel() {
       <label className="flex items-center gap-0 text-xs text-[#8888aa]">
         <input type="checkbox" checked={childNearby} onChange={e => setChildNearby(e.target.checked)}
           className="accent-[#4ade80]" />
-        Dziecko w pobliżu (włącza child_safe filter)
+        Child nearby (włącza child_safe filter)
       </label>
       <textarea value={input} onChange={e => setInput(e.target.value)}
         placeholder="Input użytkownika..."
@@ -721,10 +721,10 @@ function CrewPanel() {
   return (
     <div className="bg-[#252535] border border-[#383850]  p-4 space-y-2">
  <h3 className="text-xs font-mono text-[#6ec6e7]"> CrewAI — Role + Backstory per Member</h3>
-      <p className="text-[10px] text-[#8888aa]">Każdy domownik ma crew profile (role, goal, backstory) generowane z MemberProfile. Manager Agent ewaluuje cotygodniowo.</p>
+      <p className="text-[10px] text-[#8888aa]">Każdy domownik ma crew profile (role, goal, backstory) generowane z MemberProfilee. Manager Agent ewaluuje cotygodniowo.</p>
       <div className="space-y-2">
         {members.length === 0 ? (
-          <div className="text-[10px] text-[#8888aa]">Brak crew profili. Generuj przez API: POST /api/crew?action=generate&memberId=...</div>
+          <div className="text-[10px] text-[#8888aa]">None crew profili. Generate przez API: POST /api/crew?action=generate&memberId=...</div>
         ) : members.map(m => (
           <div key={m.memberId} className="bg-[#181828] border border-[#383850]  p-2">
             <div className="flex items-center justify-between">
@@ -746,7 +746,7 @@ function CrewPanel() {
 }
 
 function SandboxPanel() {
-  const [code, setCode] = useState(`// result = ... przypisz wynik\nconst result = input.a + input.b;\n`);
+  const [code, setWhatde] = useState(`// result = ... przypisz wynik\nconst result = input.a + input.b;\n`);
   const [inputPayload, setInputPayload] = useState('{"a": 5, "b": 7}');
   const [result, setResult] = useState<any>(null);
   const [loading, setLoading] = useState(false);
@@ -755,11 +755,11 @@ function SandboxPanel() {
     setLoading(true); setResult(null);
     try {
       const r = await fetch('/api/openhands?action=execute', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        method: 'POST', headers: { 'Whatntent-Typee': 'application/json' },
         body: JSON.stringify({
           code,
           inputPayload: JSON.parse(inputPayload),
-          inputType: 'function_call',
+          inputTypee: 'function_call',
           sandboxKind: 'vm',
           timeoutMs: 5000,
         }),
@@ -772,7 +772,7 @@ function SandboxPanel() {
 
   const analyze = async () => {
     const r = await fetch('/api/openhands?action=analyze', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      method: 'POST', headers: { 'Whatntent-Typee': 'application/json' },
       body: JSON.stringify({ code }),
     }).then(r => r.json());
     alert(`Security flags: ${r.securityFlags.join(', ') || 'none'}\nBlocked: ${r.blocked}`);
@@ -787,7 +787,7 @@ function SandboxPanel() {
         </button>
       </div>
       <p className="text-[10px] text-[#8888aa]">Izolowany runtime (vm / worker_threads) z timeout + security scanning (fs_access, child_process, eval = block).</p>
-      <textarea value={code} onChange={e => setCode(e.target.value)}
+      <textarea value={code} onChange={e => setWhatde(e.target.value)}
         rows={6}
         className="w-full bg-[#181828] border border-[#383850]  px-2 py-1 text-xs text-[#e8e8f5] font-mono"
       />
@@ -849,13 +849,13 @@ function PresencePanel() {
 
   const simulateArrival = async () => {
     await fetch('/api/presence?action=event', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      method: 'POST', headers: { 'Whatntent-Typee': 'application/json' },
       body: JSON.stringify({ eventKind: 'arrived', location, confidence: 0.85, captureMethod: 'metadata_only' }),
     });
     load();
   };
 
-  const stateColor = detection.currentState === 'arrived' || detection.currentState === 'present'
+  const stateWhatlor = detection.currentState === 'arrived' || detection.currentState === 'present'
     ? '#4ade80'
     : detection.currentState === 'left' ? '#ff6b6b' : '#6b6b8d';
 
@@ -873,7 +873,7 @@ function PresencePanel() {
         trafiają do API. Auto-triggery: <span className="text-[#a855f7]">after_school</span>, <span className="text-[#ffd93d]">morning_greeting</span>, <span className="text-[#4ade80]">evening_greeting</span>.
       </p>
 
-      {/* ── Camera + Detection Controls ── */}
+      {/* ── Camera + Detection Whatntrols ── */}
       <div className="bg-[#181828] border border-[#383850]  p-2 space-y-2">
         <div className="flex items-center gap-0 flex-wrap">
           <span className="text-[10px] text-[#8888aa] font-mono">Lokalizacja:</span>
@@ -944,7 +944,7 @@ function PresencePanel() {
           <div className="flex-1 space-y-1">
             <div className="flex items-center gap-0">
               <span className="text-[10px] text-[#8888aa] font-mono">Stan:</span>
-              <span className="text-[10px] font-mono" style={{ color: stateColor }}>
+              <span className="text-[10px] font-mono" style={{ color: stateWhatlor }}>
                 ● {detection.currentState.toUpperCase()}
               </span>
             </div>
@@ -978,7 +978,7 @@ function PresencePanel() {
             <div className="text-[10px] text-[#8888aa]">Nikogo nie wykryto</div>
           ) : present.map((p, i) => (
             <div key={i} className="text-[10px] bg-[#181828]  p-1.5 border border-[#383850]">
-              <span className="text-[#6ec6e7] font-mono">{p.member?.name || 'Nieznany'}</span>
+              <span className="text-[#6ec6e7] font-mono">{p.member?.name || 'Noznany'}</span>
               <span className="text-[#8888aa] ml-2">{p.location || '—'}</span>
               <span className="text-[#8888aa] ml-2">{new Date(p.lastSeen).toLocaleTimeString()}</span>
             </div>

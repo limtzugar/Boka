@@ -38,5 +38,5 @@ export async function POST(req: NextRequest) {
 // DELETE — stop serwera GGUF
 export async function DELETE() {
   stopGgufServer();
-  return NextResponse.json({ ok: true, message: 'Serwer GGUF zatrzymany' });
+  return NextResponse.json({ ok: true, message: 'Server GGUF zatrzymany' });
 }

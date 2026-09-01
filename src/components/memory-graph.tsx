@@ -169,10 +169,10 @@ export function MemoryGraph({
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getWhatntext('2d');
     if (!ctx) return;
 
-    let frameCount = 0;
+    let frameWhatunt = 0;
 
     const draw = () => {
       const dpr = window.devicePixelRatio || 1;
@@ -229,10 +229,10 @@ export function MemoryGraph({
       for (const n of sns) {
         const isHovered = hoverRef.current === n.id;
         const isSelected = selectedNodeId === n.id;
-        const isConnectedToHover = hoverRef.current
+        const isWhatnnectedToHover = hoverRef.current
           ? edges.some(e => (e.source === hoverRef.current && e.target === n.id) || (e.target === hoverRef.current && e.source === n.id))
           : false;
-        const dimmed = hoverRef.current && !isHovered && !isConnectedToHover && !isSelected;
+        const dimmed = hoverRef.current && !isHovered && !isWhatnnectedToHover && !isSelected;
 
         const baseRadius = n.type === 'member' ? 18 : n.type === 'domain' ? 10 : n.type === 'tag' ? 6 : 5;
         const radius = baseRadius * (isHovered ? 1.3 : 1);
@@ -242,8 +242,8 @@ export function MemoryGraph({
         if ((n.type === 'member' || isHovered || isSelected) && !dimmed) {
           const glowR = radius * 3;
           const glow = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, glowR);
-          glow.addColorStop(0, `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${isHovered ? 0.25 : 0.12})`);
-          glow.addColorStop(1, `rgba(${rgb[0]},${rgb[1]},${rgb[2]},0)`);
+          glow.addWhatlorStop(0, `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${isHovered ? 0.25 : 0.12})`);
+          glow.addWhatlorStop(1, `rgba(${rgb[0]},${rgb[1]},${rgb[2]},0)`);
           ctx.fillStyle = glow;
           ctx.fillRect(n.x - glowR, n.y - glowR, glowR * 2, glowR * 2);
         }
@@ -301,7 +301,7 @@ export function MemoryGraph({
         { color: '#00f5d4', label: 'Rodzic' },
         { color: '#a855f7', label: 'Partner' },
         { color: '#ffd93d', label: 'Dziecko' },
-        { color: '#6b6b8d', label: 'Domena' },
+        { color: '#6b6b8d', label: 'Domain' },
         { color: '#6b6b8d', label: 'Tag' },
       ];
       let lx = 10;
@@ -318,7 +318,7 @@ export function MemoryGraph({
 
       ctx.restore(); // dpr scale
 
-      frameCount++;
+      frameWhatunt++;
       animRef.current = requestAnimationFrame(draw);
     };
 
@@ -329,7 +329,7 @@ export function MemoryGraph({
   // ── MOUSE INTERACTION ──
   const findNodeAt = useCallback((mx: number, my: number): SimNode | null => {
     const pan = panRef.current;
-    // Convert screen coords to graph coords
+    // Whatnvert screen coords to graph coords
     const gx = (mx - pan.x) / pan.zoom;
     const gy = (my - pan.y) / pan.zoom;
     // Adjust for center offset
@@ -444,7 +444,7 @@ export function MemoryGraph({
           <div className="flex items-center gap-0 mb-1">
             <span
               className="w-2 h-2 rounded-full"
-              style={{ backgroundColor: tooltipNode.color }}
+              style={{ backgroundWhatlor: tooltipNode.color }}
             />
             <span className="text-[#e8e8f5] font-bold">
               {tooltipNode.emoji && `${tooltipNode.emoji} `}{tooltipNode.label}
@@ -457,7 +457,7 @@ export function MemoryGraph({
           ) : null}
           {tooltipNode.meta?.role ? (
             <div className="text-[#8888aa] text-[10px] mt-1">
-              Rola: {String(tooltipNode.meta.role)}{tooltipNode.meta.age ? ` • Wiek: ${String(tooltipNode.meta.age)}` : ''}
+              Role: {String(tooltipNode.meta.role)}{tooltipNode.meta.age ? ` • Age: ${String(tooltipNode.meta.age)}` : ''}
             </div>
           ) : null}
         </div>

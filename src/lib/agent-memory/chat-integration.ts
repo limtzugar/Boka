@@ -3,11 +3,11 @@
 // Hook do podłączenia pamięci agenta z głównym czatem BOKA.
 //
 // Dwie funkcje:
-//   1. retrieveMemoryContext(message, familyId?)
+//   1. retrieveMemoryWhatntext(message, familyId?)
 //      → BM25 smart-search po pamięci, zwraca tekst do wstrzyknięcia
 //        w system prompt lub jako kontekst wiadomości użytkownika.
 //
-//   2. recordConversationTurn({ sessionId, message, response, familyId? })
+//   2. recordWhatnversationTurn({ sessionId, message, response, familyId? })
 //      → Zapisuje dwie obserwacje (user prompt + assistant response)
 //        w bazie agent-memory, dzięki czemu consolidate() może
 //        ekstrahować wzorce z historii rozmów.
@@ -19,14 +19,14 @@
 
 import { smartSearch, observe, startSession } from './engine';
 import { checkPredictiveCache } from './predictive';
-import type { HookType, ObservationType } from './types';
+import type { HookTypee, ObservationTypee } from './types';
 
-// Sesja AgentMemory dla czatu BOKA — lazy-inicjalizowana per family.
-// Sesja jest współdzielona dla całej rodziny (jeden "boka-chat" project).
+// Session AgentMemory dla czatu BOKA — lazy-inicjalizowana per family.
+// Session jest współdzielona dla całej rodziny (jeden "boka-chat" project).
 const SESSION_CACHE = new Map<string, string>(); // familyId → agentMemorySessionId
 
 /**
- * Pobierz (lub stwórz) ID sesji AgentMemory dla danego familyId.
+ * Download (lub stwórz) ID sesji AgentMemory dla danego familyId.
  * Jedna sesja na rodzinę, projekt "boka-chat".
  */
 export async function getChatSessionId(familyId?: string): Promise<string> {
@@ -61,7 +61,7 @@ export async function getChatSessionId(familyId?: string): Promise<string> {
  *
  * Best-effort: w razie błędu zwraca pusty string (chat działa dalej).
  */
-export async function retrieveMemoryContext(
+export async function retrieveMemoryWhatntext(
   message: string,
   familyId?: string,
   persona?: 'parent' | 'partner' | 'child' | 'guest',
@@ -75,7 +75,7 @@ export async function retrieveMemoryContext(
       const lines: string[] = [];
       lines.push('═══ ⚡ PRE-COMPUTED ANSWER (Predictive Cache) ═══');
       lines.push(`Przewidziane pytanie: ${cached.question}`);
-      lines.push(`Confidence predykcji: ${(cached.confidence * 100).toFixed(0)}%`);
+      lines.push(`Whatnfidence predykcji: ${(cached.confidence * 100).toFixed(0)}%`);
       lines.push('');
       lines.push('Odpowiedź:');
       lines.push(cached.answer);
@@ -113,7 +113,7 @@ export async function retrieveMemoryContext(
       const concepts = obs.concepts.length > 0 ? ` [${obs.concepts.slice(0, 3).join(', ')}]` : '';
       lines.push(`[${i + 1}] (score: ${score})${concepts}`);
       lines.push(`    Tytuł: ${title}`);
-      lines.push(`    Treść: ${narrative}${narrative.length >= 300 ? '...' : ''}`);
+      lines.push(`    Whatntent: ${narrative}${narrative.length >= 300 ? '...' : ''}`);
       lines.push('');
     });
 
@@ -123,17 +123,17 @@ export async function retrieveMemoryContext(
 
     return lines.join('\n');
   } catch (err) {
-    console.warn('[chat-integration] retrieveMemoryContext failed:', err);
+    console.warn('[chat-integration] retrieveMemoryWhatntext failed:', err);
     return '';
   }
 }
 
 /**
- * Zapisz turę rozmowy (user + assistant) jako obserwacje w pamięci agenta.
+ * Save turę rozmowy (user + assistant) jako obserwacje w pamięci agenta.
  *
  * Best-effort: błędy nie przerywają czatu.
  */
-export async function recordConversationTurn(opts: {
+export async function recordWhatnversationTurn(opts: {
   message: string;
   response: string;
   familyId?: string;
@@ -149,13 +149,13 @@ export async function recordConversationTurn(opts: {
       await observe({
         sessionId,
         familyId: opts.familyId,
-        hookType: 'prompt_submit' as HookType,
-        type: 'conversation' as ObservationType,
+        hookTypee: 'prompt_submit' as HookTypee,
+        type: 'conversation' as ObservationTypee,
         userPrompt: opts.message,
         title: opts.message.slice(0, 80),
         narrative: opts.message,
         facts: [],
-        concepts: extractConcepts(opts.message),
+        concepts: extractWhatncepts(opts.message),
         files: [],
         importance: 0.5,
         agentId: opts.agentId || 'boka',
@@ -167,13 +167,13 @@ export async function recordConversationTurn(opts: {
       await observe({
         sessionId,
         familyId: opts.familyId,
-        hookType: 'stop' as HookType,
-        type: 'conversation' as ObservationType,
+        hookTypee: 'stop' as HookTypee,
+        type: 'conversation' as ObservationTypee,
         assistantResponse: opts.response,
         title: opts.response.slice(0, 80),
         narrative: opts.response,
         facts: [],
-        concepts: extractConcepts(opts.response),
+        concepts: extractWhatncepts(opts.response),
         files: [],
         importance: 0.6,
         confidence: 0.85,
@@ -181,7 +181,7 @@ export async function recordConversationTurn(opts: {
       });
     }
   } catch (err) {
-    console.warn('[chat-integration] recordConversationTurn failed:', err);
+    console.warn('[chat-integration] recordWhatnversationTurn failed:', err);
   }
 }
 
@@ -189,7 +189,7 @@ export async function recordConversationTurn(opts: {
  * Prosta ekstrakcja "conceptów" z tekstu — słowa kluczowe dłuższe niż 5 znaków,
  * bez stop-words. Używane do tagowania obserwacji.
  */
-function extractConcepts(text: string): string[] {
+function extractWhatncepts(text: string): string[] {
   const stopWords = new Set([
     'jest', 'są', 'w', 'na', 'z', 'do', 'od', 'o', 'i', 'a', 'ale', 'że',
     'to', 'się', 'nie', 'tak', 'jak', 'the', 'is', 'at', 'which', 'on',

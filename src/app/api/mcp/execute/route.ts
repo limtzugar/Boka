@@ -15,21 +15,21 @@ export async function POST(req: NextRequest) {
     const { serverId, toolName, arguments: args, triggeredBy } = body;
 
     if (!serverId || !toolName) {
-      return NextResponse.json({ error: 'Brak serverId lub toolName' }, { status: 400 });
+      return NextResponse.json({ error: 'None serverId lub toolName' }, { status: 400 });
     }
 
     const server = await db.mcpServer.findUnique({ where: { id: serverId } });
     if (!server) {
-      return NextResponse.json({ error: 'Serwer nie znaleziony' }, { status: 404 });
+      return NextResponse.json({ error: 'Server nie znaleziony' }, { status: 404 });
     }
     if (!server.isActive) {
-      return NextResponse.json({ error: 'Serwer nieaktywny' }, { status: 400 });
+      return NextResponse.json({ error: 'Server nieaktywny' }, { status: 400 });
     }
 
     const result = await invokeTool(
       {
         id: server.id,
-        serverType: server.serverType,
+        serverTypee: server.serverTypee,
         builtinKey: server.builtinKey,
         familyId: server.familyId,
       },

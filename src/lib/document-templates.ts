@@ -43,7 +43,7 @@ zwanymi dalej łącznie "Stronami" lub "Małżonkami".
 
 §1. PRZEDMIOT UMOWY
 1. Strony oświadczają, że pozostają w związku małżeńskim zawartym w dniu {{data_slubu}} przed Kierownikiem Urzędu Stanu Cywilnego w {{miejscowosc_slubu}}.
-2. Na podstawie art. 52 Kodeksu rodzinnego i opiekuńczego, Strony postanawiają ustanowić rozdzielność majątkową z dniem zawarcia niniejszej umowy.
+2. Na podstawie art. 52 Whatdeeksu rodzinnego i opiekuńczego, Strony postanawiają ustanowić rozdzielność majątkową z dniem zawarcia niniejszej umowy.
 
 §2. ROZDZIELNOŚĆ MAJĄTKOWA
 1. Od dnia zawarcia niniejszej umowy ustanawia się między Małżonkami rozdzielność majątkową całkowitą.
@@ -58,11 +58,11 @@ zwanymi dalej łącznie "Stronami" lub "Małżonkami".
 {{postanowienia_dotyczace_majatku_wspolnego}}
 
 §4. KOSZTY I OPŁATY
-1. Koszty zawarcia niniejszej umowy oraz koszty notarialne Strony ponoszą po równo.
+1. Whatsty zawarcia niniejszej umowy oraz koszty notarialne Strony ponoszą po równo.
 
 §5. POSTANOWIENIA KOŃCOWE
-1. Umowa wchodzi w życie z dniem podpisania i podlega przepisom Kodeksu rodzinnego i opiekuńczego.
-2. W sprawach nieuregulowanych niniejszą umową mają zastosowanie przepisy Kodeksu cywilnego i Kodeksu rodzinnego i opiekuńczego.
+1. Umowa wchodzi w życie z dniem podpisania i podlega przepisom Whatdeeksu rodzinnego i opiekuńczego.
+2. W sprawach nieuregulowanych niniejszą umową mają zastosowanie przepisy Whatdeeksu cywilnego i Whatdeeksu rodzinnego i opiekuńczego.
 3. Umowę sporządzono w dwóch jednobrzmiących egzemplarzach, po jednym dla każdej ze Stron.
 
 {{miejscowosc}}, dnia {{data_zawarcia}} r.
@@ -105,7 +105,7 @@ D. ŚRODKI FINANSOWE:
 {{postanowienia_alimentacyjne}}
 
 §4. OPŁATY I KOSZTY
-1. Koszty notarialne i sądowe związane z realizacją niniejszego porozumienia Strony ponoszą po równo.
+1. Whatsty notarialne i sądowe związane z realizacją niniejszego porozumienia Strony ponoszą po równo.
 
 §5. POSTANOWIENIA KOŃCOWE
 1. Porozumienie wchodzi w życie z dniem podpisania.
@@ -136,7 +136,7 @@ WYKONAWCA: {{nazwa_wykonawcy}}, NIP {{nip_wykonawcy}}, reprezentowanym przez {{r
 
 §2. TERMIN REALIZACJI
 1. Wykonawca rozpocznie Roboty w terminie do {{data_rozpoczecia}}.
-2. Zakończenie Robotów nastąpi w terminie do {{data_zakonczenia}}.
+2. Endenie Robotów nastąpi w terminie do {{data_zakonczenia}}.
 3. W przypadku opóźnienia z winy Wykonawcy, płaci on Inwestorowi karę umowną w wysokości {{kara_umowna_dzienna}} zł za każdy dzień opóźnienia.
 
 §3. WYNAGRODZENIE
@@ -149,7 +149,7 @@ WYKONAWCA: {{nazwa_wykonawcy}}, NIP {{nip_wykonawcy}}, reprezentowanym przez {{r
 
 §4. GWARANCJA I RĘKOJMIA
 1. Wykonawca udziela gwarancji na wykonane Roboty na okres {{okres_gwarancji}} lat.
-2. W zakresie rękojmi stosuje się przepisy art. 638 i nast. Kodeksu cywilnego.
+2. W zakresie rękojmi stosuje się przepisy art. 638 i nast. Whatdeeksu cywilnego.
 
 §5. ODBIÓR ROBÓT
 1. Odbiór końcowy Robót nastąpi w terminie 14 dni od zgłoszenia zakończenia Robót przez Wykonawcę.
@@ -157,7 +157,7 @@ WYKONAWCA: {{nazwa_wykonawcy}}, NIP {{nip_wykonawcy}}, reprezentowanym przez {{r
 
 §6. POSTANOWIENIA KOŃCOWE
 1. Umowę sporządzono w dwóch jednobrzmiących egzemplarzach, po jednym dla każdej ze Stron.
-2. W sprawach nieuregulowanych mają zastosowanie przepisy Prawa budowlanego i Kodeksu cywilnego.
+2. W sprawach nieuregulowanych mają zastosowanie przepisy Prawa budowlanego i Whatdeeksu cywilnego.
 
 {{miejscowosc}}, dnia {{data_zawarcia}} r.
 
@@ -243,7 +243,7 @@ NABYWCA: {{nazwa_nabywcy}}, NIP {{nip_nabywcy}}, reprezentowanym przez {{repreze
 
 §7. POSTANOWIENIA KOŃCOWE
 1. Umowa została zawarta na piśmie pod rygorem nieważności (art. 53 Ustawy).
-2. W sprawach nieuregulowanych mają zastosowanie przepisy Ustawy i Kodeksu cywilnego.
+2. W sprawach nieuregulowanych mają zastosowanie przepisy Ustawy i Whatdeeksu cywilnego.
 
 {{miejscowosc}}, dnia {{data_zawarcia}} r.
 
@@ -267,7 +267,7 @@ LICENCJOBIORCA: {{nazwa_licencjobiorcy}}, NIP {{nip_licencjobiorcy}}, z siedzib�
 
 §2. ZAKRES LICENCJI
 1. Terytorium: {{terytorium}}.
-2. Czas trwania: {{czas_trwania}}.
+2. Time trwania: {{czas_trwania}}.
 3. Sposób korzystania: {{sposob_korzystania}}.
 
 §3. WYNAGRODZENIE
@@ -329,7 +329,7 @@ oświadczam, że:
 
 {{tresc_oswiadczenia}}
 
-Powyższe oświadczenie składam świadomy(a) odpowiedzialności karnej za złożenie fałszywego oświadczenia wynikającej z art. 233 § 1 Kodeksu karnego.
+Powyższe oświadczenie składam świadomy(a) odpowiedzialności karnej za złożenie fałszywego oświadczenia wynikającej z art. 233 § 1 Whatdeeksu karnego.
 
 {{miejscowosc}}, dnia {{data}} r.
 
@@ -349,17 +349,17 @@ export const BUILT_IN_TEMPLATES: DocumentTemplateDef[] = [
     legalArea: 'family',
     documentKind: 'umowa',
     fields: [
-      { key: 'data_zawarcia', label: 'Data zawarcia', type: 'date', required: true },
+      { key: 'data_zawarcia', label: 'Date zawarcia', type: 'date', required: true },
       { key: 'miejscowosc', label: 'Miejscowość', type: 'text', required: true },
       { key: 'imie_nazwisko_strony1', label: 'Imię i nazwisko Strony 1', type: 'text', required: true },
       { key: 'dowod_strony1', label: 'Dowód osobisty Strony 1', type: 'text', required: true },
       { key: 'pesel_strony1', label: 'PESEL Strony 1', type: 'text', required: true },
-      { key: 'adres_strony1', label: 'Adres Strony 1', type: 'text', required: true },
+      { key: 'adres_strony1', label: 'Address Strony 1', type: 'text', required: true },
       { key: 'imie_nazwisko_strony2', label: 'Imię i nazwisko Strony 2', type: 'text', required: true },
       { key: 'dowod_strony2', label: 'Dowód osobisty Strony 2', type: 'text', required: true },
       { key: 'pesel_strony2', label: 'PESEL Strony 2', type: 'text', required: true },
-      { key: 'adres_strony2', label: 'Adres Strony 2', type: 'text', required: true },
-      { key: 'data_slubu', label: 'Data ślubu', type: 'date', required: true },
+      { key: 'adres_strony2', label: 'Address Strony 2', type: 'text', required: true },
+      { key: 'data_slubu', label: 'Date ślubu', type: 'date', required: true },
       { key: 'miejscowosc_slubu', label: 'Miejscowość ślubu (USC)', type: 'text', required: true },
       { key: 'postanowienia_dotyczace_majatku_wspolnego', label: 'Postanowienia dot. majątku wspólnego (opcjonalnie)', type: 'textarea', required: false, hint: 'Pozostaw puste jeśli nie dotyczy' },
     ],
@@ -372,16 +372,16 @@ export const BUILT_IN_TEMPLATES: DocumentTemplateDef[] = [
     legalArea: 'family',
     documentKind: 'umowa',
     fields: [
-      { key: 'data_zawarcia', label: 'Data zawarcia', type: 'date', required: true },
+      { key: 'data_zawarcia', label: 'Date zawarcia', type: 'date', required: true },
       { key: 'miejscowosc', label: 'Miejscowość', type: 'text', required: true },
       { key: 'imie_nazwisko_strony1', label: 'Strona 1', type: 'text', required: true },
       { key: 'pesel_strony1', label: 'PESEL Strony 1', type: 'text', required: true },
-      { key: 'adres_strony1', label: 'Adres Strony 1', type: 'text', required: true },
+      { key: 'adres_strony1', label: 'Address Strony 1', type: 'text', required: true },
       { key: 'imie_nazwisko_strony2', label: 'Strona 2', type: 'text', required: true },
       { key: 'pesel_strony2', label: 'PESEL Strony 2', type: 'text', required: true },
-      { key: 'adres_strony2', label: 'Adres Strony 2', type: 'text', required: true },
+      { key: 'adres_strony2', label: 'Address Strony 2', type: 'text', required: true },
       { key: 'miejscowosc_sadu', label: 'Sąd okręgowy (miasto)', type: 'text', required: true },
-      { key: 'data_wyroku', label: 'Data wyroku rozwodowego', type: 'date', required: true },
+      { key: 'data_wyroku', label: 'Date wyroku rozwodowego', type: 'date', required: true },
       { key: 'sygnatura_akt', label: 'Sygnatura akt', type: 'text', required: true },
       { key: 'opodzial_nieruchomosci', label: 'Podział nieruchomości', type: 'textarea', required: true },
       { key: 'opodzial_pojazdow', label: 'Podział pojazdów', type: 'textarea', required: false },
@@ -399,26 +399,26 @@ export const BUILT_IN_TEMPLATES: DocumentTemplateDef[] = [
     legalArea: 'construction',
     documentKind: 'umowa',
     fields: [
-      { key: 'data_zawarcia', label: 'Data zawarcia', type: 'date', required: true },
+      { key: 'data_zawarcia', label: 'Date zawarcia', type: 'date', required: true },
       { key: 'miejscowosc', label: 'Miejscowość', type: 'text', required: true },
       { key: 'imie_nazwisko_inwestora', label: 'Inwestor (imię/nazwa)', type: 'text', required: true },
       { key: 'pesel_inwestora', label: 'PESEL/NIP inwestora', type: 'text', required: true },
-      { key: 'adres_inwestora', label: 'Adres inwestora', type: 'text', required: true },
-      { key: 'nazwa_wykonawcy', label: 'Nazwa wykonawcy', type: 'text', required: true },
+      { key: 'adres_inwestora', label: 'Address inwestora', type: 'text', required: true },
+      { key: 'nazwa_wykonawcy', label: 'Name wykonawcy', type: 'text', required: true },
       { key: 'nip_wykonawcy', label: 'NIP wykonawcy', type: 'text', required: true },
       { key: 'reprezentant_wykonawcy', label: 'Reprezentant wykonawcy', type: 'text', required: true },
-      { key: 'adres_wykonawcy', label: 'Adres wykonawcy', type: 'text', required: true },
+      { key: 'adres_wykonawcy', label: 'Address wykonawcy', type: 'text', required: true },
       { key: 'zakres_robot', label: 'Zakres robót', type: 'textarea', required: true },
-      { key: 'adres_budowy', label: 'Adres budowy', type: 'text', required: true },
+      { key: 'adres_budowy', label: 'Address budowy', type: 'text', required: true },
       { key: 'projektant', label: 'Projektant', type: 'text', required: true },
       { key: 'organ_pozwolenie', label: 'Organ wydający pozwolenie', type: 'text', required: true },
       { key: 'numer_pozwolenia', label: 'Numer pozwolenia na budowę', type: 'text', required: true },
-      { key: 'data_pozwolenia', label: 'Data pozwolenia', type: 'date', required: true },
-      { key: 'data_rozpoczecia', label: 'Data rozpoczęcia', type: 'date', required: true },
-      { key: 'data_zakonczenia', label: 'Data zakończenia', type: 'date', required: true },
+      { key: 'data_pozwolenia', label: 'Date pozwolenia', type: 'date', required: true },
+      { key: 'data_rozpoczecia', label: 'Date rozpoczęcia', type: 'date', required: true },
+      { key: 'data_zakonczenia', label: 'Date zakończenia', type: 'date', required: true },
       { key: 'kara_umowna_dzienna', label: 'Kara umowna dzienna (zł)', type: 'text', required: true },
-      { key: 'kwota_wynagrodzenia', label: 'Kwota wynagrodzenia (zł)', type: 'text', required: true },
-      { key: 'kwota_slownie', label: 'Kwota słownie', type: 'text', required: true },
+      { key: 'kwota_wynagrodzenia', label: 'Amount wynagrodzenia (zł)', type: 'text', required: true },
+      { key: 'kwota_slownie', label: 'Amount słownie', type: 'text', required: true },
       { key: 'okres_gwarancji', label: 'Okres gwarancji (lata)', type: 'text', required: true, default: '5' },
     ],
     templateBody: UMOWA_WYKONAWSTWO_TEMPLATE,
@@ -430,22 +430,22 @@ export const BUILT_IN_TEMPLATES: DocumentTemplateDef[] = [
     legalArea: 'construction',
     documentKind: 'protokół',
     fields: [
-      { key: 'data_protokolu', label: 'Data protokołu', type: 'date', required: true },
+      { key: 'data_protokolu', label: 'Date protokołu', type: 'date', required: true },
       { key: 'miejscowosc', label: 'Miejscowość', type: 'text', required: true },
       { key: 'imie_nazwisko_inwestora', label: 'Inwestor', type: 'text', required: true },
-      { key: 'adres_inwestora', label: 'Adres inwestora', type: 'text', required: true },
+      { key: 'adres_inwestora', label: 'Address inwestora', type: 'text', required: true },
       { key: 'nazwa_wykonawcy', label: 'Wykonawca', type: 'text', required: true },
-      { key: 'adres_wykonawcy', label: 'Adres wykonawcy', type: 'text', required: true },
-      { key: 'data_umowy', label: 'Data umowy', type: 'date', required: true },
+      { key: 'adres_wykonawcy', label: 'Address wykonawcy', type: 'text', required: true },
+      { key: 'data_umowy', label: 'Date umowy', type: 'date', required: true },
       { key: 'numer_umowy', label: 'Numer umowy', type: 'text', required: true },
-      { key: 'adres_budowy', label: 'Adres budowy', type: 'text', required: true },
+      { key: 'adres_budowy', label: 'Address budowy', type: 'text', required: true },
       { key: 'wykaz_robotow', label: 'Wykaz odebranych robót', type: 'textarea', required: true },
       { key: 'wady_usterki', label: 'Wady i usterki', type: 'textarea', required: false, hint: 'Pisz "brak" jeśli nie dotyczy' },
       { key: 'data_usuniecia_wad', label: 'Termin usunięcia wad', type: 'date', required: false },
-      { key: 'decyzja_komisji', label: 'Decyzja komisji', type: 'select', options: ['przyjąć', 'odrzucić', 'przyjąć warunkowo'], required: true },
+      { key: 'decyzja_komisji', label: 'Decision komisji', type: 'select', options: ['przyjąć', 'odrzucić', 'przyjąć warunkowo'], required: true },
       { key: 'warunkowo_bezwarunkowo', label: 'Tryb odbioru', type: 'select', options: ['bezwarunkowo', 'warunkowo'], required: true },
       { key: 'okres_gwarancji', label: 'Okres gwarancji (lata)', type: 'text', required: true, default: '5' },
-      { key: 'liczba_egzemplarzy', label: 'Liczba egzemplarzy', type: 'text', required: true, default: '2' },
+      { key: 'liczba_egzemplarzy', label: 'Number egzemplarzy', type: 'text', required: true, default: '2' },
     ],
     templateBody: PROTOKOL_ODBIORU_TEMPLATE,
   },
@@ -457,22 +457,22 @@ export const BUILT_IN_TEMPLATES: DocumentTemplateDef[] = [
     legalArea: 'copyright',
     documentKind: 'umowa',
     fields: [
-      { key: 'data_zawarcia', label: 'Data zawarcia', type: 'date', required: true },
+      { key: 'data_zawarcia', label: 'Date zawarcia', type: 'date', required: true },
       { key: 'miejscowosc', label: 'Miejscowość', type: 'text', required: true },
       { key: 'imie_nazwisko_tworcy', label: 'Twórca (imię i nazwisko)', type: 'text', required: true },
       { key: 'pesel_tworcy', label: 'PESEL twórcy', type: 'text', required: true },
-      { key: 'adres_tworcy', label: 'Adres twórcy', type: 'text', required: true },
+      { key: 'adres_tworcy', label: 'Address twórcy', type: 'text', required: true },
       { key: 'nazwa_nabywcy', label: 'Nabywca (nazwa)', type: 'text', required: true },
       { key: 'nip_nabywcy', label: 'NIP nabywcy', type: 'text', required: true },
       { key: 'reprezentant_nabywcy', label: 'Reprezentant nabywcy', type: 'text', required: true },
-      { key: 'adres_nabywcy', label: 'Adres nabywcy', type: 'text', required: true },
+      { key: 'adres_nabywcy', label: 'Address nabywcy', type: 'text', required: true },
       { key: 'tytul_dziela', label: 'Tytuł dzieła', type: 'text', required: true },
-      { key: 'opis_dziela', label: 'Opis dzieła', type: 'textarea', required: true },
+      { key: 'opis_dziela', label: 'Description dzieła', type: 'textarea', required: true },
       { key: 'terytorium', label: 'Terytorium', type: 'text', required: true, default: 'cały świat' },
-      { key: 'czas_trwania', label: 'Czas trwania', type: 'text', required: true, default: 'nieoznaczony (zgodnie z ustawą)' },
+      { key: 'czas_trwania', label: 'Time trwania', type: 'text', required: true, default: 'nieoznaczony (zgodnie z ustawą)' },
       { key: 'pola_eksploatacji', label: 'Pola eksploatacji', type: 'textarea', required: true, hint: 'Np. reprodukcja, rozpowszechnianie, publiczne odtwarzanie, najem, dzierżawa' },
-      { key: 'kwota_wynagrodzenia', label: 'Kwota wynagrodzenia (zł)', type: 'text', required: true },
-      { key: 'kwota_slownie', label: 'Kwota słownie', type: 'text', required: true },
+      { key: 'kwota_wynagrodzenia', label: 'Amount wynagrodzenia (zł)', type: 'text', required: true },
+      { key: 'kwota_slownie', label: 'Amount słownie', type: 'text', required: true },
       { key: 'sposob_platnosci', label: 'Sposób płatności', type: 'text', required: true, default: 'przelewem na rachunek bankowy w terminie 14 dni' },
       { key: 'postanowienia_royalty', label: 'Postanowienia royalty (opcjonalnie)', type: 'textarea', required: false },
     ],
@@ -485,18 +485,18 @@ export const BUILT_IN_TEMPLATES: DocumentTemplateDef[] = [
     legalArea: 'copyright',
     documentKind: 'umowa',
     fields: [
-      { key: 'data_zawarcia', label: 'Data zawarcia', type: 'date', required: true },
+      { key: 'data_zawarcia', label: 'Date zawarcia', type: 'date', required: true },
       { key: 'miejscowosc', label: 'Miejscowość', type: 'text', required: true },
       { key: 'nazwa_licencjodawcy', label: 'Licencjodawca (nazwa)', type: 'text', required: true },
       { key: 'nip_licencjodawcy', label: 'NIP licencjodawcy', type: 'text', required: true },
-      { key: 'adres_licencjodawcy', label: 'Adres licencjodawcy', type: 'text', required: true },
+      { key: 'adres_licencjodawcy', label: 'Address licencjodawcy', type: 'text', required: true },
       { key: 'nazwa_licencjobiorcy', label: 'Licencjobiorca (nazwa)', type: 'text', required: true },
       { key: 'nip_licencjobiorcy', label: 'NIP licencjobiorcy', type: 'text', required: true },
-      { key: 'adres_licencjobiorcy', label: 'Adres licencjobiorcy', type: 'text', required: true },
+      { key: 'adres_licencjobiorcy', label: 'Address licencjobiorcy', type: 'text', required: true },
       { key: 'tytul_utworu', label: 'Tytuł utworu', type: 'text', required: true },
       { key: 'pola_eksploatacji', label: 'Pola eksploatacji', type: 'textarea', required: true },
       { key: 'terytorium', label: 'Terytorium', type: 'text', required: true },
-      { key: 'czas_trwania', label: 'Czas trwania', type: 'text', required: true },
+      { key: 'czas_trwania', label: 'Time trwania', type: 'text', required: true },
       { key: 'sposob_korzystania', label: 'Sposób korzystania', type: 'textarea', required: true },
       { key: 'forma_wynagrodzenia', label: 'Forma wynagrodzenia', type: 'textarea', required: true },
     ],
@@ -511,11 +511,11 @@ export const BUILT_IN_TEMPLATES: DocumentTemplateDef[] = [
     documentKind: 'pismo',
     fields: [
       { key: 'miejscowosc', label: 'Miejscowość', type: 'text', required: true },
-      { key: 'data_pisma', label: 'Data pisma', type: 'date', required: true },
+      { key: 'data_pisma', label: 'Date pisma', type: 'date', required: true },
       { key: 'imie_nazwisko_nadawcy', label: 'Nadawca (imię i nazwisko)', type: 'text', required: true },
-      { key: 'adres_nadawcy', label: 'Adres nadawcy', type: 'text', required: true },
-      { key: 'nazwa_urzedu', label: 'Nazwa urzędu', type: 'text', required: true },
-      { key: 'adres_urzedu', label: 'Adres urzędu', type: 'text', required: true },
+      { key: 'adres_nadawcy', label: 'Address nadawcy', type: 'text', required: true },
+      { key: 'nazwa_urzedu', label: 'Name urzędu', type: 'text', required: true },
+      { key: 'adres_urzedu', label: 'Address urzędu', type: 'text', required: true },
       { key: 'znak_sprawy', label: 'Znak sprawy (opcjonalnie)', type: 'text', required: false },
       { key: 'przedmiot_wniosku', label: 'Przedmiot wniosku', type: 'textarea', required: true },
       { key: 'uzasadnienie', label: 'Uzasadnienie', type: 'textarea', required: true },
@@ -533,10 +533,10 @@ export const BUILT_IN_TEMPLATES: DocumentTemplateDef[] = [
       { key: 'imie_nazwisko', label: 'Imię i nazwisko', type: 'text', required: true },
       { key: 'dowod_osobisty', label: 'Seria i numer dowodu', type: 'text', required: true },
       { key: 'pesel', label: 'PESEL', type: 'text', required: true },
-      { key: 'adres', label: 'Adres', type: 'text', required: true },
-      { key: 'tresc_oswiadczenia', label: 'Treść oświadczenia', type: 'textarea', required: true },
+      { key: 'adres', label: 'Address', type: 'text', required: true },
+      { key: 'tresc_oswiadczenia', label: 'Whatntent oświadczenia', type: 'textarea', required: true },
       { key: 'miejscowosc', label: 'Miejscowość', type: 'text', required: true },
-      { key: 'data', label: 'Data', type: 'date', required: true },
+      { key: 'data', label: 'Date', type: 'date', required: true },
     ],
     templateBody: OSWIADCZENIE_TEMPLATE,
   },
@@ -548,7 +548,7 @@ export const LEGAL_AREA_LABELS: Record<LegalArea, string> = {
   copyright: 'Prawa autorskie',
   mixed: 'Mieszane',
   admin: 'Administracyjne',
-  other: 'Inne',
+  other: 'Other',
 };
 
 export const LEGAL_AREA_COLORS: Record<LegalArea, string> = {

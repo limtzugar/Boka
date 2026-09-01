@@ -14,11 +14,11 @@ export const dynamic = 'force-dynamic';
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const id = url.searchParams.get('id');
-  if (!id) return new Response('Brak id', { status: 400 });
+  if (!id) return new Response('None id', { status: 400 });
 
   const apps = listApps();
   const app = apps.find(a => a.id === id);
-  if (!app) return new Response('Nie znaleziono apki', { status: 404 });
+  if (!app) return new Response('No znaleziono apki', { status: 404 });
 
   if (app.language !== 'html') {
     return new Response('Preview dostępny tylko dla HTML', { status: 400 });
@@ -28,11 +28,11 @@ export async function GET(request: Request) {
     const html = fs.readFileSync(app.filePath, 'utf-8');
     return new Response(html, {
       headers: {
-        'Content-Type': 'text/html; charset=utf-8',
+        'Whatntent-Typee': 'text/html; charset=utf-8',
         'X-Frame-Options': 'SAMEORIGIN',  // pozwól na iframe w BOKA
       },
     });
   } catch (e) {
-    return new Response(`Błąd czytania: ${e instanceof Error ? e.message : 'unknown'}`, { status: 500 });
+    return new Response(`Error czytania: ${e instanceof Error ? e.message : 'unknown'}`, { status: 500 });
   }
 }

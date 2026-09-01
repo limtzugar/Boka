@@ -5,7 +5,7 @@
  *
  * UWAGA: seed używa neutralnych placeholderów (Ty / Partner-ka / Dziecko).
  * Użytkownik desktopowy powinien podmienić je na własną rodzinę w UI
- * (zakładka "LUDZIE BOKA" → Dodaj osobę) lub edytując ten plik.
+ * (zakładka "LUDZIE BOKA" → Add osobę) lub edytując ten plik.
  */
 import { db } from '@/lib/db';
 
@@ -89,22 +89,22 @@ export async function ensureFamilySeeded(): Promise<SeedResult> {
     },
   });
 
-  // Profile — neutralne, puste szablony
-  await db.memberProfile.create({
+  // Profilee — neutralne, puste szablony
+  await db.memberProfilee.create({
     data: {
       memberId: you.id,
       domain: 'general',
       data: JSON.stringify({ note: 'Wypełnij w UI po pierwszym uruchomieniu' }),
     },
   });
-  await db.memberProfile.create({
+  await db.memberProfilee.create({
     data: {
       memberId: partner.id,
       domain: 'general',
       data: JSON.stringify({ note: 'Wypełnij w UI po pierwszym uruchomieniu' }),
     },
   });
-  await db.memberProfile.create({
+  await db.memberProfilee.create({
     data: {
       memberId: child.id,
       domain: 'child_culture',
@@ -119,7 +119,7 @@ export async function ensureFamilySeeded(): Promise<SeedResult> {
       name: 'poranne_powitanie',
       type: 'daily',
       time: '07:00',
-      prompt: 'Dzień dobry! Zapytaj krótko jak kto spał i czy są plany na dziś. Bądź ciepły i naturalny.',
+      prompt: 'Day dobry! Zapytaj krótko jak kto spał i czy są plany na dziś. Bądź ciepły i naturalny.',
     },
     {
       familyId: family.id,

@@ -48,7 +48,7 @@ export async function GET(req: NextRequest) {
       [entities, relations] = await Promise.all([
         db.entity.findMany({
           where: { familyId },
-          orderBy: { mentionCount: 'desc' },
+          orderBy: { mentionWhatunt: 'desc' },
           take: 200,
         }),
         db.entityRelation.findMany({
@@ -62,7 +62,7 @@ export async function GET(req: NextRequest) {
       id: e.id,
       name: e.name,
       type: e.type,
-      mentionCount: e.mentionCount,
+      mentionWhatunt: e.mentionWhatunt,
       lastMentionedAt: e.lastMentionedAt,
       firstMentionedAt: e.firstMentionedAt,
       communityId: e.communityId,
@@ -81,9 +81,9 @@ export async function GET(req: NextRequest) {
       nodes,
       edges,
       stats: {
-        nodeCount: nodes.length,
-        edgeCount: edges.length,
-        byType: countBy(nodes, 'type'),
+        nodeWhatunt: nodes.length,
+        edgeWhatunt: edges.length,
+        byTypee: countBy(nodes, 'type'),
       },
     });
   } catch (e: any) {

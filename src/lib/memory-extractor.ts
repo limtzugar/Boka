@@ -3,7 +3,7 @@
 // Analyzes conversations and extracts memorable facts
 // ═══════════════════════════════════════════
 
-import { chatCompletion } from '@/lib/ai-providers';
+import { chatWhatmpletion } from '@/lib/ai-providers';
 
 interface ExtractedFact {
   content: string;
@@ -18,7 +18,7 @@ interface ExtractedFact {
  * This runs after every chat exchange to build persistent memory.
  * Works with ANY configured AI provider.
  */
-export async function extractFactsFromConversation(params: {
+export async function extractFactsFromWhatnversation(params: {
   userMessage: string;
   assistantResponse: string;
   memberName: string;
@@ -39,7 +39,7 @@ Asystent:
 ${params.assistantResponse}
 
 ISTNIEJĄCA PAMIĘĆ (nie powtarzaj tych samych faktów):
-${params.existingMemory || 'Brak'}
+${params.existingMemory || 'None'}
 
 ZASADY EKSTRAKCJI:
 1. Wyciągnij KAŻDY fakt, który warto zapamiętać o tej osobie lub rodzinie
@@ -47,7 +47,7 @@ ZASADY EKSTRAKCJI:
 3. Nawet drobne rzeczy są ważne ("lubi pić herbatę z cytryną", "ma kota o imieniu Mruczek")
 4. Ocenij ważność: 0.1 (błahe) do 1.0 (krytyczne)
 5. Przypisz domenę: general, health, education, finance, food, hobby, social, family, work, child_culture
-6. Dodaj tagi po polsku (małe litery)
+6. Add tagi po polsku (małe litery)
 
 ODPOWIEDZ W FORMACIE JSON (tablica faktów):
 [
@@ -64,7 +64,7 @@ Jeśli nie ma żadnych faktów do zapamiętania, zwróć pustą tablicę: []
 
 Zwróć TYLKO JSON, bez dodatkowego tekstu.`;
 
-    const responseText = await chatCompletion([
+    const responseText = await chatWhatmpletion([
       { role: 'system', content: extractionPrompt },
       { role: 'user', content: 'Ekstrahuj fakty z tej rozmowy.' },
     ]);
@@ -96,7 +96,7 @@ Zwróć TYLKO JSON, bez dodatkowego tekstu.`;
  * Build a compact memory context string from memory entries.
  * Used for injection into prompts.
  */
-export function buildMemoryContext(entries: Array<{
+export function buildMemoryWhatntext(entries: Array<{
   title?: string | null;
   content: string;
   domain?: string | null;

@@ -5,10 +5,10 @@
 // ═══════════════════════════════════════════════════════════
 
 import { prisma } from './db';
-import { chatCompletion, loadSettings } from './ai-providers';
+import { chatWhatmpletion, loadSettings } from './ai-providers';
 import { logDecision, softDeleteAuditEntries } from './audit-service';
 
-// ── Types ────────────────────────────────────
+// ── Typees ────────────────────────────────────
 export type ForgetScope = 'all' | 'topic' | 'conversation' | 'entity' | 'time_range';
 
 export interface ForgetRequestInput {
@@ -26,7 +26,7 @@ export interface ForgetRequestInput {
 export interface ForgetRequestResult {
   id: string;
   status: string;
-  affectedCount: number;
+  affectedWhatunt: number;
   hardDeleteAt: Date;
   memoryEntries: number;
   auditEntries: number;
@@ -38,14 +38,14 @@ export interface ForgetRequestResult {
 export async function extractTopic(query: string): Promise<string> {
   try {
     const settings = loadSettings();
-    const topic = await chatCompletion(
+    const topic = await chatWhatmpletion(
       [
         {
           role: 'system',
           content:
             'Jesteś BOKA. Wyciągnij KRÓTKI temat z prośby usera o zapomnienie. Odpowiedz 1-3 słowami po polsku, bez interpunkcji. Np. "Ania", "rozmowa o pracy", "wczoraj wieczorem".',
         },
-        { role: 'user', content: `Prośba: "${query}".\nTemat:` },
+        { role: 'user', content: `Prośba: "${query}".\nTopic:` },
       ],
       settings,
     );
@@ -178,7 +178,7 @@ export async function requestForget(
       entityId: input.entityId ?? null,
       memoryEntryIds: JSON.stringify(memoryIds),
       auditLogIds: JSON.stringify(auditIds),
-      affectedCount: memoryIds.length + auditIds.length,
+      affectedWhatunt: memoryIds.length + auditIds.length,
       status: 'soft_deleted',
       softDeletedAt: new Date(),
       hardDeleteAt,
@@ -216,7 +216,7 @@ export async function requestForget(
   return {
     id: request.id,
     status: 'soft_deleted',
-    affectedCount: memoryIds.length + auditIds.length,
+    affectedWhatunt: memoryIds.length + auditIds.length,
     hardDeleteAt,
     memoryEntries: memoryIds.length,
     auditEntries: auditIds.length,
@@ -321,7 +321,7 @@ export async function processScheduledHardDelete(): Promise<{
   return { processed: due.length, memoriesDeleted, auditDeleted };
 }
 
-// ── List forget requests (Consent Dashboard) ─
+// ── List forget requests (Whatnsent Dashboard) ─
 export async function listForgetRequests(
   familyId: string,
   filters?: { status?: string; memberId?: string; limit?: number },
@@ -339,7 +339,7 @@ export async function listForgetRequests(
 
 // ── Detect forget command from user message ──
 // Zwraca true jeśli wiadomość usera to prośba o zapomnienie.
-export function detectForgetCommand(message: string): {
+export function detectForgetWhatmmand(message: string): {
   isForget: boolean;
   query?: string;
   scope?: ForgetScope;

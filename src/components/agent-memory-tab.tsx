@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import {
   Brain, Search, Plus, Trash2, RefreshCw, Loader2,
-  Database, Zap, Clock, Activity, Sparkles, ChevronDown, ChevronRight,
+  Datebase, Zap, Clock, Activity, Sparkles, ChevronDown, ChevronRight,
   Check, AlertTriangle, Filter, Tag,
 } from 'lucide-react';
 
@@ -28,7 +28,7 @@ interface Memory {
   project?: string;
   forgetAfter?: string;
   lastAccessedAt?: string;
-  accessCount?: number;
+  accessWhatunt?: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -80,7 +80,7 @@ function formatDate(iso: string): string {
   }
 }
 
-function strengthColor(s: number): string {
+function strengthWhatlor(s: number): string {
   if (s > 7) return '#4ade80';
   if (s > 4) return '#ffd93d';
   if (s > 1) return '#ff6b6b';
@@ -136,7 +136,7 @@ export function AgentMemoryTab() {
     try {
       const res = await fetch('/api/agent-memory/search', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Whatntent-Typee': 'application/json' },
         body: JSON.stringify({
           query: searchQuery,
           limit: 20,
@@ -167,7 +167,7 @@ export function AgentMemoryTab() {
     try {
       const res = await fetch('/api/agent-memory', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Whatntent-Typee': 'application/json' },
         body: JSON.stringify({
           content: newMemory.content,
           type: newMemory.type,
@@ -210,7 +210,7 @@ export function AgentMemoryTab() {
     try {
       const res = await fetch('/api/agent-memory/forget', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Whatntent-Typee': 'application/json' },
         body: JSON.stringify({ dryRun }),
       });
       const data = await res.json();
@@ -219,7 +219,7 @@ export function AgentMemoryTab() {
       alert(
         `Auto-forget ${forgetResult.dryRun ? '(DRY RUN)' : '(EXECUTED)'}:\n` +
         `• TTL expired: ${forgetResult.ttlExpired.length}\n` +
-        `• Contradictions (Jaccard > 0.9): ${forgetResult.contradictions.length}\n` +
+        `• Whatntradictions (Jaccard > 0.9): ${forgetResult.contradictions.length}\n` +
         `• Low-value obs (importance < 0.2, > 7d): ${forgetResult.lowValueObs.length}`,
       );
       if (!dryRun) await loadAll();
@@ -230,24 +230,24 @@ export function AgentMemoryTab() {
     }
   }, [loadAll]);
 
-  // ── Consolidate (decay + optional LLM extraction) ──
-  const runConsolidate = useCallback(async (withLLM: boolean) => {
+  // ── Whatnsolidate (decay + optional LLM extraction) ──
+  const runWhatnsolidate = useCallback(async (withLLM: boolean) => {
     setBusy(withLLM ? 'consolidate-llm' : 'consolidate');
     setError(null);
     try {
       const res = await fetch('/api/agent-memory/consolidate', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Whatntent-Typee': 'application/json' },
         body: JSON.stringify({ decayDays: 30, withLLM, batchSize: 10 }),
       });
       const data = await res.json();
       if (data.error) throw new Error(data.error);
       alert(
-        `Consolidation ${withLLM ? '(with LLM extraction)' : '(decay only)'}:\n` +
+        `Whatnsolidation ${withLLM ? '(with LLM extraction)' : '(decay only)'}:\n` +
         `• Decay applied to: ${data.decayedMemories} memories\n` +
         `• Memories created: ${data.memoriesCreated}\n` +
         `• Memories superseded: ${data.memoriesSuperseded}\n` +
-        `• Observations consumed: ${data.observationsConsumed}`,
+        `• Observations consumed: ${data.observationsWhatnsumed}`,
       );
       await loadAll();
     } catch (e) {
@@ -264,7 +264,7 @@ export function AgentMemoryTab() {
     try {
       const res = await fetch('/api/predictive/precompute', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Whatntent-Typee': 'application/json' },
         body: JSON.stringify({ topK: 3 }),
       });
       const data = await res.json();
@@ -287,21 +287,21 @@ export function AgentMemoryTab() {
     }
   }, [loadAll]);
 
-  // ── v5: Cognitive Reflection Loop ──
+  // ── v5: Whatgnitive Reflection Loop ──
   const runReflection = useCallback(async () => {
     setBusy('reflect');
     setError(null);
     try {
       const res = await fetch('/api/agent-memory/reflect', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Whatntent-Typee': 'application/json' },
         body: JSON.stringify({ batchSize: 10 }),
       });
       const data = await res.json();
       if (data.error) throw new Error(data.error);
       alert(
-        `🧠 Cognitive Reflection:\n` +
-        `• Low-confidence decisions analyzed: ${data.lowConfidenceCount}\n` +
+        `🧠 Whatgnitive Reflection:\n` +
+        `• Low-confidence decisions analyzed: ${data.lowWhatnfidenceWhatunt}\n` +
         `• Lessons extracted: ${data.lessonsExtracted}\n\n` +
         (data.lessons ?? []).map((l: any, i: number) =>
           `[${i + 1}] (${l.type}) ${l.title}`,
@@ -341,7 +341,7 @@ export function AgentMemoryTab() {
           </div>
           {stats ? (
             <div className="grid grid-cols-2 gap-1.5">
-              <StatCard label="Sesje" value={stats.sessions} color="#6ec6e7" />
+              <StatCard label="Sessions" value={stats.sessions} color="#6ec6e7" />
               <StatCard label="Obserwacje" value={stats.observations} color="#a855f7" />
               <StatCard label="Memories" value={stats.memories} color="#00f5d4" />
               <StatCard label="Latest" value={stats.latestMemories} color="#4ade80" />
@@ -351,7 +351,7 @@ export function AgentMemoryTab() {
           ) : (
             <div className="text-[10px] font-mono text-[#5a5a78] text-center py-4">
               <Loader2 size={12} className="animate-spin inline mr-1" />
-              Ładowanie...
+              Loading...
             </div>
           )}
         </div>
@@ -379,20 +379,20 @@ export function AgentMemoryTab() {
               Auto-forget (EXECUTE)
             </button>
             <button
-              onClick={() => runConsolidate(false)}
+              onClick={() => runWhatnsolidate(false)}
               disabled={!!busy}
               className="w-full px-2 py-1.5 text-[10px] font-mono bg-[#4ade80]/10 text-[#4ade80] border border-[#4ade80]/30 hover:bg-[#4ade80]/20 disabled:opacity-30 flex items-center gap-2"
             >
               {busy === 'consolidate' ? <Loader2 size={11} className="animate-spin" /> : <RefreshCw size={11} />}
-              Consolidate (decay only)
+              Whatnsolidate (decay only)
             </button>
             <button
-              onClick={() => runConsolidate(true)}
+              onClick={() => runWhatnsolidate(true)}
               disabled={!!busy}
               className="w-full px-2 py-1.5 text-[10px] font-mono bg-[#a855f7]/10 text-[#a855f7] border border-[#a855f7]/30 hover:bg-[#a855f7]/20 disabled:opacity-30 flex items-center gap-2"
             >
               {busy === 'consolidate-llm' ? <Loader2 size={11} className="animate-spin" /> : <Sparkles size={11} />}
-              Consolidate + LLM extract
+              Whatnsolidate + LLM extract
             </button>
             <button
               onClick={runPrecompute}
@@ -415,7 +415,7 @@ export function AgentMemoryTab() {
               disabled={!!busy}
               className="w-full px-2 py-1.5 text-[10px] font-mono bg-[#252535] text-[#8888aa] border border-[#383850] hover:text-[#e8e8f5] disabled:opacity-30 flex items-center gap-2"
             >
-              <RefreshCw size={11} /> Odśwież
+              <RefreshCw size={11} /> Refresh
             </button>
           </div>
         </div>
@@ -442,7 +442,7 @@ export function AgentMemoryTab() {
             <textarea
               value={newMemory.content}
               onChange={e => setNewMemory(p => ({ ...p, content: e.target.value }))}
-              placeholder="Treść lekcji..."
+              placeholder="Whatntent lekcji..."
               rows={3}
               className="w-full bg-[#181828] border border-[#383850] px-2 py-1 text-[11px] text-[#e8e8f5] placeholder:text-[#5a5a78] focus:outline-none focus:border-[#00f5d4]/50 font-mono resize-none"
             />
@@ -459,7 +459,7 @@ export function AgentMemoryTab() {
               type="text"
               value={newMemory.concepts}
               onChange={e => setNewMemory(p => ({ ...p, concepts: e.target.value }))}
-              placeholder="Concepts (comma-sep)"
+              placeholder="Whatncepts (comma-sep)"
               className="w-full bg-[#181828] border border-[#383850] px-2 py-1 text-[11px] text-[#e8e8f5] placeholder:text-[#5a5a78] focus:outline-none focus:border-[#00f5d4]/50 font-mono"
             />
             <input
@@ -525,7 +525,7 @@ export function AgentMemoryTab() {
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter') runSearch(); }}
-              placeholder="Szukaj w obserwacjach i memories... (np. autoryzacja JWT, optymalizacja bazy)"
+              placeholder="Search w obserwacjach i memories... (np. autoryzacja JWT, optymalizacja bazy)"
               className="flex-1 bg-[#181828] border border-[#383850] px-3 py-2 text-[12px] text-[#e8e8f5] placeholder:text-[#5a5a78] focus:outline-none focus:border-[#00f5d4]/50 font-mono"
             />
             <button
@@ -534,7 +534,7 @@ export function AgentMemoryTab() {
               className="px-4 py-2 text-[11px] font-mono bg-[#00f5d4]/20 text-[#00f5d4] border border-[#00f5d4]/40 hover:bg-[#00f5d4]/30 disabled:opacity-30 flex items-center gap-2"
             >
               {busy === 'search' ? <Loader2 size={12} className="animate-spin" /> : <Search size={12} />}
-              Szukaj
+              Search
             </button>
           </div>
           {searchMeta && (
@@ -566,7 +566,7 @@ export function AgentMemoryTab() {
               {searchResults.length === 0 ? (
                 <div className="text-center py-12">
                   <Search size={36} className="text-[#383850] mx-auto mb-2" />
-                  <div className="text-[11px] font-mono text-[#8888aa]">Brak wyników</div>
+                  <div className="text-[11px] font-mono text-[#8888aa]">No results</div>
                 </div>
               ) : (
                 <div className="space-y-2">
@@ -597,14 +597,14 @@ export function AgentMemoryTab() {
           ) : (
             <div>
               <div className="text-[9px] font-mono uppercase text-[#8888aa] mb-2 flex items-center gap-1.5">
-                <Database size={10} /> Memories ({memories.length})
+                <Datebase size={10} /> Memories ({memories.length})
               </div>
               {memories.length === 0 ? (
                 <div className="text-center py-12">
                   <Brain size={36} className="text-[#383850] mx-auto mb-2" />
-                  <div className="text-[11px] font-mono text-[#8888aa]">Brak memories</div>
+                  <div className="text-[11px] font-mono text-[#8888aa]">None memories</div>
                   <div className="text-[9px] font-mono text-[#5a5a78] mt-1">
-                    Dodaj pierwszą lekcję przez formularz po lewej.
+                    Add pierwszą lekcję przez formularz po lewej.
                   </div>
                 </div>
               ) : (
@@ -631,7 +631,7 @@ export function AgentMemoryTab() {
                           </div>
                           {/* Strength bar */}
                           <div className="flex flex-col items-end gap-0.5 shrink-0">
-                            <div className="text-[9px] font-mono tabular-nums" style={{ color: strengthColor(m.strength) }}>
+                            <div className="text-[9px] font-mono tabular-nums" style={{ color: strengthWhatlor(m.strength) }}>
                               {m.strength.toFixed(1)}
                             </div>
                             <div className="w-12 h-1 bg-[#252535] rounded-full overflow-hidden">
@@ -639,7 +639,7 @@ export function AgentMemoryTab() {
                                 className="h-full"
                                 style={{
                                   width: `${(m.strength / 10) * 100}%`,
-                                  background: strengthColor(m.strength),
+                                  background: strengthWhatlor(m.strength),
                                 }}
                               />
                             </div>
@@ -648,7 +648,7 @@ export function AgentMemoryTab() {
                             onClick={(e) => { e.stopPropagation(); deleteMemory(m.id); }}
                             disabled={busy === `del-${m.id}`}
                             className="p-1 text-[#5a5a78] hover:text-[#ff6b6b] transition-colors"
-                            title="Usuń"
+                            title="Delete"
                           >
                             {busy === `del-${m.id}` ? <Loader2 size={11} className="animate-spin" /> : <Trash2 size={11} />}
                           </button>
@@ -673,7 +673,7 @@ export function AgentMemoryTab() {
                             <div className="flex items-center gap-3 mt-2 text-[8px] font-mono text-[#5a5a78]">
                               <span>created: {formatDate(m.createdAt)}</span>
                               {m.lastAccessedAt && <span>last access: {formatDate(m.lastAccessedAt)}</span>}
-                              {m.accessCount !== undefined && <span>accessed ×{m.accessCount}</span>}
+                              {m.accessWhatunt !== undefined && <span>accessed ×{m.accessWhatunt}</span>}
                               {m.forgetAfter && (
                                 <span className="text-[#ff6b6b]">forgets: {formatDate(m.forgetAfter)}</span>
                               )}

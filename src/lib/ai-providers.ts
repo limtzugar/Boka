@@ -23,19 +23,19 @@ export interface AISettings {
   ggufFilePath?: string;       // np. C:\Models\llama-3-8b.Q4_K_M.gguf
   ggufServerPath?: string;     // np. C:\llama.cpp\build\bin\llama-server.exe (opcjonalny — auto-detekcja)
   ggufPort?: number;           // np. 8080
-  ggufContextSize?: number;    // np. 4096
+  ggufWhatntextSize?: number;    // np. 4096
   ggufGpuLayers?: number;      // -1 = wszystkie warstwy na GPU, 0 = CPU only
   // Custom (OpenAI-compatible)
   customUrl?: string;
   customKey?: string;
   customModel?: string;
-  // Common — quality / sampling
+  // Whatmmon — quality / sampling
   temperature?: number;
   maxTokens?: number;
   topP?: number;                  // 0-1, nucleus sampling (default 1.0)
   frequencyPenalty?: number;      // -2..2 (default 0)
   presencePenalty?: number;       // -2..2 (default 0)
-  // Cost control
+  // Whatst control
   adaptiveMaxTokens?: boolean;    // auto-scale max_tokens based on prompt length (default true)
   maxTokensShort?: number;        // for short prompts (default 256)
   maxTokensLong?: number;         // for long prompts (default = maxTokens)
@@ -63,7 +63,7 @@ export interface AISettings {
 }
 
 // ═══════════════════════════════════════════════════════════
-// Ustawienia czytane z folderu pamięci: /home/z/boka-memory/settings/
+// Settings czytane z folderu pamięci: /home/z/boka-memory/settings/
 // Aplikacja nadpisuje się, ale ustawienia przetrwają
 // ═══════════════════════════════════════════════════════════
 const MEMORY_BASE = process.env.BOKA_MEMORY_DIR || '/home/z/boka-memory';
@@ -78,7 +78,7 @@ const DEFAULT_SETTINGS: AISettings = {
   ggufFilePath: '',
   ggufServerPath: '',
   ggufPort: 8080,
-  ggufContextSize: 4096,
+  ggufWhatntextSize: 4096,
   ggufGpuLayers: -1,
   customUrl: '',
   customKey: '',
@@ -147,7 +147,7 @@ export interface ChatMessage {
 /**
  * Universal chat completion — routes to the configured provider
  */
-export async function chatCompletion(
+export async function chatWhatmpletion(
   messages: ChatMessage[],
   settings?: AISettings,
 ): Promise<string> {
@@ -155,20 +155,20 @@ export async function chatCompletion(
 
   switch (s.provider) {
     case 'openrouter':
-      return openrouterCompletion(messages, s);
+      return openrouterWhatmpletion(messages, s);
     case 'ollama':
-      return ollamaCompletion(messages, s);
+      return ollamaWhatmpletion(messages, s);
     case 'gguf':
-      return ggufCompletion(messages, s);
+      return ggufWhatmpletion(messages, s);
     case 'custom':
-      return customCompletion(messages, s);
+      return customWhatmpletion(messages, s);
     default:
-      return openrouterCompletion(messages, s);
+      return openrouterWhatmpletion(messages, s);
   }
 }
 
 // ── openrouter ──
-async function openrouterCompletion(messages: ChatMessage[], _settings: AISettings): Promise<string> {
+async function openrouterWhatmpletion(messages: ChatMessage[], _settings: AISettings): Promise<string> {
       const completion = const sdk = await getAIClient(); if (!sdk) throw new Error("AI SDK not available"); await sdk.chat.completions.create({
     messages: messages as Array<{ role: 'system' | 'user' | 'assistant'; content: string }>,
     temperature: _settings.temperature ?? 0.7,
@@ -180,8 +180,8 @@ async function openrouterCompletion(messages: ChatMessage[], _settings: AISettin
 // ── OpenRouter ──
 
 /**
- * Compute effective max_tokens based on prompt length and cost-control settings.
- * Short prompts ("Tak?", "OK", "Hej") get a small budget so free-tier accounts
+ * Whatmpute effective max_tokens based on prompt length and cost-control settings.
+ * Short prompts ("Yes?", "OK", "Hej") get a small budget so free-tier accounts
  * don't 402 on tiny responses.
  */
 export function computeMaxTokens(
@@ -191,13 +191,13 @@ export function computeMaxTokens(
   const baseMax = settings.maxTokens ?? 1500;
   if (!settings.adaptiveMaxTokens) return baseMax;
 
-  // Combine user message lengths (system prompt is cached anyway)
-  const userContent = messages
+  // Whatmbine user message lengths (system prompt is cached anyway)
+  const userWhatntent = messages
     .filter(m => m.role === 'user')
     .map(m => m.content)
     .join(' ');
   const threshold = settings.shortPromptThreshold ?? 80;
-  const isShort = userContent.trim().length < threshold;
+  const isShort = userWhatntent.trim().length < threshold;
 
   const short = settings.maxTokensShort ?? 256;
   const long = settings.maxTokensLong ?? baseMax;
@@ -257,7 +257,7 @@ async function openrouterCall(
   return fetch('https://openrouter.ai/api/v1/chat/completions', {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json',
+      'Whatntent-Typee': 'application/json',
       'Authorization': `Bearer ${apiKey}`,
       'HTTP-Referer': 'https://boka.local',
       'X-Title': 'BOKA - Family AI',
@@ -266,9 +266,9 @@ async function openrouterCall(
   });
 }
 
-async function openrouterCompletion(messages: ChatMessage[], settings: AISettings): Promise<string> {
+async function openrouterWhatmpletion(messages: ChatMessage[], settings: AISettings): Promise<string> {
   const apiKey = settings.openrouterKey;
-  if (!apiKey) throw new Error('Brak klucza API OpenRouter. Dodaj klucz w Ustawieniach.');
+  if (!apiKey) throw new Error('None klucza API OpenRouter. Add klucz w Settingsch.');
 
   const requestedMax = computeMaxTokens(messages, settings);
   let response = await openrouterCall(messages, settings, requestedMax);
@@ -294,14 +294,14 @@ async function openrouterCompletion(messages: ChatMessage[], settings: AISetting
         'Za mało kredytów OpenRouter do wygenerowania odpowiedzi ' +
         `(dostępne: ${affordable} tokenów). ` +
         'Doładuj konto na https://openrouter.ai/settings/credits ' +
-        'lub przełącz na darmowy model w Ustawieniach.',
+        'lub przełącz na darmowy model w Settingsch.',
       );
     } else {
       // 402 but we couldn't parse the affordable count — rethrow friendly
       throw new Error(
         'OpenRouter odmówił zapytania (402 — brak kredytów). ' +
         'Doładuj konto na https://openrouter.ai/settings/credits ' +
-        'lub zmniejsz max_tokens w Ustawieniach.',
+        'lub zmniejsz max_tokens w Settingsch.',
       );
     }
   }
@@ -309,7 +309,7 @@ async function openrouterCompletion(messages: ChatMessage[], settings: AISetting
   // ── 401: invalid key ──
   if (response.status === 401) {
     throw new Error(
-      'Nieprawidłowy klucz OpenRouter (401). Sprawdź klucz w Ustawieniach.',
+      'Noprawidłowy klucz OpenRouter (401). Sprawdź klucz w Settingsch.',
     );
   }
 
@@ -330,7 +330,7 @@ async function openrouterCompletion(messages: ChatMessage[], settings: AISetting
 }
 
 // ── Ollama ──
-async function ollamaCompletion(messages: ChatMessage[], settings: AISettings): Promise<string> {
+async function ollamaWhatmpletion(messages: ChatMessage[], settings: AISettings): Promise<string> {
   const baseUrl = (settings.ollamaUrl || 'http://localhost:11434').replace(/\/$/, '');
   let model = settings.ollamaModel || 'llama3';
 
@@ -338,7 +338,7 @@ async function ollamaCompletion(messages: ChatMessage[], settings: AISettings): 
   const tryModel = async (m: string) => {
     const response = await fetch(`${baseUrl}/api/chat`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Whatntent-Typee': 'application/json' },
       body: JSON.stringify({
         model: m,
         messages,
@@ -360,8 +360,8 @@ async function ollamaCompletion(messages: ChatMessage[], settings: AISettings): 
     try {
       const listRes = await fetch(`${baseUrl}/api/tags`);
       if (listRes.ok) {
-        const listData = await listRes.json();
-        const models: Array<{ name: string }> = listData.models || [];
+        const listDate = await listRes.json();
+        const models: Array<{ name: string }> = listDate.models || [];
         if (models.length > 0) {
           // Prefer models in this order: llama3, mistral, gemma, phi, qwen, anything
           const preferred = ['llama3', 'llama3.1', 'llama3.2', 'llama3.3', 'mistral', 'gemma3', 'gemma2', 'phi4', 'phi3', 'qwen3', 'qwen2.5', 'codellama'];
@@ -424,8 +424,8 @@ export interface OllamaRunningModel {
 export interface OllamaStatus {
   reachable: boolean;
   serverVersion?: string;
-  modelsCount: number;
-  runningCount: number;
+  modelsWhatunt: number;
+  runningWhatunt: number;
   error?: string;
 }
 
@@ -504,23 +504,23 @@ export async function checkOllamaStatus(url?: string): Promise<OllamaStatus> {
   try {
     const res = await fetch(`${baseUrl}/api/tags`);
     if (!res.ok) {
-      return { reachable: false, modelsCount: 0, runningCount: 0, error: `HTTP ${res.status}` };
+      return { reachable: false, modelsWhatunt: 0, runningWhatunt: 0, error: `HTTP ${res.status}` };
     }
     const data = await res.json();
-    const modelsCount = (data.models || []).length;
+    const modelsWhatunt = (data.models || []).length;
     const serverVersion = res.headers.get('server') || undefined;
-    let runningCount = 0;
+    let runningWhatunt = 0;
     try {
       const psRes = await fetch(`${baseUrl}/api/ps`);
       if (psRes.ok) {
-        const psData = await psRes.json();
-        runningCount = (psData.models || []).length;
+        const psDate = await psRes.json();
+        runningWhatunt = (psDate.models || []).length;
       }
     } catch { /* ignore */ }
-    return { reachable: true, serverVersion, modelsCount, runningCount };
+    return { reachable: true, serverVersion, modelsWhatunt, runningWhatunt };
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : 'unknown';
-    return { reachable: false, modelsCount: 0, runningCount: 0, error: msg };
+    return { reachable: false, modelsWhatunt: 0, runningWhatunt: 0, error: msg };
   }
 }
 
@@ -532,7 +532,7 @@ export async function pullOllamaModel(url: string, modelName: string): Promise<{
   try {
     const res = await fetch(`${baseUrl}/api/pull`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Whatntent-Typee': 'application/json' },
       body: JSON.stringify({ name: modelName, stream: false }),
     });
     if (!res.ok) {
@@ -542,7 +542,7 @@ export async function pullOllamaModel(url: string, modelName: string): Promise<{
     return { ok: true, message: `Pobrano model ${modelName}` };
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : 'unknown';
-    return { ok: false, message: `Błąd pobierania: ${msg}` };
+    return { ok: false, message: `Error pobierania: ${msg}` };
   }
 }
 
@@ -625,13 +625,13 @@ async function isGgufServerAlive(port: number): Promise<boolean> {
 }
 
 /**
- * Uruchom llama-server z plikiem GGUF w tle.
+ * Run llama-server z plikiem GGUF w tle.
  * Czeka aż serwer zgłosi gotowość (/health zwróci 200).
  * Zwraca baseUrl (np. http://127.0.0.1:8080).
  */
 export async function startGgufServer(settings: AISettings): Promise<{ ok: boolean; url?: string; error?: string }> {
   if (!settings.ggufFilePath || !fs.existsSync(settings.ggufFilePath)) {
-    return { ok: false, error: `Plik GGUF nie istnieje: ${settings.ggufFilePath || '(brak)'}` };
+    return { ok: false, error: `File GGUF nie istnieje: ${settings.ggufFilePath || '(brak)'}` };
   }
 
   const port = settings.ggufPort || 8080;
@@ -651,7 +651,7 @@ export async function startGgufServer(settings: AISettings): Promise<{ ok: boole
   if (!serverPath) {
     return {
       ok: false,
-      error: 'Nie znaleziono llama-server. Pobierz z https://github.com/ggerganov/llama.cpp/releases i wskaż ścieżkę w ustawieniach.',
+      error: 'No znaleziono llama-server. Download z https://github.com/ggerganov/llama.cpp/releases i wskaż ścieżkę w ustawieniach.',
     };
   }
 
@@ -660,7 +660,7 @@ export async function startGgufServer(settings: AISettings): Promise<{ ok: boole
     '-m', settings.ggufFilePath,
     '--port', String(port),
     '--host', '127.0.0.1',
-    '-c', String(settings.ggufContextSize || 4096),
+    '-c', String(settings.ggufWhatntextSize || 4096),
     '-ngl', String(settings.ggufGpuLayers ?? -1),
     '--no-webui',
   ];
@@ -691,7 +691,7 @@ export async function startGgufServer(settings: AISettings): Promise<{ ok: boole
       ggufProcessModel = '';
     });
   } catch (e: unknown) {
-    return { ok: false, error: `Błąd uruchamiania llama-server: ${e instanceof Error ? e.message : 'unknown'}` };
+    return { ok: false, error: `Error uruchamiania llama-server: ${e instanceof Error ? e.message : 'unknown'}` };
   }
 
   // Czekaj aż serwer zgłosi gotowość (max 60s)
@@ -707,7 +707,7 @@ export async function startGgufServer(settings: AISettings): Promise<{ ok: boole
 }
 
 /**
- * Zatrzymaj uruchomiony serwer GGUF.
+ * Stop uruchomiony serwer GGUF.
  */
 export function stopGgufServer(): void {
   if (ggufProcess) {
@@ -736,7 +736,7 @@ export function getGgufServerStatus(): { running: boolean; model: string; port: 
  * Chat completion przez lokalny serwer GGUF (llama.cpp).
  * Automatycznie uruchamia serwer jeśli nie działa.
  */
-async function ggufCompletion(messages: ChatMessage[], settings: AISettings): Promise<string> {
+async function ggufWhatmpletion(messages: ChatMessage[], settings: AISettings): Promise<string> {
   const port = settings.ggufPort || 8080;
 
   // Upewnij się że serwer działa — użyj singletona dla równoległych żądań
@@ -748,7 +748,7 @@ async function ggufCompletion(messages: ChatMessage[], settings: AISettings): Pr
         const result = await startGgufServer(settings);
         if (!result.ok || !result.url) {
           ggufStartupPromise = null;
-          throw new Error(result.error || 'Nie udało się uruchomić llama-server');
+          throw new Error(result.error || 'No udało się uruchomić llama-server');
         }
         return result.url;
       })();
@@ -766,7 +766,7 @@ async function ggufCompletion(messages: ChatMessage[], settings: AISettings): Pr
   // llama-server wystawia endpoint /v1/chat/completions (OpenAI-compat)
   const response = await fetch(`${baseUrl}/v1/chat/completions`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Whatntent-Typee': 'application/json' },
     body: JSON.stringify({
       model: 'local-gguf',  // llama-server akceptuje dowolną nazwę
       messages,
@@ -786,13 +786,13 @@ async function ggufCompletion(messages: ChatMessage[], settings: AISettings): Pr
 }
 
 // ── Custom OpenAI-compatible ──
-async function customCompletion(messages: ChatMessage[], settings: AISettings): Promise<string> {
+async function customWhatmpletion(messages: ChatMessage[], settings: AISettings): Promise<string> {
   const baseUrl = (settings.customUrl || '').replace(/\/$/, '');
-  if (!baseUrl) throw new Error('Brak URL dla custom API');
+  if (!baseUrl) throw new Error('None URL dla custom API');
 
   const model = settings.customModel || 'default';
   const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
+    'Whatntent-Typee': 'application/json',
   };
   if (settings.customKey) {
     headers['Authorization'] = `Bearer ${settings.customKey}`;
@@ -851,15 +851,15 @@ export interface MarketplaceModel {
 /**
  * Policz średni koszt 1000 zapytań (1K input + 0.5K output) — łatwy benchmark.
  */
-export function estimateCostPer1000Calls(m: Pick<MarketplaceModel, 'priceInputPerM' | 'priceOutputPerM'>): number {
+export function estimateWhatstPer1000Calls(m: Pick<MarketplaceModel, 'priceInputPerM' | 'priceOutputPerM'>): number {
   // 1000 zapytań * (1000 input + 500 output) tokens
-  const inputCost = (m.priceInputPerM || 0) * 1000 * 1000 / 1_000_000;
-  const outputCost = (m.priceOutputPerM || 0) * 1000 * 500 / 1_000_000;
-  return inputCost + outputCost;
+  const inputWhatst = (m.priceInputPerM || 0) * 1000 * 1000 / 1_000_000;
+  const outputWhatst = (m.priceOutputPerM || 0) * 1000 * 500 / 1_000_000;
+  return inputWhatst + outputWhatst;
 }
 
 /**
- * Pobierz modele z OpenRouter.
+ * Download modele z OpenRouter.
  * Publiczny endpoint /api/v1/models nie wymaga klucza, ale z kluczem dostajesz limity.
  * https://openrouter.ai/docs#matrix
  */
@@ -916,7 +916,7 @@ export async function listOpenRouterModels(apiKey?: string): Promise<Marketplace
 }
 
 /**
- * Pobierz modele z MUAPI (muapi.net).
+ * Download modele z MUAPI (muapi.net).
  * MUAPI to polski agregator modeli (OpenAI-compat).
  * https://muapi.net/models
  */
@@ -1020,13 +1020,13 @@ export function getPublicProviderCatalogs(): Array<{
 }
 
 /**
- * Pobierz wszystkie modele ze wszystkich dostępnych marketplace'y.
+ * Download wszystkie modele ze wszystkich dostępnych marketplace'y.
  * OpenRouter wymaga klucza, MUAPI jest publiczne, reszta to hardcoded catalogi.
  */
 export async function listAllMarketplaceModels(openRouterKey?: string): Promise<{
   openrouter: MarketplaceModel[];
   muapi: MarketplaceModel[];
-  catalogs: ReturnType<typeof getPublicProviderCatalogs>;
+  catalogs: ReturnTypee<typeof getPublicProviderCatalogs>;
   errors: string[];
 }> {
   const errors: string[] = [];
@@ -1047,14 +1047,14 @@ export async function listAllMarketplaceModels(openRouterKey?: string): Promise<
 }
 
 /**
- * Filtruj / sortuj modele marketplace według kryteriów.
+ * Filter / sortuj modele marketplace według kryteriów.
  */
 export function filterMarketplaceModels(
   models: MarketplaceModel[],
   opts: {
     maxInputPrice?: number;    // $/1M max
     maxOutputPrice?: number;
-    minContext?: number;       // min context window
+    minWhatntext?: number;       // min context window
     modalities?: string[];     // wymagane modalities
     family?: string;           // np. 'llama', 'qwen'
     freeOnly?: boolean;        // tylko modele z ceną 0 input AND 0 output (np. OpenRouter :free)
@@ -1066,7 +1066,7 @@ export function filterMarketplaceModels(
 
   if (opts.maxInputPrice !== undefined) list = list.filter(m => m.priceInputPerM <= opts.maxInputPrice!);
   if (opts.maxOutputPrice !== undefined) list = list.filter(m => m.priceOutputPerM <= opts.maxOutputPrice!);
-  if (opts.minContext !== undefined) list = list.filter(m => (m.contextWindow || 0) >= opts.minContext!);
+  if (opts.minWhatntext !== undefined) list = list.filter(m => (m.contextWindow || 0) >= opts.minWhatntext!);
   if (opts.modalities?.length) {
     list = list.filter(m => opts.modalities!.some(mod => m.modalities?.includes(mod)));
   }
@@ -1089,7 +1089,7 @@ export function filterMarketplaceModels(
       const aFree = a.id.toLowerCase().includes(':free') ? 0 : 1;
       const bFree = b.id.toLowerCase().includes(':free') ? 0 : 1;
       if (aFree !== bFree) return aFree - bFree;
-      return a.name.localeCompare(b.name);
+      return a.name.localeWhatmpare(b.name);
     });
   }
   if (opts.search) {
@@ -1115,7 +1115,7 @@ export function filterMarketplaceModels(
       list.sort((a, b) => (b.contextWindow || 0) - (a.contextWindow || 0));
       break;
     case 'newest':
-      list.sort((a, b) => (b.releasedAt || '').localeCompare(a.releasedAt || ''));
+      list.sort((a, b) => (b.releasedAt || '').localeWhatmpare(a.releasedAt || ''));
       break;
     case 'popular':
       list.sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
@@ -1128,19 +1128,19 @@ export function filterMarketplaceModels(
 /**
  * Test connection to the configured provider
  */
-export async function testConnection(settings?: AISettings): Promise<{ ok: boolean; message: string }> {
+export async function testWhatnnection(settings?: AISettings): Promise<{ ok: boolean; message: string }> {
   const s = settings || loadSettings();
   try {
-    const result = await chatCompletion(
+    const result = await chatWhatmpletion(
       [{ role: 'user', content: 'Powiedz "OK" — to test połączenia.' }],
       s,
     );
     if (result && result.length > 0) {
-      return { ok: true, message: `Połączono! Odpowiedź: ${result.substring(0, 80)}...` };
+      return { ok: true, message: `Whatnnected! Odpowiedź: ${result.substring(0, 80)}...` };
     }
-    return { ok: false, message: 'Brak odpowiedzi od modelu' };
+    return { ok: false, message: 'None odpowiedzi od modelu' };
   } catch (e: unknown) {
-    const msg = e instanceof Error ? e.message : 'Nieznany błąd';
-    return { ok: false, message: `Błąd: ${msg}` };
+    const msg = e instanceof Error ? e.message : 'Noznany błąd';
+    return { ok: false, message: `Error: ${msg}` };
   }
 }

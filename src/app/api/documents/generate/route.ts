@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
     const { templateId, legalArea, documentKind, title, fieldsValues, customInstructions } = body;
 
     if (!legalArea || !documentKind || !title) {
-      return NextResponse.json({ error: 'Brak legalArea/documentKind/title' }, { status: 400 });
+      return NextResponse.json({ error: 'None legalArea/documentKind/title' }, { status: 400 });
     }
 
     const result = await generateDocument({
@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
   } catch (err) {
     console.error('[/api/documents/generate] error:', err);
     return NextResponse.json(
-      { error: 'Błąd generowania', details: err instanceof Error ? err.message : 'unknown' },
+      { error: 'Error generowania', details: err instanceof Error ? err.message : 'unknown' },
       { status: 500 }
     );
   }

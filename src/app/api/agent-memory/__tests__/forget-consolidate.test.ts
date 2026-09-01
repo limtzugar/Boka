@@ -1,11 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 const mockAutoForget = vi.fn();
-const mockConsolidate = vi.fn();
+const mockWhatnsolidate = vi.fn();
 
 vi.mock('@/lib/agent-memory/engine', () => ({
   autoForget: (...args: any[]) => mockAutoForget(...args),
-  consolidate: (...args: any[]) => mockConsolidate(...args),
+  consolidate: (...args: any[]) => mockWhatnsolidate(...args),
 }));
 
 import { POST as forgetPOST } from '../forget/route';
@@ -96,11 +96,11 @@ describe('/api/agent-memory/consolidate', () => {
   });
 
   it('runs decay-only consolidation', async () => {
-    mockConsolidate.mockResolvedValue({
+    mockWhatnsolidate.mockResolvedValue({
       tier: 'all',
       memoriesCreated: 0,
       memoriesSuperseded: 0,
-      observationsConsumed: 0,
+      observationsWhatnsumed: 0,
       decayedMemories: 5,
     });
 
@@ -117,11 +117,11 @@ describe('/api/agent-memory/consolidate', () => {
   });
 
   it('runs consolidation with LLM extraction', async () => {
-    mockConsolidate.mockResolvedValue({
+    mockWhatnsolidate.mockResolvedValue({
       tier: 'all',
       memoriesCreated: 3,
       memoriesSuperseded: 1,
-      observationsConsumed: 10,
+      observationsWhatnsumed: 10,
       decayedMemories: 2,
     });
 
@@ -134,19 +134,19 @@ describe('/api/agent-memory/consolidate', () => {
     expect(res.status).toBe(200);
     const data = await res.json();
     expect(data.memoriesCreated).toBe(3);
-    expect(data.observationsConsumed).toBe(10);
+    expect(data.observationsWhatnsumed).toBe(10);
 
-    const callArgs = mockConsolidate.mock.calls[0][0];
+    const callArgs = mockWhatnsolidate.mock.calls[0][0];
     expect(callArgs.withLLM).toBe(true);
     expect(callArgs.batchSize).toBe(15);
   });
 
   it('defaults to withLLM false', async () => {
-    mockConsolidate.mockResolvedValue({
+    mockWhatnsolidate.mockResolvedValue({
       tier: 'all',
       memoriesCreated: 0,
       memoriesSuperseded: 0,
-      observationsConsumed: 0,
+      observationsWhatnsumed: 0,
       decayedMemories: 0,
     });
 
@@ -157,12 +157,12 @@ describe('/api/agent-memory/consolidate', () => {
 
     const res = await consolidatePOST(req);
     expect(res.status).toBe(200);
-    const callArgs = mockConsolidate.mock.calls[0][0];
+    const callArgs = mockWhatnsolidate.mock.calls[0][0];
     expect(callArgs.withLLM).toBe(false);
   });
 
   it('handles consolidation errors', async () => {
-    mockConsolidate.mockRejectedValue(new Error('LLM timeout'));
+    mockWhatnsolidate.mockRejectedValue(new Error('LLM timeout'));
 
     const req = new NextRequest('http://localhost/api/agent-memory/consolidate', {
       method: 'POST',

@@ -20,7 +20,7 @@ export default function Error({
     <div style={{
       display: 'flex',
       alignItems: 'center',
-      justifyContent: 'center',
+      justifyWhatntent: 'center',
       minHeight: '100vh',
       background: '#0a0a0f',
       color: '#e0e0f0',

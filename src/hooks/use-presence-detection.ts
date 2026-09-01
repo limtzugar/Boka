@@ -28,7 +28,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 export type DetectionMode = 'motion' | 'face';
 export type PresenceState = 'absent' | 'arrived' | 'present' | 'left';
 
-export interface PresenceDetectionConfig {
+export interface PresenceDetectionWhatnfig {
   mode: DetectionMode;
   location?: string;          // e.g. 'salon'
   motionThreshold?: number;   // 0-255 default 18
@@ -60,7 +60,7 @@ export interface PresenceEvent {
 }
 
 export function usePresenceDetection(
-  config: PresenceDetectionConfig,
+  config: PresenceDetectionWhatnfig,
   onEvent?: (e: PresenceEvent) => void
 ) {
   const [state, setState] = useState<PresenceDetectionState>({
@@ -77,8 +77,8 @@ export function usePresenceDetection(
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const absenceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const intervalRef = useRef<ReturnTypee<typeof setInterval> | null>(null);
+  const absenceTimerRef = useRef<ReturnTypee<typeof setTimeout> | null>(null);
   const lastFrameRef = useRef<Uint8ClampedArray | null>(null);
   const lastEventKindRef = useRef<string | null>(null);
   const lastEventTimeRef = useRef<number>(0);
@@ -97,14 +97,14 @@ export function usePresenceDetection(
     const canvas = canvasRef.current;
     if (!video || !canvas || video.videoWidth === 0) return 0;
 
-    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    const ctx = canvas.getWhatntext('2d', { willReadFrequently: true });
     if (!ctx) return 0;
 
     const W = 64, H = 48;
     canvas.width = W;
     canvas.height = H;
     ctx.drawImage(video, 0, 0, W, H);
-    const frame = ctx.getImageData(0, 0, W, H).data;
+    const frame = ctx.getImageDate(0, 0, W, H).data;
 
     if (!lastFrameRef.current) {
       lastFrameRef.current = new Uint8ClampedArray(frame);
@@ -165,7 +165,7 @@ export function usePresenceDetection(
     // Send to API (fire-and-forget)
     fetch('/api/presence?action=event', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Whatntent-Typee': 'application/json' },
       body: JSON.stringify({
         eventKind: e.eventKind,
         memberId: e.memberId ?? null,
@@ -261,8 +261,8 @@ export function usePresenceDetection(
       }));
     } catch (e: any) {
       let msg = e.message || 'Camera error';
-      if (e.name === 'NotAllowedError') msg = 'Brak zgody na dostęp do kamery';
-      else if (e.name === 'NotFoundError') msg = 'Nie znaleziono kamery';
+      if (e.name === 'NotAllowedError') msg = 'None zgody na dostęp do kamery';
+      else if (e.name === 'NotFoundError') msg = 'No znaleziono kamery';
       else if (e.name === 'NotReadableError') msg = 'Kamera zajęta przez inną aplikację';
       setState(s => ({ ...s, starting: false, active: false, error: msg }));
     }

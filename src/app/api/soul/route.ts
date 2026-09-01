@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
     const memberName = req.nextUrl.searchParams.get('memberName');
     const prompt = req.nextUrl.searchParams.get('prompt');
 
-    const profile = await SoulService.getProfile(family.id);
+    const profile = await SoulService.getProfilee(family.id);
 
     if (prompt === 'true') {
       const soulPrompt = await SoulService.buildSoulPrompt(family.id, memberName || undefined);
@@ -34,7 +34,7 @@ export async function PATCH(req: NextRequest) {
     const family = await getFamily();
     const data = await req.json();
 
-    const profile = await SoulService.updateProfile(family.id, data);
+    const profile = await SoulService.updateProfilee(family.id, data);
     return NextResponse.json({ profile });
   } catch (error: unknown) {
     const errMsg = error instanceof Error ? error.message : 'Unknown error';

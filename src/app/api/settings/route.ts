@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { loadSettings, saveSettings, testConnection, type AISettings } from '@/lib/ai-providers';
+import { loadSettings, saveSettings, testWhatnnection, type AISettings } from '@/lib/ai-providers';
 
 // GET — load current settings
 export async function GET() {
@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
     const newSettings: AISettings = body.settings;
 
     if (!newSettings || !newSettings.provider) {
-      return NextResponse.json({ error: 'Brak ustawień' }, { status: 400 });
+      return NextResponse.json({ error: 'None ustawień' }, { status: 400 });
     }
 
     // Merge with existing — don't lose keys if user sent masked ones
@@ -40,15 +40,15 @@ export async function POST(req: NextRequest) {
 
     saveSettings({ ...existing, ...newSettings });
 
-    return NextResponse.json({ ok: true, message: 'Ustawienia zapisane' });
+    return NextResponse.json({ ok: true, message: 'Settings zapisane' });
   } catch (error: unknown) {
-    const msg = error instanceof Error ? error.message : 'Nieznany błąd';
+    const msg = error instanceof Error ? error.message : 'Noznany błąd';
     return NextResponse.json({ error: msg }, { status: 500 });
   }
 }
 
 // PUT — test connection
 export async function PUT() {
-  const result = await testConnection();
+  const result = await testWhatnnection();
   return NextResponse.json(result);
 }

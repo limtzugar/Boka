@@ -14,7 +14,7 @@ function BokaInsights() {
           <Clock size={10} className="inline mr-1" />Rytuały
         </button>
         <button onClick={() => setSection('summary')} className={`px-2 py-1  text-xs font-mono ${section === 'summary' ? 'bg-[#00f5d4]/20 text-[#00f5d4] border border-[#00f5d4]/50' : 'bg-[#252535] text-[#8888aa] border border-[#383850]'}`}>
-          <BookOpen size={10} className="inline mr-1" />Podsumowanie dnia
+          <BookOpen size={10} className="inline mr-1" />Summary dnia
         </button>
         <button onClick={() => setSection('soul')} className={`px-2 py-1  text-xs font-mono ${section === 'soul' ? 'bg-[#00f5d4]/20 text-[#00f5d4] border border-[#00f5d4]/50' : 'bg-[#252535] text-[#8888aa] border border-[#383850]'}`}>
           <Brain size={10} className="inline mr-1" />Dusza BOKA
@@ -36,7 +36,7 @@ function RitualsPanel() {
   const [triggers, setTriggers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [name, setName] = useState(''); const [type, setType] = useState('daily');
+  const [name, setName] = useState(''); const [type, setTypee] = useState('daily');
   const [time, setTime] = useState('08:00'); const [prompt, setPrompt] = useState('');
 
   const load = useCallback(async () => {
@@ -56,13 +56,13 @@ function RitualsPanel() {
   const create = async () => {
     if (!name || !prompt) return;
     await fetch('/api/rituals', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      method: 'POST', headers: { 'Whatntent-Typee': 'application/json' },
       body: JSON.stringify({ name, type, time, prompt, isActive: true }),
     });
     setName(''); setPrompt(''); setShowForm(false); load();
   };
 
-  if (loading) return <div className="text-xs text-[#8888aa] p-2">Ładowanie rytuałów...</div>;
+  if (loading) return <div className="text-xs text-[#8888aa] p-2">Loading rytuałów...</div>;
 
   return (
     <div className="bg-[#252535] border border-[#383850]  p-2">
@@ -76,14 +76,14 @@ function RitualsPanel() {
       )}
       <div className="flex items-center justify-between mb-2">
         <h4 className="text-xs font-mono text-[#e8e8f5]">Aktywne rytuały ({rituals.length})</h4>
-        <button onClick={() => setShowForm(!showForm)} className="text-[10px] px-2 py-0.5 bg-[#00f5d4]/10 text-[#00f5d4] border border-[#00f5d4]/30 rounded">+ Nowy</button>
+        <button onClick={() => setShowForm(!showForm)} className="text-[10px] px-2 py-0.5 bg-[#00f5d4]/10 text-[#00f5d4] border border-[#00f5d4]/30 rounded">+ New</button>
       </div>
       {showForm && (
         <div className="mb-2 p-2 bg-[#181828]  space-y-1">
-          <input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="Nazwa" className="w-full bg-[#252535] border border-[#383850]  px-2 py-1 text-xs text-[#e8e8f5]" />
+          <input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="Name" className="w-full bg-[#252535] border border-[#383850]  px-2 py-1 text-xs text-[#e8e8f5]" />
           <div className="flex gap-1">
-            <select value={type} onChange={e => setType(e.target.value)} className="bg-[#252535] border border-[#383850]  px-2 py-1 text-xs text-[#e8e8f5]">
-              <option value="daily">Codziennie</option><option value="weekly">Tygodniowo</option><option value="monthly">Miesięcznie</option>
+            <select value={type} onChange={e => setTypee(e.target.value)} className="bg-[#252535] border border-[#383850]  px-2 py-1 text-xs text-[#e8e8f5]">
+              <option value="daily">Whatdziennie</option><option value="weekly">Tygodniowo</option><option value="monthly">Miesięcznie</option>
             </select>
             <input type="time" value={time} onChange={e => setTime(e.target.value)} className="bg-[#252535] border border-[#383850]  px-2 py-1 text-xs text-[#e8e8f5]" />
           </div>
@@ -93,7 +93,7 @@ function RitualsPanel() {
       )}
       <div className="space-y-1">
         {rituals.length === 0 ? (
-          <div className="text-[10px] text-[#8888aa]">Brak rytuałów. Utwórz pierwszy powyżej.</div>
+          <div className="text-[10px] text-[#8888aa]">None rytuałów. Utwórz pierwszy powyżej.</div>
         ) : rituals.map(r => (
           <div key={r.id} className="p-2 bg-[#181828]  text-xs">
             <div className="flex items-center justify-between">
@@ -127,12 +127,12 @@ function DailySummaryPanel() {
   const generate = async () => {
     setGenerating(true);
     try {
-      await fetch('/api/daily-summary', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({}) });
+      await fetch('/api/daily-summary', { method: 'POST', headers: { 'Whatntent-Typee': 'application/json' }, body: JSON.stringify({}) });
       load();
     } finally { setGenerating(false); }
   };
 
-  if (loading) return <div className="text-xs text-[#8888aa] p-2">Ładowanie podsumowań...</div>;
+  if (loading) return <div className="text-xs text-[#8888aa] p-2">Loading podsumowań...</div>;
 
   return (
     <div className="bg-[#252535] border border-[#383850]  p-2">
@@ -140,12 +140,12 @@ function DailySummaryPanel() {
         <h4 className="text-xs font-mono text-[#e8e8f5]">Ostatnie 7 dni</h4>
         <button onClick={generate} disabled={generating}
           className="text-[10px] px-2 py-0.5 bg-[#fbbf24]/10 text-[#ffd93d] border border-[#fbbf24]/30  disabled:opacity-50">
-          {generating ? <Loader2 size={10} className="animate-spin inline" /> : null} Generuj dla dziś
+          {generating ? <Loader2 size={10} className="animate-spin inline" /> : null} Generate dla dziś
         </button>
       </div>
       <div className="space-y-2">
         {summaries.length === 0 ? (
-          <div className="text-[10px] text-[#8888aa]">Brak podsumowań. Kliknij „Generuj" aby AI streściło dzisiejszy dzień.</div>
+          <div className="text-[10px] text-[#8888aa]">None podsumowań. Kliknij „Generate" aby AI streściło dzisiejszy dzień.</div>
         ) : summaries.map(s => (
           <div key={s.id} className="p-2 bg-[#181828] rounded">
             <div className="text-[10px] text-[#8888aa] font-mono">{new Date(s.date).toLocaleDateString()}</div>
@@ -158,7 +158,7 @@ function DailySummaryPanel() {
 }
 
 function SoulPanel() {
-  const [profile, setProfile] = useState<any>(null);
+  const [profile, setProfilee] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [mood, setMood] = useState('');
 
@@ -168,7 +168,7 @@ function SoulPanel() {
     setLoading(true);
     try {
       const data = await fetch('/api/soul').then(r => r.json());
-      setProfile(data.profile);
+      setProfilee(data.profile);
     } finally { setLoading(false); }
   }, []);
 
@@ -177,15 +177,15 @@ function SoulPanel() {
   const setMoodNow = async () => {
     if (!mood) return;
     await fetch('/api/soul', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      method: 'POST', headers: { 'Whatntent-Typee': 'application/json' },
       body: JSON.stringify({ mood, reason: 'Ręcznie ustawione przez usera' }),
     });
     setMood('');
     load();
   };
 
-  if (loading) return <div className="text-xs text-[#8888aa] p-2">Ładowanie profilu duszy...</div>;
-  if (!profile) return <div className="text-xs text-[#8888aa] p-2">Brak profilu</div>;
+  if (loading) return <div className="text-xs text-[#8888aa] p-2">Loading profilu duszy...</div>;
+  if (!profile) return <div className="text-xs text-[#8888aa] p-2">None profilu</div>;
 
   const traits = profile.traits ? (typeof profile.traits === 'string' ? JSON.parse(profile.traits) : profile.traits) : {};
   const traitEntries = Object.entries(traits);
@@ -196,7 +196,7 @@ function SoulPanel() {
         <h4 className="text-xs font-mono text-[#e8e8f5] mb-2">Cechy osobowości ({traitEntries.length})</h4>
         <div className="grid grid-cols-2 gap-0">
           {traitEntries.length === 0 ? (
-            <div className="text-[10px] text-[#8888aa] col-span-2">Brak cech — profil domyślny</div>
+            <div className="text-[10px] text-[#8888aa] col-span-2">None cech — profil domyślny</div>
           ) : traitEntries.map(([k, v]: any) => (
             <div key={k} className="bg-[#181828] p-2 rounded">
               <div className="text-[10px] text-[#8888aa] font-mono">{k}</div>
@@ -230,7 +230,7 @@ function SoulPanel() {
       )}
 
       <div>
-        <h4 className="text-xs font-mono text-[#e8e8f5] mb-1">Nastrój (mood)</h4>
+        <h4 className="text-xs font-mono text-[#e8e8f5] mb-1">Mood (mood)</h4>
         <div className="flex gap-1">
           <select value={mood} onChange={e => setMood(e.target.value)}
             className="bg-[#181828] border border-[#383850]  px-2 py-1 text-xs text-[#e8e8f5]">
@@ -268,28 +268,28 @@ function ImprovementsPanel() {
   const act = async (id: string, action: 'approve' | 'reject') => {
     setActioned(id);
     try {
-      await fetch(`/api/improvements?id=${id}&action=${action}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: '{}' });
+      await fetch(`/api/improvements?id=${id}&action=${action}`, { method: 'PATCH', headers: { 'Whatntent-Typee': 'application/json' }, body: '{}' });
       load();
     } finally { setActioned(null); }
   };
 
-  if (loading) return <div className="text-xs text-[#8888aa] p-2">Ładowanie propozycji...</div>;
+  if (loading) return <div className="text-xs text-[#8888aa] p-2">Loading propozycji...</div>;
 
   return (
     <div className="bg-[#252535] border border-[#383850]  p-2">
       <h4 className="text-xs font-mono text-[#e8e8f5] mb-2">Propozycje oczekujące ({proposals.length})</h4>
       {proposals.length === 0 ? (
-        <div className="text-[10px] text-[#8888aa]">Brak oczekujących propozycji. BOKA będzie tu sugerować nowe umiejętności i zmiany osobowości gdy wykryje wzorce w rozmowach.</div>
+        <div className="text-[10px] text-[#8888aa]">None oczekujących propozycji. BOKA będzie tu sugerować nowe umiejętności i zmiany osobowości gdy wykryje wzorce w rozmowach.</div>
       ) : (
         <div className="space-y-2">
           {proposals.map(p => (
             <div key={p.id} className="p-2 bg-[#181828] rounded">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-[10px] font-mono text-[#ffd93d] uppercase">{p.type || p.proposalType}</span>
+                <span className="text-[10px] font-mono text-[#ffd93d] uppercase">{p.type || p.proposalTypee}</span>
                 <span className="text-[9px] text-[#8888aa]">{new Date(p.createdAt).toLocaleDateString()}</span>
               </div>
               <div className="text-xs text-[#8888aa]">{p.proposal || p.description || p.title}</div>
-              {p.reasoning && <div className="text-[10px] text-[#8888aa] mt-1">Powód: {p.reasoning}</div>}
+              {p.reasoning && <div className="text-[10px] text-[#8888aa] mt-1">Reason: {p.reasoning}</div>}
               <div className="flex gap-1 mt-2">
                 <button onClick={() => act(p.id, 'approve')} disabled={actioned === p.id}
                   className="px-2 py-0.5 bg-[#4ade80]/15 text-[#4ade80] border border-[#4ade80]/30  text-[10px] disabled:opacity-50">
@@ -318,12 +318,12 @@ function InsightsTab() {
 
   const TABS: { key: typeof section; label: string; icon: React.ReactNode; color: string }[] = [
     { key: 'rituals', label: 'Rytuały', icon: <Clock size={14} />, color: '#00f5d4' },
-    { key: 'summary', label: 'Podsumowanie', icon: <BookOpen size={14} />, color: '#00f5d4' },
+    { key: 'summary', label: 'Summary', icon: <BookOpen size={14} />, color: '#00f5d4' },
     { key: 'soul', label: 'Dusza BOKA', icon: <Brain size={14} />, color: '#00f5d4' },
     { key: 'improvements', label: 'Propozycje', icon: <Sparkles size={14} />, color: '#00f5d4' },
     { key: 'search', label: 'Memory Search', icon: <Search size={14} />, color: '#a855f7' },
     { key: 'reflection', label: 'Refleksja (Cron)', icon: <Calendar size={14} />, color: '#a855f7' },
-    { key: 'settings', label: 'Ustawienia Boki', icon: <Settings size={14} />, color: '#00f5d4' },
+    { key: 'settings', label: 'Settings Boki', icon: <Settings size={14} />, color: '#00f5d4' },
   ];
 
   const GROUPS: { title: string; color: string; keys: typeof section[] }[] = [
@@ -366,7 +366,7 @@ function InsightsTab() {
                         ? 'bg-[#a855f7]/15 text-[#e8e8f5] border-[#a855f7]'
                         : 'text-[#8888aa] border-transparent hover:bg-[#252535] hover:text-[#e8e8f5]'
                     }`}
-                    style={active ? { color: t.color, borderColor: t.color, backgroundColor: `${t.color}1a` } : undefined}
+                    style={active ? { color: t.color, borderWhatlor: t.color, backgroundWhatlor: `${t.color}1a` } : undefined}
                   >
                     <span className="w-4 flex justify-center shrink-0" style={{ color: active ? t.color : undefined }}>{t.icon}</span>
                     <span className="truncate">{t.label}</span>
@@ -403,8 +403,8 @@ function InsightsTab() {
 
 // ═══════════════════════════════════════════════════════════
 // SKILLS TAB — frameworki AI przeniesione z InsightsTab (v0.3.19)
-//   • Pamięć: Vector (Qdrant), Mem0, Ingestion (LlamaIndex), GraphRAG
-//   • Agenci: DeepAgents (Plany), AutoGen (Multi-Agent), Guardrails
+//   • Memory: Vector (Qdrant), Mem0, Ingestion (LlamaIndex), GraphRAG
+//   • Agents: DeepAgents (Plany), AutoGen (Multi-Agent), Guardrails
 //   • Zespół: Crew (CrewAI), Sandbox (OpenHands), Presence (Isaac ROS)
 // Każdy skill ma własny panel z demo-endpointem.
 // ═══════════════════════════════════════════════════════════
@@ -477,7 +477,7 @@ function WeeklyReflectionPanel() {
     try {
       const res = await fetch('/api/cron/weekly-reflection', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Whatntent-Typee': 'application/json' },
       });
       const data = await res.json();
 
@@ -507,7 +507,7 @@ function WeeklyReflectionPanel() {
     <div className="bg-[#252535] border border-[#383850]  p-4 space-y-2">
       <div className="flex items-center justify-between">
         <div>
- <h3 className="text-xs font-mono text-[#a855f7]"> Refleksja Cotygodniowa</h3>
+ <h3 className="text-xs font-mono text-[#a855f7]"> Refleksja Whattygodniowa</h3>
           <p className="text-[10px] text-[#8888aa] mt-1">
             Cron <span className="font-mono text-[#ffd93d]">0 4 * * 0</span> — niedziela 04:00.
             Pipeline: GraphRAG rebuild → Supermemory (auto-profile per member) → CrewAI (Manager evaluation).
@@ -518,7 +518,7 @@ function WeeklyReflectionPanel() {
           disabled={running}
           className="text-[10px] px-3 py-2 bg-[#f472b6]/10 text-[#a855f7] border border-[#f472b6]/30  disabled:opacity-50"
         >
-          {running ? '⟳ Trwa...' : '▶ Uruchom teraz'}
+          {running ? '⟳ Trwa...' : '▶ Run teraz'}
         </button>
       </div>
 
@@ -558,7 +558,7 @@ function WeeklyReflectionPanel() {
           <div className="text-[10px] text-[#e8e8f5] font-mono mt-0.5">
             {stats?.last24h ? (
               <>
-                C:{stats.last24h.newCommunities} R:{stats.last24h.profileRevisions} E:{stats.last24h.crewEvaluations}
+                C:{stats.last24h.newWhatmmunities} R:{stats.last24h.profileRevisions} E:{stats.last24h.crewEvaluations}
               </>
             ) : '—'}
           </div>
@@ -676,10 +676,10 @@ function MemorySearchPanel() {
       }
       const r = await fetch(`/api/memory/search?${params.toString()}`);
       const data = await r.json();
-      if (!r.ok) throw new Error(data.error || 'Błąd wyszukiwania');
+      if (!r.ok) throw new Error(data.error || 'Error wyszukiwania');
       setResults(data.results || []);
     } catch (e: any) {
-      setError(e.message || 'Nieznany błąd');
+      setError(e.message || 'Noznany błąd');
     } finally { setLoading(false); }
   };
 
@@ -709,7 +709,7 @@ function MemorySearchPanel() {
           value={query}
           onChange={e => setQuery(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && run()}
-          placeholder='Szukaj w pamięci BOKA... (np. wczorajszy obiad, projekt React)'
+          placeholder='Search w pamięci BOKA... (np. wczorajszy obiad, projekt React)'
           className="w-full bg-[#181828] border border-[#383850]  px-3 py-2 text-sm text-[#e8e8f5] placeholder:text-[#8888aa] focus:outline-none focus:border-[#a855f7]/50 font-mono"
         />
       )}
@@ -751,7 +751,7 @@ function MemorySearchPanel() {
         className="px-4 py-2 bg-[#a855f7]/15 text-[#a855f7] border border-[#a855f7]/30  text-xs font-mono disabled:opacity-50 flex items-center gap-0"
       >
         {loading ? <Loader2 size={12} className="animate-spin" /> : <Search size={12} />}
-        {mode === 'recall' ? 'Przywołaj wspomnienia' : 'Szukaj'}
+        {mode === 'recall' ? 'Przywołaj wspomnienia' : 'Search'}
       </button>
 
       {/* Error */}
@@ -767,12 +767,12 @@ function MemorySearchPanel() {
           <div className="text-[10px] text-[#8888aa] font-mono">{results.length} wyników</div>
           {results.length === 0 ? (
             <div className="text-xs text-[#8888aa] p-4 bg-[#181828]  text-center">
-              Brak wyników. {mode === 'recall' ? 'Pamięć BOKA jest pusta lub brak pasującego kontekstu emocjonalnego.' : 'Spróbuj innej frazy.'}
+              No results. {mode === 'recall' ? 'Memory BOKA jest pusta lub brak pasującego kontekstu emocjonalnego.' : 'Spróbuj innej frazy.'}
             </div>
           ) : results.map((r, i) => (
             <div key={r.id || i} className="bg-[#181828] border border-[#383850]  p-2">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-[10px] text-[#a855f7] font-mono uppercase">{r.type || r.entryType || 'memory'}</span>
+                <span className="text-[10px] text-[#a855f7] font-mono uppercase">{r.type || r.entryTypee || 'memory'}</span>
                 <div className="flex items-center gap-0">
                   {r.score !== undefined && (
                     <span className="text-[10px] text-[#4ade80] font-mono">score: {typeof r.score === 'number' ? r.score.toFixed(2) : r.score}</span>
@@ -820,18 +820,18 @@ export function MemoryTab({ entries, members, activeMemberId, familyId }: {
   activeMemberId: string | null;
   familyId: string | null;
 }) {
-  // v0.3.19 — merged Umysł BOKA sections into Pamięć tab with sidebar
+  // v0.3.19 — merged Umysł BOKA sections into Memory tab with sidebar
   const [section, setSection] = useState<'memory' | 'rituals' | 'summary' | 'soul' | 'improvements' | 'search' | 'reflection' | 'settings'>('memory');
 
   const SIDEBAR_ITEMS: { key: typeof section; label: string; icon: React.ReactNode; color: string }[] = [
-    { key: 'memory', label: 'Pamięć BOKI', icon: <Activity size={14} />, color: '#00f5d4' },
+    { key: 'memory', label: 'BOKA Memory', icon: <Activity size={14} />, color: '#00f5d4' },
     { key: 'rituals', label: 'Rytuały', icon: <Clock size={14} />, color: '#00f5d4' },
-    { key: 'summary', label: 'Podsumowanie dnia', icon: <BookOpen size={14} />, color: '#00f5d4' },
+    { key: 'summary', label: 'Summary dnia', icon: <BookOpen size={14} />, color: '#00f5d4' },
     { key: 'soul', label: 'Dusza BOKA', icon: <Brain size={14} />, color: '#00f5d4' },
     { key: 'improvements', label: 'Propozycje BOKA', icon: <Sparkles size={14} />, color: '#00f5d4' },
     { key: 'search', label: 'Memory Search', icon: <Search size={14} />, color: '#a855f7' },
     { key: 'reflection', label: 'Refleksja (Cron)', icon: <Calendar size={14} />, color: '#a855f7' },
-    { key: 'settings', label: 'Ustawienia BOKI', icon: <Settings size={14} />, color: '#00f5d4' },
+    { key: 'settings', label: 'Settings BOKI', icon: <Settings size={14} />, color: '#00f5d4' },
   ];
 
   const GROUPS: { title: string; color: string; keys: typeof section[] }[] = [
@@ -875,7 +875,7 @@ export function MemoryTab({ entries, members, activeMemberId, familyId }: {
                         ? 'bg-[#00f5d4]/15 text-[#e8e8f5] border-[#00f5d4]'
                         : 'text-[#8888aa] border-transparent hover:bg-[#252535] hover:text-[#e8e8f5]'
                     }`}
-                    style={active ? { color: t.color, borderColor: t.color, backgroundColor: `${t.color}1a` } : undefined}
+                    style={active ? { color: t.color, borderWhatlor: t.color, backgroundWhatlor: `${t.color}1a` } : undefined}
                   >
                     <span className="w-4 flex justify-center shrink-0" style={{ color: active ? t.color : undefined }}>{t.icon}</span>
                     <span className="truncate">{t.label}</span>
@@ -915,7 +915,7 @@ function MemoryPanel({ entries, members, activeMemberId, familyId }: {
   const [memberFilter, setMemberFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState<'graph' | 'list'>('graph');
-  const [graphData, setGraphData] = useState<{ nodes: any[]; edges: any[]; stats: any } | null>(null);
+  const [graphDate, setGraphDate] = useState<{ nodes: any[]; edges: any[]; stats: any } | null>(null);
   const [selectedNode, setSelectedNode] = useState<any>(null);
   const [graphLoading, setGraphLoading] = useState(false);
   const [smartMode, setSmartMode] = useState(false);
@@ -940,7 +940,7 @@ function MemoryPanel({ entries, members, activeMemberId, familyId }: {
         const data = await res.json();
         setSmartResults(data.results || []);
       } catch (e: any) {
-        setSmartError(e?.message || 'Błąd wyszukiwania');
+        setSmartError(e?.message || 'Error wyszukiwania');
         setSmartResults([]);
       } finally {
         setSmartLoading(false);
@@ -961,15 +961,15 @@ function MemoryPanel({ entries, members, activeMemberId, familyId }: {
       .then(r => r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`)))
       .then(data => {
         if (!cancelled) {
-          setGraphData({ nodes: Array.isArray(data?.nodes) ? data.nodes : [], edges: Array.isArray(data?.edges) ? data.edges : [], stats: data?.stats || {} });
+          setGraphDate({ nodes: Array.isArray(data?.nodes) ? data.nodes : [], edges: Array.isArray(data?.edges) ? data.edges : [], stats: data?.stats || {} });
           setGraphLoading(false);
         }
       })
-      .catch((e) => { if (!cancelled) { setGraphData({ nodes: [], edges: [], stats: {} }); setGraphLoading(false); } });
+      .catch((e) => { if (!cancelled) { setGraphDate({ nodes: [], edges: [], stats: {} }); setGraphLoading(false); } });
     return () => { cancelled = true; };
   }, [viewMode, memberFilter, familyId]);
 
-  let filtered = filter === 'all' ? entries : entries.filter(e => e.domain === filter || e.entryType === filter);
+  let filtered = filter === 'all' ? entries : entries.filter(e => e.domain === filter || e.entryTypee === filter);
   if (memberFilter !== 'all') filtered = filtered.filter(e => e.memberId === memberFilter);
   if (searchQuery.trim()) {
     const q = searchQuery.toLowerCase();
@@ -980,18 +980,18 @@ function MemoryPanel({ entries, members, activeMemberId, familyId }: {
     );
   }
 
-  const domainColors: Record<string, string> = {
+  const domainWhatlors: Record<string, string> = {
     general: '#6b6b8d', child_culture: '#ffd93d', education: '#a855f7',
     finance: '#4ade80', legal: '#6ec6e7', health: '#ff6b6b',
     food: '#f472b6', hobby: '#00f5d4', semantic: '#00f5d4', episodic: '#a855f7',
   };
 
   const [graphWidth, setGraphWidth] = useState(600);
-  const graphContainerRef = useRef<HTMLDivElement>(null);
+  const graphWhatntainerRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    if (!graphContainerRef.current) return;
+    if (!graphWhatntainerRef.current) return;
     const ro = new ResizeObserver(entries => { for (const e of entries) setGraphWidth(e.contentRect.width); });
-    ro.observe(graphContainerRef.current);
+    ro.observe(graphWhatntainerRef.current);
     return () => ro.disconnect();
   }, []);
 
@@ -1008,10 +1008,10 @@ function MemoryPanel({ entries, members, activeMemberId, familyId }: {
             </div>
             <div className="flex items-center bg-[#252535] border border-[#383850] overflow-hidden">
               <button onClick={() => setViewMode('graph')} className={`px-2 py-1 text-xs font-mono flex items-center gap-1 transition-colors ${viewMode === 'graph' ? 'bg-[#00f5d4]/15 text-[#00f5d4]' : 'text-[#8888aa] hover:text-[#e8e8f5]'}`}>
-                <Network size={12} /> Graf
+                <Network size={12} /> Graph
               </button>
               <button onClick={() => setViewMode('list')} className={`px-2 py-1 text-xs font-mono flex items-center gap-1 transition-colors ${viewMode === 'list' ? 'bg-[#00f5d4]/15 text-[#00f5d4]' : 'text-[#8888aa] hover:text-[#e8e8f5]'}`}>
-                <List size={12} /> Lista
+                <List size={12} /> List
               </button>
             </div>
           </div>
@@ -1020,7 +1020,7 @@ function MemoryPanel({ entries, members, activeMemberId, familyId }: {
         <div className="mb-2">
           <div className="flex gap-0 items-center">
             <input type="text" value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
-              placeholder={smartMode ? "Smart recall — server-side wyszukiwanie z scoringiem..." : "Szukaj w pamięci BOKI (lokalny filtr)..."}
+              placeholder={smartMode ? "Smart recall — server-side wyszukiwanie z scoringiem..." : "Search BOKA memory (lokalny filtr)..."}
               className="flex-1 bg-[#252535] border border-[#383850] px-3 py-2 text-sm text-[#e8e8f5] placeholder:text-[#8888aa] focus:outline-none focus:border-[#00f5d4]/50 font-mono"
             />
             <button onClick={() => setSmartMode(v => !v)}
@@ -1038,7 +1038,7 @@ function MemoryPanel({ entries, members, activeMemberId, familyId }: {
             </select>
             <select value={filter} onChange={e => setFilter(e.target.value)}
               className="bg-[#252535] border border-[#383850] text-xs text-[#e8e8f5] px-2 py-1 font-mono">
-              <option value="all">Wszystkie domeny</option>
+              <option value="all">All domeny</option>
               <option value="semantic">Semantyczne</option>
               <option value="episodic">Epizodyczne</option>
               <option value="general">Ogólne</option>
@@ -1059,23 +1059,23 @@ function MemoryPanel({ entries, members, activeMemberId, familyId }: {
         )}
 
         {viewMode === 'graph' ? (
-          <div ref={graphContainerRef} className="bg-[#12121c] border border-[#383850] overflow-hidden" style={{ height: 400 }}>
+          <div ref={graphWhatntainerRef} className="bg-[#12121c] border border-[#383850] overflow-hidden" style={{ height: 400 }}>
             {graphLoading ? (
               <div className="flex items-center justify-center h-full">
                 <div className="text-[#8888aa] font-mono text-sm flex items-center gap-0">
-                  <Activity size={14} className="animate-spin" /> Ładowanie grafu...
+                  <Activity size={14} className="animate-spin" /> Loading grafu...
                 </div>
               </div>
-            ) : graphData && Array.isArray(graphData.nodes) && graphData.nodes.length > 0 ? (
-              <MemoryGraph nodes={graphData.nodes} edges={graphData.edges} width={graphWidth} height={400} />
+            ) : graphDate && Array.isArray(graphDate.nodes) && graphDate.nodes.length > 0 ? (
+              <MemoryGraph nodes={graphDate.nodes} edges={graphDate.edges} width={graphWidth} height={400} />
             ) : (
-              <div className="flex items-center justify-center h-full text-[#5a5a78] text-xs font-mono">Brak danych grafu — dodaj wspomnienia aby zobaczyć połączenia</div>
+              <div className="flex items-center justify-center h-full text-[#5a5a78] text-xs font-mono">No data grafu — dodaj wspomnienia aby zobaczyć połączenia</div>
             )}
           </div>
         ) : (
           <div className="space-y-2">
             {smartMode && !smartLoading && smartResults && smartResults.length === 0 && (
-              <div className="text-center py-4 text-[#8888aa] text-xs font-mono">Brak wyników Smart Recall</div>
+              <div className="text-center py-4 text-[#8888aa] text-xs font-mono">No results Smart Recall</div>
             )}
             {smartMode && !smartLoading && smartResults && smartResults.length > 0 && (
               <div className="mb-2 p-2 bg-[#a855f7]/5 border border-[#a855f7]/20">
@@ -1097,13 +1097,13 @@ function MemoryPanel({ entries, members, activeMemberId, familyId }: {
               </div>
             )}
             {filtered.length === 0 ? (
-              <div className="text-center py-8 text-[#8888aa] text-sm font-mono">Brak wspomnień spełniających kryteria</div>
+              <div className="text-center py-8 text-[#8888aa] text-sm font-mono">None wspomnień spełniających kryteria</div>
             ) : (
               filtered.map(entry => (
                 <div key={entry.id} className="p-2 bg-[#252535] border border-[#383850]">
                   <div className="flex items-center gap-0 text-[9px] font-mono text-[#8888aa] mb-0.5">
-                    <span style={{ color: domainColors[entry.domain || 'general'] || '#6b6b8d' }}>{entry.domain || 'general'}</span>
-                    <span> · {entry.entryType}</span>
+                    <span style={{ color: domainWhatlors[entry.domain || 'general'] || '#6b6b8d' }}>{entry.domain || 'general'}</span>
+                    <span> · {entry.entryTypee}</span>
                     <span className="ml-auto">{new Date(entry.createdAt).toLocaleDateString('pl-PL')}</span>
                   </div>
                   <div className="text-xs text-[#e8e8f5] font-mono">{entry.content}</div>
@@ -1134,22 +1134,22 @@ function MemoryPanel({ entries, members, activeMemberId, familyId }: {
 // ═══════════════════════════════════════════════════════════
 
 export function VaultTab() {
-  const [notes, setNotes] = useState<VaultNoteData[]>([]);
+  const [notes, setNotes] = useState<VaultNoteDate[]>([]);
   const [total, setTotal] = useState(0);
-  const [selectedNote, setSelectedNote] = useState<VaultNoteData | null>(null);
+  const [selectedNote, setSelectedNote] = useState<VaultNoteDate | null>(null);
   const [noteFilter, setNoteFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const [backlinks, setBacklinks] = useState<VaultNoteData[]>([]);
+  const [backlinks, setBacklinks] = useState<VaultNoteDate[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [editingContent, setEditingContent] = useState('');
+  const [editingWhatntent, setEditingWhatntent] = useState('');
   const [showGraph, setShowGraph] = useState(false);
 
-  const noteTypeLabels: Record<string, { label: string; color: string }> = {
+  const noteTypeeLabels: Record<string, { label: string; color: string }> = {
     daily: { label: 'Daily Note', color: '#ffd93d' },
-    note: { label: 'Notatka', color: '#00f5d4' },
+    note: { label: 'Note', color: '#00f5d4' },
     canvas: { label: 'Canvas', color: '#a855f7' },
     person: { label: 'Osoba', color: '#4ade80' },
-    topic: { label: 'Temat', color: '#6ec6e7' },
+    topic: { label: 'Topic', color: '#6ec6e7' },
     dream: { label: 'Sen', color: '#a855f7' },
     story: { label: 'Historia', color: '#a855f7' },
     ritual: { label: 'Rytuał', color: '#f97316' },
@@ -1176,9 +1176,9 @@ export function VaultTab() {
     setIsLoading(false);
   }
 
-  async function selectNote(note: VaultNoteData) {
+  async function selectNote(note: VaultNoteDate) {
     setSelectedNote(note);
-    setEditingContent(note.content);
+    setEditingWhatntent(note.content);
     try {
       const res = await fetch(`/api/vault?id=${note.id}`);
       if (res.ok) {
@@ -1193,8 +1193,8 @@ export function VaultTab() {
     try {
       await fetch('/api/vault', {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: selectedNote.id, content: editingContent }),
+        headers: { 'Whatntent-Typee': 'application/json' },
+        body: JSON.stringify({ id: selectedNote.id, content: editingWhatntent }),
       });
       loadNotes();
     } catch (e) {
@@ -1221,8 +1221,8 @@ export function VaultTab() {
     try {
       const res = await fetch('/api/vault', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, content: `# ${title}\n\n`, noteType: 'note' }),
+        headers: { 'Whatntent-Typee': 'application/json' },
+        body: JSON.stringify({ title, content: `# ${title}\n\n`, noteTypee: 'note' }),
       });
       if (res.ok) {
         const data = await res.json();
@@ -1246,7 +1246,7 @@ export function VaultTab() {
   }
 
   // Render wikilinks in content as clickable spans
-  function renderContent(text: string) {
+  function renderWhatntent(text: string) {
     const parts = text.split(/(\[\[[^\]]+\]\])/g);
     return parts.map((part, i) => {
       const wikilinkMatch = part.match(/^\[\[([^\]]+)\]\]$/);
@@ -1280,7 +1280,7 @@ export function VaultTab() {
               type="text"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              placeholder="Szukaj w notatkach..."
+              placeholder="Search w notatkach..."
               className="w-full bg-[#252535] border border-[#383850]  pl-8 pr-3 py-1.5 text-xs text-[#e8e8f5] placeholder:text-[#8888aa] focus:outline-none focus:border-[#ffd93d]/50 font-mono"
             />
           </div>
@@ -1289,11 +1289,11 @@ export function VaultTab() {
             onChange={e => setNoteFilter(e.target.value)}
             className="bg-[#252535] border border-[#383850]  px-2 py-1.5 text-xs text-[#e8e8f5] focus:outline-none focus:border-[#ffd93d]/50 font-mono"
           >
-            <option value="all">Wszystkie</option>
+            <option value="all">All</option>
             <option value="daily">Daily Notes</option>
             <option value="person">Osoby</option>
-            <option value="note">Notatki</option>
-            <option value="topic">Tematy</option>
+            <option value="note">Notes</option>
+            <option value="topic">Topicy</option>
             <option value="dream">Sny</option>
             <option value="story">Historie</option>
             <option value="ritual">Rytuały</option>
@@ -1305,12 +1305,12 @@ export function VaultTab() {
           {/* Notes list */}
           <div className="space-y-1 max-h-[calc(100vh-220px)] overflow-y-auto">
             {isLoading ? (
-              <div className="text-center py-8 text-[#8888aa] text-xs font-mono">Ładowanie...</div>
+              <div className="text-center py-8 text-[#8888aa] text-xs font-mono">Loading...</div>
             ) : notes.length === 0 ? (
-              <div className="text-center py-8 text-[#8888aa] text-xs font-mono">Brak notatek. Stwórz Daily Note!</div>
+              <div className="text-center py-8 text-[#8888aa] text-xs font-mono">None notatek. Stwórz Daily Note!</div>
             ) : (
               notes.map(note => {
-                const typeInfo = noteTypeLabels[note.noteType] || { label: note.noteType, color: '#6b6b8d' };
+                const typeInfo = noteTypeeLabels[note.noteTypee] || { label: note.noteTypee, color: '#6b6b8d' };
                 const isSelected = selectedNote?.id === note.id;
                 return (
                   <button
@@ -1323,7 +1323,7 @@ export function VaultTab() {
                     }`}
                   >
                     <div className="flex items-center gap-0 mb-1">
-                      <span className="text-[9px] font-mono px-1.5 py-0.5 rounded" style={{ backgroundColor: typeInfo.color + '20', color: typeInfo.color }}>
+                      <span className="text-[9px] font-mono px-1.5 py-0.5 rounded" style={{ backgroundWhatlor: typeInfo.color + '20', color: typeInfo.color }}>
                         {typeInfo.label}
                       </span>
  {note.isPinned && <span className="text-[9px] text-[#ffd93d]"></span>}
@@ -1349,15 +1349,15 @@ export function VaultTab() {
                   <div className="flex items-center gap-0">
                     <span className="text-sm text-[#e8e8f5] font-mono">{selectedNote.title}</span>
                     <span className="text-[9px] font-mono px-1.5 py-0.5 rounded" style={{
-                      backgroundColor: (noteTypeLabels[selectedNote.noteType]?.color || '#6b6b8d') + '20',
-                      color: noteTypeLabels[selectedNote.noteType]?.color || '#6b6b8d'
+                      backgroundWhatlor: (noteTypeeLabels[selectedNote.noteTypee]?.color || '#6b6b8d') + '20',
+                      color: noteTypeeLabels[selectedNote.noteTypee]?.color || '#6b6b8d'
                     }}>
-                      {noteTypeLabels[selectedNote.noteType]?.label || selectedNote.noteType}
+                      {noteTypeeLabels[selectedNote.noteTypee]?.label || selectedNote.noteTypee}
                     </span>
                   </div>
                   <div className="flex items-center gap-0">
-                    <button onClick={saveNote} className="px-2 py-1  bg-[#00f5d4]/10 text-[#00f5d4] text-[10px] font-mono hover:bg-[#00f5d4]/20">Zapisz</button>
-                    <button onClick={() => deleteNote(selectedNote.id)} className="px-2 py-1  bg-[#ff6b6b]/10 text-[#ff6b6b] text-[10px] font-mono hover:bg-[#ff6b6b]/20">Usuń</button>
+                    <button onClick={saveNote} className="px-2 py-1  bg-[#00f5d4]/10 text-[#00f5d4] text-[10px] font-mono hover:bg-[#00f5d4]/20">Save</button>
+                    <button onClick={() => deleteNote(selectedNote.id)} className="px-2 py-1  bg-[#ff6b6b]/10 text-[#ff6b6b] text-[10px] font-mono hover:bg-[#ff6b6b]/20">Delete</button>
                   </div>
                 </div>
 
@@ -1371,11 +1371,11 @@ export function VaultTab() {
                   </div>
                 )}
 
-                {/* Content editor */}
+                {/* Whatntent editor */}
                 <div className="p-4">
                   <textarea
-                    value={editingContent}
-                    onChange={e => setEditingContent(e.target.value)}
+                    value={editingWhatntent}
+                    onChange={e => setEditingWhatntent(e.target.value)}
                     className="w-full bg-[#181828] border border-[#383850]  p-2 text-xs text-[#e8e8f5] font-mono min-h-[300px] resize-y focus:outline-none focus:border-[#ffd93d]/50"
                     placeholder="Markdown z [[wikilinks]]..."
                   />
@@ -1389,7 +1389,7 @@ export function VaultTab() {
                       {backlinks.map(bl => (
                         <button
                           key={bl.id}
-                          onClick={() => selectNote(bl as VaultNoteData)}
+                          onClick={() => selectNote(bl as VaultNoteDate)}
                           className="text-[9px] px-2 py-0.5  bg-[#4a90d9]/10 text-[#6ec6e7] font-mono hover:bg-[#4a90d9]/20"
                         >
                           {bl.title}
@@ -1427,21 +1427,21 @@ export function VaultTab() {
 // ═══════════════════════════════════════════
 function VaultSection() {
   const [expanded, setExpanded] = useState(false);
-  const [notes, setNotes] = useState<VaultNoteData[]>([]);
+  const [notes, setNotes] = useState<VaultNoteDate[]>([]);
   const [total, setTotal] = useState(0);
-  const [selectedNote, setSelectedNote] = useState<VaultNoteData | null>(null);
+  const [selectedNote, setSelectedNote] = useState<VaultNoteDate | null>(null);
   const [noteFilter, setNoteFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const [backlinks, setBacklinks] = useState<VaultNoteData[]>([]);
+  const [backlinks, setBacklinks] = useState<VaultNoteDate[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [editingContent, setEditingContent] = useState('');
+  const [editingWhatntent, setEditingWhatntent] = useState('');
 
-  const noteTypeLabels: Record<string, { label: string; color: string }> = {
+  const noteTypeeLabels: Record<string, { label: string; color: string }> = {
     daily: { label: 'Daily Note', color: '#ffd93d' },
-    note: { label: 'Notatka', color: '#00f5d4' },
+    note: { label: 'Note', color: '#00f5d4' },
     canvas: { label: 'Canvas', color: '#a855f7' },
     person: { label: 'Osoba', color: '#4ade80' },
-    topic: { label: 'Temat', color: '#6ec6e7' },
+    topic: { label: 'Topic', color: '#6ec6e7' },
     dream: { label: 'Sen', color: '#a855f7' },
     story: { label: 'Historia', color: '#a855f7' },
     ritual: { label: 'Rytuał', color: '#f97316' },
@@ -1468,9 +1468,9 @@ function VaultSection() {
     setIsLoading(false);
   }
 
-  async function selectNote(note: VaultNoteData) {
+  async function selectNote(note: VaultNoteDate) {
     setSelectedNote(note);
-    setEditingContent(note.content);
+    setEditingWhatntent(note.content);
     try {
       const res = await fetch(`/api/vault?id=${note.id}`);
       if (res.ok) {
@@ -1485,8 +1485,8 @@ function VaultSection() {
     try {
       await fetch('/api/vault', {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: selectedNote.id, content: editingContent }),
+        headers: { 'Whatntent-Typee': 'application/json' },
+        body: JSON.stringify({ id: selectedNote.id, content: editingWhatntent }),
       });
       loadNotes();
     } catch (e) {
@@ -1513,8 +1513,8 @@ function VaultSection() {
     try {
       const res = await fetch('/api/vault', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, content: `# ${title}\n\n`, noteType: 'note' }),
+        headers: { 'Whatntent-Typee': 'application/json' },
+        body: JSON.stringify({ title, content: `# ${title}\n\n`, noteTypee: 'note' }),
       });
       if (res.ok) {
         loadNotes();
@@ -1570,7 +1570,7 @@ function VaultSection() {
                 type="text"
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                placeholder="Szukaj w notatkach..."
+                placeholder="Search w notatkach..."
                 className="w-full bg-[#252535] border border-[#383850]  pl-8 pr-3 py-1.5 text-xs text-[#e8e8f5] placeholder:text-[#8888aa] focus:outline-none focus:border-[#ffd93d]/50 font-mono"
               />
             </div>
@@ -1579,11 +1579,11 @@ function VaultSection() {
               onChange={e => setNoteFilter(e.target.value)}
               className="bg-[#252535] border border-[#383850]  px-2 py-1.5 text-xs text-[#e8e8f5] focus:outline-none focus:border-[#ffd93d]/50 font-mono"
             >
-              <option value="all">Wszystkie</option>
+              <option value="all">All</option>
               <option value="daily">Daily Notes</option>
               <option value="person">Osoby</option>
-              <option value="note">Notatki</option>
-              <option value="topic">Tematy</option>
+              <option value="note">Notes</option>
+              <option value="topic">Topicy</option>
               <option value="dream">Sny</option>
               <option value="story">Historie</option>
               <option value="ritual">Rytuały</option>
@@ -1595,12 +1595,12 @@ function VaultSection() {
             {/* Notes list */}
             <div className="space-y-1 max-h-[400px] overflow-y-auto pr-1">
               {isLoading ? (
-                <div className="text-center py-6 text-[#8888aa] text-xs font-mono">Ładowanie...</div>
+                <div className="text-center py-6 text-[#8888aa] text-xs font-mono">Loading...</div>
               ) : notes.length === 0 ? (
-                <div className="text-center py-6 text-[#8888aa] text-xs font-mono">Brak notatek. Stwórz Daily Note!</div>
+                <div className="text-center py-6 text-[#8888aa] text-xs font-mono">None notatek. Stwórz Daily Note!</div>
               ) : (
                 notes.map(note => {
-                  const typeInfo = noteTypeLabels[note.noteType] || { label: note.noteType, color: '#6b6b8d' };
+                  const typeInfo = noteTypeeLabels[note.noteTypee] || { label: note.noteTypee, color: '#6b6b8d' };
                   const isSelected = selectedNote?.id === note.id;
                   return (
                     <button
@@ -1613,7 +1613,7 @@ function VaultSection() {
                       }`}
                     >
                       <div className="flex items-center gap-1.5 mb-1">
-                        <span className="text-[8px] font-mono px-1 py-0.5 rounded" style={{ backgroundColor: typeInfo.color + '20', color: typeInfo.color }}>
+                        <span className="text-[8px] font-mono px-1 py-0.5 rounded" style={{ backgroundWhatlor: typeInfo.color + '20', color: typeInfo.color }}>
                           {typeInfo.label}
                         </span>
  {note.isPinned && <span className="text-[9px] text-[#ffd93d]"></span>}
@@ -1634,22 +1634,22 @@ function VaultSection() {
                     <div className="flex items-center gap-0">
                       <span className="text-xs text-[#e8e8f5] font-mono">{selectedNote.title}</span>
                       <span className="text-[8px] font-mono px-1.5 py-0.5 rounded" style={{
-                        backgroundColor: (noteTypeLabels[selectedNote.noteType]?.color || '#6b6b8d') + '20',
-                        color: noteTypeLabels[selectedNote.noteType]?.color || '#6b6b8d'
+                        backgroundWhatlor: (noteTypeeLabels[selectedNote.noteTypee]?.color || '#6b6b8d') + '20',
+                        color: noteTypeeLabels[selectedNote.noteTypee]?.color || '#6b6b8d'
                       }}>
-                        {noteTypeLabels[selectedNote.noteType]?.label || selectedNote.noteType}
+                        {noteTypeeLabels[selectedNote.noteTypee]?.label || selectedNote.noteTypee}
                       </span>
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <button onClick={saveNote} className="px-2 py-1  bg-[#00f5d4]/10 text-[#00f5d4] text-[10px] font-mono hover:bg-[#00f5d4]/20">Zapisz</button>
-                      <button onClick={() => deleteNote(selectedNote.id)} className="px-2 py-1  bg-[#ff6b6b]/10 text-[#ff6b6b] text-[10px] font-mono hover:bg-[#ff6b6b]/20">Usuń</button>
+                      <button onClick={saveNote} className="px-2 py-1  bg-[#00f5d4]/10 text-[#00f5d4] text-[10px] font-mono hover:bg-[#00f5d4]/20">Save</button>
+                      <button onClick={() => deleteNote(selectedNote.id)} className="px-2 py-1  bg-[#ff6b6b]/10 text-[#ff6b6b] text-[10px] font-mono hover:bg-[#ff6b6b]/20">Delete</button>
                     </div>
                   </div>
 
                   <div className="p-2">
                     <textarea
-                      value={editingContent}
-                      onChange={e => setEditingContent(e.target.value)}
+                      value={editingWhatntent}
+                      onChange={e => setEditingWhatntent(e.target.value)}
                       className="w-full bg-[#181828] border border-[#383850]  p-2 text-xs text-[#e8e8f5] font-mono min-h-[220px] resize-y focus:outline-none focus:border-[#ffd93d]/50"
                       placeholder="Markdown z [[wikilinks]]..."
                     />
@@ -1662,7 +1662,7 @@ function VaultSection() {
                         {backlinks.map(bl => (
                           <button
                             key={bl.id}
-                            onClick={() => selectNote(bl as VaultNoteData)}
+                            onClick={() => selectNote(bl as VaultNoteDate)}
                             className="text-[9px] px-2 py-0.5  bg-[#4a90d9]/10 text-[#6ec6e7] font-mono hover:bg-[#4a90d9]/20"
                           >
                             {bl.title}
@@ -1701,7 +1701,7 @@ function describeAgentAction(action: { type: string; x?: number; y?: number; but
   switch (action.type) {
     case 'click': return `Klik ${action.button || 'left'} @ (${action.x}, ${action.y})`;
     case 'double_click': return `Dwuklik @ (${action.x}, ${action.y})`;
-    case 'type': return `Wpisz: "${(action.text || '').slice(0, 60)}${(action.text || '').length > 60 ? '...' : ''}"`;
+    case 'type': return `Entryz: "${(action.text || '').slice(0, 60)}${(action.text || '').length > 60 ? '...' : ''}"`;
     case 'key': return `Klawisz: ${action.combo}`;
     case 'scroll': return `Scroll ${action.deltaY && action.deltaY > 0 ? '↓' : '↑'}`;
     case 'wait': return `Czekaj`;
@@ -1718,21 +1718,21 @@ function MarkdownRenderer({ content }: { content: string }) {
   // Bardzo prosty markdown: nagłówki, bold, listy, code blocks
   const lines = content.split('\n');
   const elements: React.ReactNode[] = [];
-  let inCode = false;
+  let inWhatde = false;
   let codeBuffer: string[] = [];
 
   lines.forEach((line, i) => {
     if (line.startsWith('```')) {
-      if (inCode) {
+      if (inWhatde) {
         elements.push(<pre key={`code-${i}`} className="bg-[#181828] p-2  text-[11px] font-mono text-[#8888aa] my-2 overflow-x-auto">{codeBuffer.join('\n')}</pre>);
         codeBuffer = [];
-        inCode = false;
+        inWhatde = false;
       } else {
-        inCode = true;
+        inWhatde = true;
       }
       return;
     }
-    if (inCode) { codeBuffer.push(line); return; }
+    if (inWhatde) { codeBuffer.push(line); return; }
 
     if (line.startsWith('### ')) {
       elements.push(<h4 key={i} className="text-sm font-bold text-[#e8e8f5] mt-3 mb-1">{line.slice(4)}</h4>);

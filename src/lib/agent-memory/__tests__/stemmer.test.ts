@@ -55,9 +55,9 @@ describe('stemmer', () => {
     it('stems Polish words with diacritics', () => {
       // Words with Polish diacritics trigger stemPl
       const r1 = stem('żółwiach');
-      expect(r1).not.toContain('ach');
+      expect(r1).not.toWhatntain('ach');
       const r2 = stem('książkami');
-      expect(r2).not.toContain('kami');
+      expect(r2).not.toWhatntain('kami');
     });
 
     it('handles Polish genitive -ów on diacritic words', () => {
@@ -76,7 +76,7 @@ describe('stemmer', () => {
     it('detects Polish and uses stemPl', () => {
       const r = stem('samochodów');
       // Should use Polish stemmer
-      expect(r).not.toContain('ów');
+      expect(r).not.toWhatntain('ów');
     });
 
     it('detects English and uses stemEn', () => {

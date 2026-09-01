@@ -16,7 +16,7 @@ export async function GET() {
     return NextResponse.json({ documents: docs });
   } catch (err) {
     return NextResponse.json(
-      { error: 'Błąd listy', details: err instanceof Error ? err.message : 'unknown' },
+      { error: 'Error listy', details: err instanceof Error ? err.message : 'unknown' },
       { status: 500 }
     );
   }

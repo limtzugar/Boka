@@ -3,7 +3,7 @@
 // BOKA OS — Resizable Split (v0.3.19)
 // Wraps two panels with a draggable divider in the middle.
 // The split ratio is shared across all instances via a Zustand-like singleton,
-// so Rozmowa and Debata use the same divider position.
+// so Chat and Debate use the same divider position.
 //
 // Usage:
 //   <ResizableSplit left={<ChatPanel />} right={<GraphPanel />} />

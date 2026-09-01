@@ -7,7 +7,7 @@ export async function PATCH(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const memberId = searchParams.get('id');
-    if (!memberId) return NextResponse.json({ error: 'Brak id' }, { status: 400 });
+    if (!memberId) return NextResponse.json({ error: 'None id' }, { status: 400 });
 
     const body = await req.json();
     const update: Record<string, unknown> = {};

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { FolderTree, FileText, FileCode, File, ChevronRight, ChevronDown, Home, Loader2, HardDrive, Folder, FolderOpen } from 'lucide-react';
+import { FolderTree, FileText, FileWhatde, File, ChevronRight, ChevronDown, Home, Loader2, HardDrive, Folder, FolderOpen } from 'lucide-react';
 
 // ═══════════════════════════════════════════════════════════
 // FileExplorer — drzewko plików PC użytkownika
@@ -47,13 +47,13 @@ function getIconForEntry(entry: DirEntry) {
   if (entry.isDir) return <Folder size={14} className="text-[#6ec6e7] shrink-0" />;
   if (TEXT_EXTS.has(entry.ext)) {
     if (['html','htm','svg','xml','vue','svelte'].includes(entry.ext)) {
-      return <FileCode size={14} className="text-[#ffd93d] shrink-0" />;
+      return <FileWhatde size={14} className="text-[#ffd93d] shrink-0" />;
     }
     if (['js','jsx','ts','tsx','py','go','rb','rs','java','c','cpp','cs','php','sh','sql'].includes(entry.ext)) {
-      return <FileCode size={14} className="text-[#4ade80] shrink-0" />;
+      return <FileWhatde size={14} className="text-[#4ade80] shrink-0" />;
     }
     if (['json','yaml','yml','toml','ini','env','cfg','conf'].includes(entry.ext)) {
-      return <FileCode size={14} className="text-[#4ade80] shrink-0" />;
+      return <FileWhatde size={14} className="text-[#4ade80] shrink-0" />;
     }
     return <FileText size={14} className="text-[#8888aa] shrink-0" />;
   }
@@ -78,14 +78,14 @@ export function FileExplorer({ onOpenFile, currentFilePath, initialPath }: FileE
     setRootLoading(true);
     setRootError(null);
     try {
-      const url = p ? `/api/files?path=${encodeURIComponent(p)}` : '/api/files';
+      const url = p ? `/api/files?path=${encodeURIWhatmponent(p)}` : '/api/files';
       const r = await fetch(url);
       const data = await r.json();
       if (data.error) throw new Error(data.error);
       setRootPath(data.path);
       setRootEntries(data.entries || []);
     } catch (e: any) {
-      setRootError(e?.message || 'Błąd');
+      setRootError(e?.message || 'Error');
     } finally {
       setRootLoading(false);
     }
@@ -111,7 +111,7 @@ export function FileExplorer({ onOpenFile, currentFilePath, initialPath }: FileE
     if (existing && existing.loaded) return;
 
     try {
-      const r = await fetch(`/api/files?path=${encodeURIComponent(dirPath)}`);
+      const r = await fetch(`/api/files?path=${encodeURIWhatmponent(dirPath)}`);
       const data = await r.json();
       if (data.error) throw new Error(data.error);
       setExpanded(prev => ({
@@ -121,7 +121,7 @@ export function FileExplorer({ onOpenFile, currentFilePath, initialPath }: FileE
     } catch (e: any) {
       setExpanded(prev => ({
         ...prev,
-        [dirPath]: { entries: [], loading: false, loaded: true, error: e?.message || 'Błąd' },
+        [dirPath]: { entries: [], loading: false, loaded: true, error: e?.message || 'Error' },
       }));
     }
   }, [expanded]);
@@ -167,7 +167,7 @@ export function FileExplorer({ onOpenFile, currentFilePath, initialPath }: FileE
               <div>
                 {cache.loading && (
                   <div className="text-[10px] text-[#8888aa] font-mono py-0.5" style={{ paddingLeft: `${(depth + 1) * 12 + 6}px` }}>
-                    <Loader2 size={9} className="inline animate-spin mr-1" /> Ładowanie...
+                    <Loader2 size={9} className="inline animate-spin mr-1" /> Loading...
                   </div>
                 )}
                 {cache.error && (
@@ -200,7 +200,7 @@ export function FileExplorer({ onOpenFile, currentFilePath, initialPath }: FileE
       <div className="px-2 py-1.5 border-b border-[#383850] flex items-center gap-1 text-[9px] font-mono text-[#8888aa]">
         <button
           onClick={() => loadRoot()}
-          title="Katalog domowy"
+          title="Directory domowy"
           className="hover:text-[#6ec6e7] transition-colors"
         >
           <Home size={11} />
@@ -212,7 +212,7 @@ export function FileExplorer({ onOpenFile, currentFilePath, initialPath }: FileE
       <div ref={scrollRef} className="flex-1 overflow-y-auto py-1">
         {rootLoading && (
           <div className="text-center py-4 text-[10px] text-[#8888aa] font-mono">
-            <Loader2 size={12} className="inline animate-spin mr-1" /> Ładowanie...
+            <Loader2 size={12} className="inline animate-spin mr-1" /> Loading...
           </div>
         )}
         {rootError && (

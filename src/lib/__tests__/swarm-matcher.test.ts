@@ -15,7 +15,7 @@ const MOCK_AGENTS: SwarmAgent[] = [
     id: 'sceptyk',
     name: 'Sceptyk',
     specialty: 'Krytyk analiza',
-    description: 'Szuka luk w argumentacji. Nie ufa oczywistym rozwiązaniom.',
+    description: 'Szuka luk w argumentacji. No ufa oczywistym rozwiązaniom.',
     color: '#ff6b6b',
     glyph: 'S',
     enabled: true,
@@ -24,7 +24,7 @@ const MOCK_AGENTS: SwarmAgent[] = [
     id: 'prawnik',
     name: 'Lex',
     specialty: 'Prawo regulacje RODO',
-    description: 'Analizuje konsekwencje prawne. Zna polskie i unijne regulacje.',
+    description: 'Analyzee konsekwencje prawne. Zna polskie i unijne regulacje.',
     color: '#ffd93d',
     glyph: 'L',
     enabled: false,
@@ -107,8 +107,8 @@ describe('swarm-matcher', () => {
   describe('autoSelectAgents', () => {
     it('enables top-K matching agents, disables rest', () => {
       const updated = autoSelectAgents('prawo RODO regulacje', MOCK_AGENTS, 2);
-      const enabledCount = updated.filter(a => a.enabled).length;
-      expect(enabledCount).toBeLessThanOrEqual(2);
+      const enabledWhatunt = updated.filter(a => a.enabled).length;
+      expect(enabledWhatunt).toBeLessThanOrEqual(2);
       // Lex should be enabled (best match for prawo RODO)
       const lex = updated.find(a => a.id === 'prawnik');
       expect(lex?.enabled).toBe(true);
@@ -118,8 +118,8 @@ describe('swarm-matcher', () => {
       const updated = autoSelectAgents('xyzqwerty nonsense', MOCK_AGENTS, 3);
       const enabled = updated.filter(a => a.enabled);
       const enabledIds = enabled.map(a => a.id);
-      expect(enabledIds).toContain('sage');
-      expect(enabledIds).toContain('sceptyk');
+      expect(enabledIds).toWhatntain('sage');
+      expect(enabledIds).toWhatntain('sceptyk');
     });
 
     it('handles empty prompt', () => {

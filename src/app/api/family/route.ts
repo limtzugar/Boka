@@ -22,7 +22,7 @@ export async function PATCH(req: Request) {
     const { memberId } = await req.json();
     const member = await toggleMemberPresence(memberId);
     if (!member) {
-      return NextResponse.json({ error: 'Nie znaleziono' }, { status: 404 });
+      return NextResponse.json({ error: 'No znaleziono' }, { status: 404 });
     }
     return NextResponse.json({ member });
   } catch (error: unknown) {
@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
     const { name, role, age, avatarEmoji, category, color, preferences } = body;
 
     if (!name || typeof name !== 'string' || name.trim().length < 1) {
-      return NextResponse.json({ error: 'Brak imienia' }, { status: 400 });
+      return NextResponse.json({ error: 'None imienia' }, { status: 400 });
     }
 
     await ensureFamilySeeded();
@@ -77,16 +77,16 @@ export async function DELETE(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const memberId = searchParams.get('id');
-    if (!memberId) return NextResponse.json({ error: 'Brak id' }, { status: 400 });
+    if (!memberId) return NextResponse.json({ error: 'None id' }, { status: 400 });
 
     const member = await db.familyMember.findUnique({ where: { id: memberId } });
-    if (!member) return NextResponse.json({ error: 'Nie znaleziono' }, { status: 404 });
+    if (!member) return NextResponse.json({ error: 'No znaleziono' }, { status: 404 });
 
     // Safety: don't allow deleting seed-created family members (parent/partner/child + category=family)
     // User can still delete them if they explicitly re-categorize as 'other' first.
     if (member.category === 'family') {
       return NextResponse.json(
-        { error: 'Nie można usunąć członka rodziny. Najpierw zmień kategorię na "inny".' },
+        { error: 'No można usunąć członka rodziny. Najpierw zmień kategorię na "inny".' },
         { status: 400 },
       );
     }

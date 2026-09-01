@@ -83,7 +83,7 @@ export async function GET(req: NextRequest) {
   } catch (err) {
     console.error('[/api/orchestrator/memory GET] error:', err);
     return NextResponse.json(
-      { error: 'Błąd odczytu pamięci', details: err instanceof Error ? err.message : 'unknown' },
+      { error: 'Error odczytu pamięci', details: err instanceof Error ? err.message : 'unknown' },
       { status: 500 },
     );
   }
@@ -96,7 +96,7 @@ export async function POST(req: NextRequest) {
 
     if (!body.input || !body.final_decision) {
       return NextResponse.json(
-        { error: 'Brak input lub final_decision w rekordzie' },
+        { error: 'None input lub final_decision w rekordzie' },
         { status: 400 },
       );
     }
@@ -124,7 +124,7 @@ export async function POST(req: NextRequest) {
   } catch (err) {
     console.error('[/api/orchestrator/memory POST] error:', err);
     return NextResponse.json(
-      { error: 'Błąd zapisu pamięci', details: err instanceof Error ? err.message : 'unknown' },
+      { error: 'Error zapisu pamięci', details: err instanceof Error ? err.message : 'unknown' },
       { status: 500 },
     );
   }
@@ -135,20 +135,20 @@ export async function DELETE(req: NextRequest) {
     const url = new URL(req.url);
     const id = url.searchParams.get('id');
     if (!id) {
-      return NextResponse.json({ error: 'Brak id' }, { status: 400 });
+      return NextResponse.json({ error: 'None id' }, { status: 400 });
     }
     // prevent path traversal
     const safeId = id.replace(/[^a-zA-Z0-9_-]/g, '');
     const filePath = path.join(MEM_DIR, `decision-${safeId.replace(/^decision-/, '')}.json`);
     if (!fs.existsSync(filePath)) {
-      return NextResponse.json({ error: 'Nie znaleziono rekordu' }, { status: 404 });
+      return NextResponse.json({ error: 'No znaleziono rekordu' }, { status: 404 });
     }
     fs.unlinkSync(filePath);
     return NextResponse.json({ ok: true });
   } catch (err) {
     console.error('[/api/orchestrator/memory DELETE] error:', err);
     return NextResponse.json(
-      { error: 'Błąd usuwania', details: err instanceof Error ? err.message : 'unknown' },
+      { error: 'Error usuwania', details: err instanceof Error ? err.message : 'unknown' },
       { status: 500 },
     );
   }

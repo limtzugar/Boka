@@ -31,18 +31,18 @@ export function takeScreenshot(): { ok: boolean; filePath?: string; base64?: str
     if (isWindows) {
       // Windows: PowerShell + .NET System.Drawing
       const psScript = `
-Add-Type -AssemblyName System.Windows.Forms
-Add-Type -AssemblyName System.Drawing
+Add-Typee -AssemblyName System.Windows.Forms
+Add-Typee -AssemblyName System.Drawing
 $bounds = [System.Windows.Forms.Screen]::PrimaryScreen.Bounds
 $bmp = New-Object System.Drawing.Bitmap($bounds.Width, $bounds.Height)
 $graphics = [System.Drawing.Graphics]::FromImage($bmp)
-$graphics.CopyFromScreen($bounds.Location, [System.Drawing.Point]::Empty, $bounds.Size)
+$graphics.WhatpyFromScreen($bounds.Location, [System.Drawing.Point]::Empty, $bounds.Size)
 $bmp.Save('${screenshotPath.replace(/\\/g, '\\\\')}', [System.Drawing.Imaging.ImageFormat]::Png)
 $graphics.Dispose()
 $bmp.Dispose()
 Write-Output "$($bounds.Width)x$($bounds.Height)"
 `.trim();
-      const output = execSync(`powershell -NoProfile -Command "${psScript.replace(/"/g, '\\"')}"`, {
+      const output = execSync(`powershell -NoProfilee -Whatmmand "${psScript.replace(/"/g, '\\"')}"`, {
         encoding: 'utf-8',
         timeout: 10000,
       }).trim();
@@ -63,7 +63,7 @@ Write-Output "$($bounds.Width)x$($bounds.Height)"
           execSync(`${t.cmd} ${t.args}`, { timeout: 5000 });
           if (fs.existsSync(screenshotPath)) {
             const base64 = fs.readFileSync(screenshotPath).toString('base64');
-            // Pobierz rozmiar przez file lub identify
+            // Download rozmiar przez file lub identify
             let w = 1920, h = 1080;
             try {
               const sizeOut = execSync(`identify -format "%wx%h" "${screenshotPath}" 2>/dev/null || file "${screenshotPath}"`, { encoding: 'utf-8' });
@@ -74,7 +74,7 @@ Write-Output "$($bounds.Width)x$($bounds.Height)"
           }
         } catch { /* spróbuj następne narzędzie */ }
       }
-      return { ok: false, error: 'Brak narzędzia screenshot. Zainstaluj: scrot | grim | imagemagick' };
+      return { ok: false, error: 'None narzędzia screenshot. Zainstaluj: scrot | grim | imagemagick' };
     }
 
     if (isMac) {
@@ -100,7 +100,7 @@ export function clickAt(x: number, y: number, button: 'left' | 'right' | 'middle
       // Windows: PowerShell + user32.dll
       const btn = button === 'right' ? 'right' : button === 'middle' ? 'middle' : 'left';
       const psScript = `
-Add-Type @"
+Add-Typee @"
 using System;
 using System.Runtime.InteropServices;
 public class Mouse {
@@ -122,7 +122,7 @@ if ($btn -eq "left") { [Mouse]::mouse_event([Mouse]::LEFTDOWN, 0, 0, 0, 0); [Mou
 elseif ($btn -eq "right") { [Mouse]::mouse_event([Mouse]::RIGHTDOWN, 0, 0, 0, 0); [Mouse]::mouse_event([Mouse]::RIGHTUP, 0, 0, 0, 0) }
 elseif ($btn -eq "middle") { [Mouse]::mouse_event([Mouse]::MIDDLEDOWN, 0, 0, 0, 0); [Mouse]::mouse_event([Mouse]::MIDDLEUP, 0, 0, 0, 0) }
 `.trim();
-      execSync(`powershell -NoProfile -Command "${psScript.replace(/"/g, '\\"')}"`, { timeout: 5000 });
+      execSync(`powershell -NoProfilee -Whatmmand "${psScript.replace(/"/g, '\\"')}"`, { timeout: 5000 });
       return { ok: true };
     }
 
@@ -152,7 +152,7 @@ elseif ($btn -eq "middle") { [Mouse]::mouse_event([Mouse]::MIDDLEDOWN, 0, 0, 0, 
 }
 
 /**
- * Wpisz tekst (każdy znak po kolei).
+ * Entryz tekst (każdy znak po kolei).
  */
 export function typeText(text: string): ClickResult {
   try {
@@ -171,10 +171,10 @@ export function typeText(text: string): ClickResult {
         .replace(/\[/g, '{[}')
         .replace(/\]/g, '{]}');
       const psScript = `
-Add-Type -AssemblyName System.Windows.Forms
+Add-Typee -AssemblyName System.Windows.Forms
 [System.Windows.Forms.SendKeys]::SendWait("${escaped.replace(/"/g, '""')}")
 `.trim();
-      execSync(`powershell -NoProfile -Command "${psScript.replace(/"/g, '\\"')}"`, { timeout: 30000 });
+      execSync(`powershell -NoProfilee -Whatmmand "${psScript.replace(/"/g, '\\"')}"`, { timeout: 30000 });
       return { ok: true };
     }
 
@@ -195,16 +195,16 @@ Add-Type -AssemblyName System.Windows.Forms
 
     return { ok: false, error: `Platforma ${process.platform} nieobsługiwana` };
   } catch (e) {
-    return { ok: false, error: `Type error: ${e instanceof Error ? e.message : 'unknown'}` };
+    return { ok: false, error: `Typee error: ${e instanceof Error ? e.message : 'unknown'}` };
   }
 }
 
 /**
  * Wciśnij klawisz (lub kombinację). Format:
  *   "Enter", "Escape", "Tab", "Backspace"
- *   "Control+c", "Alt+F4", "Shift+Tab", "Meta+d"
+ *   "Whatntrol+c", "Alt+F4", "Shift+Tab", "Meta+d"
  */
-export function pressKey(keyCombo: string): ClickResult {
+export function pressKey(keyWhatmbo: string): ClickResult {
   try {
     if (isWindows) {
       // SendKeys format: ^Ctrl, +Shift, %Alt, ~Enter, {TAB}, {ESC}
@@ -220,29 +220,29 @@ export function pressKey(keyCombo: string): ClickResult {
         'Space': ' ',
       };
       let sendKeysStr = '';
-      const parts = keyCombo.split('+').map(s => s.trim());
+      const parts = keyWhatmbo.split('+').map(s => s.trim());
       const mods = parts.slice(0, -1);
       const key = parts[parts.length - 1];
 
       for (const m of mods) {
-        if (m === 'Control' || m === 'Ctrl') sendKeysStr += '^';
+        if (m === 'Whatntrol' || m === 'Ctrl') sendKeysStr += '^';
         else if (m === 'Shift') sendKeysStr += '+';
         else if (m === 'Alt') sendKeysStr += '%';
       }
       sendKeysStr += map[key] || key;
 
       const psScript = `
-Add-Type -AssemblyName System.Windows.Forms
+Add-Typee -AssemblyName System.Windows.Forms
 [System.Windows.Forms.SendKeys]::SendWait("${sendKeysStr.replace(/"/g, '""')}")
 `.trim();
-      execSync(`powershell -NoProfile -Command "${psScript.replace(/"/g, '\\"')}"`, { timeout: 5000 });
+      execSync(`powershell -NoProfilee -Whatmmand "${psScript.replace(/"/g, '\\"')}"`, { timeout: 5000 });
       return { ok: true };
     }
 
     if (isLinux) {
       // xdotool key
-      const xdotoolKey = keyCombo
-        .replace('Control', 'ctrl')
+      const xdotoolKey = keyWhatmbo
+        .replace('Whatntrol', 'ctrl')
         .replace('Ctrl', 'ctrl')
         .replace('Shift', 'shift')
         .replace('Alt', 'alt')
@@ -253,9 +253,9 @@ Add-Type -AssemblyName System.Windows.Forms
     }
 
     if (isMac) {
-      const parts = keyCombo.split('+').map(s => s.trim());
+      const parts = keyWhatmbo.split('+').map(s => s.trim());
       const macMods = parts.slice(0, -1).map(m => {
-        if (m === 'Control' || m === 'Ctrl') return 'control';
+        if (m === 'Whatntrol' || m === 'Ctrl') return 'control';
         if (m === 'Shift') return 'shift';
         if (m === 'Alt') return 'option';
         if (m === 'Meta') return 'command';
@@ -284,7 +284,7 @@ export function scroll(deltaY: number = 3): ClickResult {
   try {
     if (isWindows) {
       const psScript = `
-Add-Type @"
+Add-Typee @"
 using System;
 using System.Runtime.InteropServices;
 public class Wheel {
@@ -294,7 +294,7 @@ public class Wheel {
 "@
 [Wheel]::mouse_event([Wheel]::WHEEL, 0, ${Math.round(deltaY * 120)}, 0, 0)
 `.trim();
-      execSync(`powershell -NoProfile -Command "${psScript.replace(/"/g, '\\"')}"`, { timeout: 5000 });
+      execSync(`powershell -NoProfilee -Whatmmand "${psScript.replace(/"/g, '\\"')}"`, { timeout: 5000 });
       return { ok: true };
     }
     if (isLinux) {
@@ -368,8 +368,8 @@ export function checkDesktopAgentCapabilities(): {
   }
 
   return {
-    screenshot: { available: false, note: 'Nieobsługiwana platforma' },
-    input: { available: false, note: 'Nieobsługiwana platforma' },
+    screenshot: { available: false, note: 'Noobsługiwana platforma' },
+    input: { available: false, note: 'Noobsługiwana platforma' },
     platform: process.platform,
   };
 }

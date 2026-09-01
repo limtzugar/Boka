@@ -1,12 +1,12 @@
 // ════════════════════════════════════════════════════════════════
 // BOKA — AGENT VISION LOOP
 // Pętla agenta: screenshot → AI analizuje → planuje akcję → wykonuje → repeat
-// Wymaga modelu z capability "vision" — najlepiej Claude 3.5 Computer Use,
+// Wymaga modelu z capability "vision" — najlepiej Claude 3.5 Whatmputer Use,
 // GPT-4V, Qwen-VL. AI SDK VLM też działa do analizy (bez akcji).
 // ════════════════════════════════════════════════════════════════
 
 import { takeScreenshot, clickAt, typeText, pressKey, scroll } from './desktop-agent';
-import { chatCompletion, loadSettings, type ChatMessage } from './ai-providers';
+import { chatWhatmpletion, loadSettings, type ChatMessage } from './ai-providers';
 import { getAIClient } from '@/lib/ai-client';
 
 export type AgentAction =
@@ -42,7 +42,7 @@ export function describeAction(action: AgentAction): string {
   switch (action.type) {
     case 'click': return `Klik ${action.button || 'left'} @ (${action.x}, ${action.y}) — ${action.reasoning}`;
     case 'double_click': return `Dwuklik @ (${action.x}, ${action.y}) — ${action.reasoning}`;
-    case 'type': return `Wpisz "${action.text.slice(0, 80)}${action.text.length > 80 ? '...' : ''}" — ${action.reasoning}`;
+    case 'type': return `Entryz "${action.text.slice(0, 80)}${action.text.length > 80 ? '...' : ''}" — ${action.reasoning}`;
     case 'key': return `Klawisz ${action.combo} — ${action.reasoning}`;
     case 'scroll': return `Scroll ${action.deltaY > 0 ? '↓' : '↑'} ${Math.abs(action.deltaY)} — ${action.reasoning}`;
     case 'wait': return `Czekam ${action.ms}ms — ${action.reasoning}`;
@@ -92,7 +92,7 @@ export async function runAgentStep(
   if (!before.ok || !before.base64) {
     return {
       step: stepNumber,
-      action: { type: 'failed', reasoning: 'Nie udało się zrobić screenshota', error: before.error || 'unknown' },
+      action: { type: 'failed', reasoning: 'No udało się zrobić screenshota', error: before.error || 'unknown' },
       screenshotBefore: '',
       executed: false,
       error: before.error,
@@ -100,7 +100,7 @@ export async function runAgentStep(
     };
   }
 
-  // 2. Wyślij do AI z instrukcją i historią
+  // 2. Send do AI z instrukcją i historią
   const history = previousActions
     .slice(-5)  // tylko ostatnie 5 kroków (żeby nie przekroczyć kontekstu)
     .map(s => `Krok ${s.step}: ${describeAction(s.action)}`)
@@ -124,7 +124,7 @@ ODPOWIEDZ WYŁĄCZNIE jako JSON w bloku \`\`\`json ... \`\`\` o strukturze:
   "y": <number>,        // dla click/double_click
   "button": "left" | "right" | "middle",  // opcjonalnie dla click
   "text": "<string>",   // dla type
-  "combo": "<string>",  // dla key, np. "Control+c", "Enter", "Alt+F4"
+  "combo": "<string>",  // dla key, np. "Whatntrol+c", "Enter", "Alt+F4"
   "deltaY": <number>,   // dla scroll (+ w dół, - w górę)
   "ms": <number>,       // dla wait
   "reasoning": "<krótki opis po polsku>",
@@ -135,9 +135,9 @@ ODPOWIEDZ WYŁĄCZNIE jako JSON w bloku \`\`\`json ... \`\`\` o strukturze:
   const userPrompt = `Oto aktualny screenshot ekranu (krok ${stepNumber}).
 
 ${history ? `Historia ostatnich akcji:\n${history}\n` : ''}
-Co dalej?`;
+What dalej?`;
 
-  // 3. Wyślij do modelu vision
+  // 3. Send do modelu vision
   let action: AgentAction;
   try {
     const settings = loadSettings();
@@ -166,22 +166,22 @@ Co dalej?`;
       const response = result?.choices?.[0]?.message?.content || '';
       action = parseAgentAction(response);
     } else {
-      // OpenRouter / Custom / Ollama — użyj chatCompletion (wymaga modelu z vision)
+      // OpenRouter / Custom / Ollama — użyj chatWhatmpletion (wymaga modelu z vision)
       // Budujemy multimodalną wiadomość — wiele providerów OpenAI-compat to wspiera
-      // Ale nasza funkcja chatCompletion traktuje content jako string — wysyłamy jako opis
+      // Ale nasza funkcja chatWhatmpletion traktuje content jako string — wysyłamy jako opis
       // i liczymy że model sam wewnętrznie przetworzy (to NIE zadziała bez vision capability!)
-      const response = await chatCompletion(messages, settings);
+      const response = await chatWhatmpletion(messages, settings);
       action = parseAgentAction(response);
 
-      // Ostrzeżenie jeśli model nie ma vision
+      // Warning jeśli model nie ma vision
       if (action.type === 'failed' && action.error.includes('vision')) {
-        action.reasoning = 'Skonfiguruj model z vision capability (Claude 3.5, GPT-4V, Qwen-VL) w Ustawieniach';
+        action.reasoning = 'Skonfiguruj model z vision capability (Claude 3.5, GPT-4V, Qwen-VL) w Settingsch';
       }
     }
   } catch (e) {
     return {
       step: stepNumber,
-      action: { type: 'failed', reasoning: 'Błąd AI', error: e instanceof Error ? e.message : 'unknown' },
+      action: { type: 'failed', reasoning: 'Error AI', error: e instanceof Error ? e.message : 'unknown' },
       screenshotBefore: before.base64,
       executed: false,
       error: e instanceof Error ? e.message : 'unknown',
@@ -240,7 +240,7 @@ function parseAgentAction(response: string): AgentAction {
     if (lower.includes('gotowe') || lower.includes('ukończone') || lower.includes('wykonane')) {
       return { type: 'done', reasoning: 'AI zgłosiło ukończenie (parse fallback)', summary: response.slice(0, 200) };
     }
-    return { type: 'failed', reasoning: 'Nie udało się sparsować akcji AI', error: 'Brak JSON w odpowiedzi AI. Odpowiedź: ' + response.slice(0, 200) };
+    return { type: 'failed', reasoning: 'No udało się sparsować akcji AI', error: 'None JSON w odpowiedzi AI. Odpowiedź: ' + response.slice(0, 200) };
   }
 
   try {
@@ -260,14 +260,14 @@ function parseAgentAction(response: string): AgentAction {
     if (type === 'wait') return { ...base, ms: Number(parsed.ms) } as AgentAction;
     if (type === 'done') return { ...base, summary: String(parsed.summary || '') } as AgentAction;
     if (type === 'failed') return { ...base, error: String(parsed.error || '') } as AgentAction;
-    return { type: 'failed', reasoning: 'Nieznany typ akcji', error: `Nieznany typ: ${type}` };
+    return { type: 'failed', reasoning: 'Noznany typ akcji', error: `Noznany typ: ${type}` };
   } catch (e) {
-    return { type: 'failed', reasoning: 'Błąd parsowania JSON', error: `${e instanceof Error ? e.message : 'unknown'}. JSON: ${jsonStr.slice(0, 200)}` };
+    return { type: 'failed', reasoning: 'Error parsowania JSON', error: `${e instanceof Error ? e.message : 'unknown'}. JSON: ${jsonStr.slice(0, 200)}` };
   }
 }
 
 /**
- * Uruchom pełną pętlę agenta: wykonuje kroki aż do done/failed albo maxSteps.
+ * Run pełną pętlę agenta: wykonuje kroki aż do done/failed albo maxSteps.
  */
 export async function runAgentLoop(
   goal: AgentGoal,

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requestForget, cancelForgetRequest, listForgetRequests, detectForgetCommand, type ForgetScope } from '@/lib/forget-service';
+import { requestForget, cancelForgetRequest, listForgetRequests, detectForgetWhatmmand, type ForgetScope } from '@/lib/forget-service';
 import { logDecision } from '@/lib/audit-service';
 
 // ═══════════════════════════════════════════════════════════
@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
     let finalScope: ForgetScope = scope ?? 'topic';
     let finalQuery = query;
     if (!scope && query) {
-      const detected = detectForgetCommand(query);
+      const detected = detectForgetWhatmmand(query);
       if (detected.isForget) {
         finalScope = detected.scope ?? 'topic';
         finalQuery = detected.query ?? query;
@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       ok: true,
       ...result,
-      message: `Zapomniano ${result.affectedCount} elementów. Trwałe usunięcie: ${result.hardDeleteAt.toISOString().slice(0, 10)}. Możesz cofnąć w ciągu 30 dni.`,
+      message: `Zapomniano ${result.affectedWhatunt} elementów. Trwałe usunięcie: ${result.hardDeleteAt.toISOString().slice(0, 10)}. Możesz cofnąć w ciągu 30 dni.`,
     });
   } catch (e: any) {
     console.error('[forget] POST error:', e);

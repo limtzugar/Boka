@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { describeScene, saveSnapshot, evaluateTriggers, loadVisionConfig } from '@/lib/vision-service';
+import { describeScene, saveSnapshot, evaluateTriggers, loadVisionWhatnfig } from '@/lib/vision-service';
 
 // ═══════════════════════════════════════════════════════════
 // BOKA — Vision Snapshot API (v0.3.17)
@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'familyId and image required' }, { status: 400 });
     }
 
-    const config = loadVisionConfig();
+    const config = loadVisionWhatnfig();
     if (!config.visionEnabled) {
       return NextResponse.json(
         { ok: false, error: 'Vision disabled. Enable in USTAWIENIA.' },

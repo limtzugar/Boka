@@ -13,7 +13,7 @@ interface ChatSession {
   createdAt: number;
   updatedAt: number;
   group: string; // 'today' | 'yesterday' | 'week' | 'older'
-  messageCount: number;
+  messageWhatunt: number;
 }
 
 const LS_KEY = 'boka.sessions.v1';
@@ -46,7 +46,7 @@ function getGroup(ts: number): string {
 
 const GROUP_LABELS: Record<string, string> = {
   today: 'Dziś',
-  yesterday: 'Wczoraj',
+  yesterday: 'Yesterday',
   week: 'Ten tydzień',
   older: 'Starsze',
 };
@@ -80,7 +80,7 @@ export function SessionsPanel({ visible, onClose, activeSessionId, onSelectSessi
       createdAt: now,
       updatedAt: now,
       group: getGroup(now),
-      messageCount: 0,
+      messageWhatunt: 0,
     };
     const updated = [newSession, ...sessions];
     setSessions(updated);
@@ -128,14 +128,14 @@ export function SessionsPanel({ visible, onClose, activeSessionId, onSelectSessi
             <button
               onClick={handleNew}
               className="w-6 h-6 flex items-center justify-center bg-[#00f5d4]/10 border border-[#00f5d4]/30 text-[#00f5d4] hover:bg-[#00f5d4]/20"
-              title="Nowa sesja"
+              title="New session"
             >
               <Plus size={12} />
             </button>
             <button
               onClick={onClose}
               className="w-6 h-6 flex items-center justify-center text-[#8888aa] hover:text-[#e8e8f5]"
-              title="Zamknij"
+              title="Close"
             >
               <ChevronLeft size={14} />
             </button>
@@ -147,9 +147,9 @@ export function SessionsPanel({ visible, onClose, activeSessionId, onSelectSessi
           {sessions.length === 0 ? (
             <div className="text-center py-8 px-4">
               <MessageSquare size={32} className="text-[#2a2a3a] mx-auto mb-2" />
-              <div className="text-xs text-[#8888aa] font-mono">Brak sesji</div>
+              <div className="text-xs text-[#8888aa] font-mono">No sessions</div>
               <div className="text-[10px] text-[#5a5a78] font-mono mt-1">
-                Kliknij + aby rozpocząć nową rozmowę
+                Click + to start a new conversation
               </div>
             </div>
           ) : (
@@ -177,12 +177,12 @@ export function SessionsPanel({ visible, onClose, activeSessionId, onSelectSessi
                       </div>
                       <div className="text-[9px] text-[#8888aa] font-mono mt-0.5">
                         {new Date(s.updatedAt).toLocaleString('pl-PL', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' })}
-                        {s.messageCount > 0 && ` · ${s.messageCount} wiadomości`}
+                        {s.messageWhatunt > 0 && ` · ${s.messageWhatunt} wiadomości`}
                       </div>
                       <button
                         onClick={(e) => { e.stopPropagation(); handleDelete(s.id); }}
                         className="absolute top-1/2 right-1.5 -translate-y-1/2 w-5 h-5 flex items-center justify-center text-[#5a5a78] hover:text-[#ff6b6b] opacity-0 group-hover:opacity-100 transition-opacity"
-                        title="Usuń sesję"
+                        title="Delete session"
                       >
                         <Trash2 size={10} />
                       </button>
@@ -196,7 +196,7 @@ export function SessionsPanel({ visible, onClose, activeSessionId, onSelectSessi
 
         {/* Footer */}
         <div className="px-3 py-2 border-t border-[#383850] text-[9px] text-[#5a5a78] font-mono">
-          {sessions.length} sesji · zapisywane lokalnie
+          {sessions.length} sessions · saved locally
         </div>
       </div>
     </>

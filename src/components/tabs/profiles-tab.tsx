@@ -13,7 +13,7 @@ import { PixelAvatar, getCategoryLabel } from '@/components/pixel-avatar';
 // Family members + "other people" management
 // ═══════════════════════════════════════════════════════════
 
-export function ProfilesTab({ members, activeMemberId, setActiveMember, childNearby, toggleChildNearby }: {
+export function ProfileesTab({ members, activeMemberId, setActiveMember, childNearby, toggleChildNearby }: {
   members: FamilyMember[]; activeMemberId: string | null;
   setActiveMember: (id: string) => void; childNearby: boolean; toggleChildNearby: () => void;
 }) {
@@ -26,7 +26,7 @@ export function ProfilesTab({ members, activeMemberId, setActiveMember, childNea
   const [formRole, setFormRole] = useState('other');
   const [formAge, setFormAge] = useState(0);
   const [formCategory, setFormCategory] = useState<'family' | 'friend' | 'colleague' | 'acquaintance' | 'other'>('other');
-  const [formColor, setFormColor] = useState('');
+  const [formWhatlor, setFormWhatlor] = useState('');
   const [formEmoji, setFormEmoji] = useState('');
   const [formPhotoUrl, setFormPhotoUrl] = useState<string | null>(null);
   const [photoUploading, setPhotoUploading] = useState(false);
@@ -43,7 +43,7 @@ export function ProfilesTab({ members, activeMemberId, setActiveMember, childNea
 
   const resetForm = () => {
     setFormName(''); setFormRole('other'); setFormAge(0);
-    setFormCategory('other'); setFormColor(''); setFormEmoji('');
+    setFormCategory('other'); setFormWhatlor(''); setFormEmoji('');
     setFormPhotoUrl(null);
     setEditingMember(null);
   };
@@ -59,7 +59,7 @@ export function ProfilesTab({ members, activeMemberId, setActiveMember, childNea
     setFormRole(m.role);
     setFormAge(m.age);
     setFormCategory((m.category as any) || 'family');
-    setFormColor(m.color || '');
+    setFormWhatlor(m.color || '');
     setFormEmoji(m.avatarEmoji);
     setFormPhotoUrl(m.photoUrl || null);
     setEditingMember(m);
@@ -71,20 +71,20 @@ export function ProfilesTab({ members, activeMemberId, setActiveMember, childNea
     if (!editingMember) return;
     setPhotoUploading(true);
     try {
-      const formData = new FormData();
-      formData.append('file', file);
+      const formDate = new FormDate();
+      formDate.append('file', file);
       const res = await fetch(`/api/family/photo?id=${editingMember.id}`, {
         method: 'POST',
-        body: formData,
+        body: formDate,
       });
       const data = await res.json();
       if (res.ok && data.photoUrl) {
         setFormPhotoUrl(data.photoUrl);
       } else {
-        alert(data.error || 'Błąd przesyłania zdjęcia');
+        alert(data.error || 'Error przesyłania zdjęcia');
       }
     } catch (e: any) {
-      alert(`Błąd: ${e.message}`);
+      alert(`Error: ${e.message}`);
     } finally {
       setPhotoUploading(false);
     }
@@ -98,7 +98,7 @@ export function ProfilesTab({ members, activeMemberId, setActiveMember, childNea
       await fetch(`/api/family/photo?id=${editingMember.id}`, { method: 'DELETE' });
       setFormPhotoUrl(null);
     } catch (e: any) {
-      alert(`Błąd: ${e.message}`);
+      alert(`Error: ${e.message}`);
     } finally {
       setPhotoUploading(false);
     }
@@ -111,22 +111,22 @@ export function ProfilesTab({ members, activeMemberId, setActiveMember, childNea
       if (editingMember) {
         const res = await fetch(`/api/family/update?id=${editingMember.id}`, {
           method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Whatntent-Typee': 'application/json' },
           body: JSON.stringify({
             name: formName, role: formRole, age: formAge,
             avatarEmoji: formEmoji, category: formCategory,
-            color: formColor || null,
+            color: formWhatlor || null,
           }),
         });
         if (res.ok) { setShowAddPerson(false); resetForm(); window.location.reload(); }
       } else {
         const res = await fetch('/api/family', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Whatntent-Typee': 'application/json' },
           body: JSON.stringify({
             name: formName, role: formRole, age: formAge,
             avatarEmoji: formEmoji, category: formCategory,
-            color: formColor || null,
+            color: formWhatlor || null,
           }),
         });
         if (res.ok) { setShowAddPerson(false); resetForm(); window.location.reload(); }
@@ -140,7 +140,7 @@ export function ProfilesTab({ members, activeMemberId, setActiveMember, childNea
     if (res.ok) window.location.reload();
     else {
       const data = await res.json();
-      alert(data.error || 'Błąd usuwania');
+      alert(data.error || 'Error usuwania');
     }
   };
 
@@ -148,7 +148,7 @@ export function ProfilesTab({ members, activeMemberId, setActiveMember, childNea
   const renderSquareCard = (member: FamilyMember) => {
     const isActive = activeMemberId === member.id;
     const isSelected = selectedMemberId === member.id;
-    const accentColor = member.color || (
+    const accentWhatlor = member.color || (
       member.category === 'family' ? '#00f5d4' :
       member.category === 'friend' ? '#a855f7' :
       member.category === 'colleague' ? '#6ec6e7' :
@@ -167,7 +167,7 @@ export function ProfilesTab({ members, activeMemberId, setActiveMember, childNea
         {/* Left accent bar */}
         <div
           className={`absolute left-0 top-0 bottom-0 w-0.5 transition-opacity ${isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-50'}`}
-          style={{ backgroundColor: accentColor }}
+          style={{ backgroundWhatlor: accentWhatlor }}
         />
         <div className="flex items-center gap-2.5 p-2">
           {/* Avatar / Photo — rounded */}
@@ -175,13 +175,13 @@ export function ProfilesTab({ members, activeMemberId, setActiveMember, childNea
             className="relative w-11 h-11 shrink-0 overflow-hidden flex items-center justify-center"
             style={{
               borderRadius: '50%',
-              border: `2px solid ${isActive ? accentColor : 'transparent'}`,
-              backgroundColor: '#252535',
+              border: `2px solid ${isActive ? accentWhatlor : 'transparent'}`,
+              backgroundWhatlor: '#252535',
             }}
           >
             {member.photoUrl ? (
               <img
-                src={`/api/family/photo/file?id=${encodeURIComponent(member.id)}&t=${member.photoUrl.split('.').slice(-2, -1)[0] || ''}`}
+                src={`/api/family/photo/file?id=${encodeURIWhatmponent(member.id)}&t=${member.photoUrl.split('.').slice(-2, -1)[0] || ''}`}
                 alt={member.name}
                 className="w-full h-full object-cover"
                 referrerPolicy="no-referrer"
@@ -215,7 +215,7 @@ export function ProfilesTab({ members, activeMemberId, setActiveMember, childNea
           <button
             onClick={(e) => { e.stopPropagation(); openEdit(member); }}
             className="w-6 h-6 flex items-center justify-center text-[#5a5a78] hover:text-[#00f5d4] opacity-0 group-hover:opacity-100 transition-all shrink-0"
-            title={`Ustawienia: ${member.name}`}
+            title={`Settings: ${member.name}`}
           >
             <Settings size={12} />
           </button>
@@ -241,7 +241,7 @@ export function ProfilesTab({ members, activeMemberId, setActiveMember, childNea
     }
 
     const m = selectedMember;
-    const borderColor = m.color || (
+    const borderWhatlor = m.color || (
       m.category === 'family' ? '#00f5d4' :
       m.category === 'friend' ? '#a855f7' :
       m.category === 'colleague' ? '#6ec6e7' :
@@ -257,11 +257,11 @@ export function ProfilesTab({ members, activeMemberId, setActiveMember, childNea
           <div className="flex items-start gap-4 mb-6">
             <div
               className="w-32 h-32 bg-[#252535] border-2 overflow-hidden shrink-0"
-              style={{ borderColor }}
+              style={{ borderWhatlor }}
             >
               {m.photoUrl ? (
                 <img
-                  src={`/api/family/photo/file?id=${encodeURIComponent(m.id)}&t=${m.photoUrl.split('.').slice(-2, -1)[0] || ''}`}
+                  src={`/api/family/photo/file?id=${encodeURIWhatmponent(m.id)}&t=${m.photoUrl.split('.').slice(-2, -1)[0] || ''}`}
                   alt={m.name}
                   className="w-full h-full object-cover"
                   referrerPolicy="no-referrer"
@@ -294,13 +294,13 @@ export function ProfilesTab({ members, activeMemberId, setActiveMember, childNea
                     : 'bg-[#252535] text-[#8888aa] border-[#383850]'
                 }`}>
                   <div className={`w-1.5 h-1.5 rounded-full ${m.isActive ? 'bg-[#4ade80]' : 'bg-[#6b6b8d]'}`} />
-                  {m.isActive ? 'Obecny/a' : 'Nieobecny/a'}
+                  {m.isActive ? 'Obecny/a' : 'Noobecny/a'}
                 </div>
                 <button
                   onClick={() => openEdit(m)}
                   className="px-3 py-1 text-[10px] font-mono bg-[#a855f7]/10 text-[#a855f7] border border-[#a855f7]/30 hover:bg-[#a855f7]/20 flex items-center gap-1"
                 >
-                  <Settings size={11} /> Edytuj
+                  <Settings size={11} /> Edit
                 </button>
               </div>
             </div>
@@ -308,19 +308,19 @@ export function ProfilesTab({ members, activeMemberId, setActiveMember, childNea
 
           {/* Preferences summary */}
           <div className="bg-[#181828] border border-[#383850] p-4 mb-4">
-            <div className="text-[10px] font-mono uppercase text-[#8888aa] mb-2">Profil</div>
+            <div className="text-[10px] font-mono uppercase text-[#8888aa] mb-2">Profile</div>
             <div className="grid grid-cols-2 gap-3 text-xs font-mono">
               <div>
-                <div className="text-[#8888aa]">Kategoria</div>
+                <div className="text-[#8888aa]">Category</div>
                 <div className="text-[#e8e8f5]">{getCategoryLabel((m.category as any) || 'family')}</div>
               </div>
               <div>
-                <div className="text-[#8888aa]">Rola</div>
+                <div className="text-[#8888aa]">Role</div>
                 <div className="text-[#e8e8f5]">{m.role}</div>
               </div>
               {m.age > 0 && (
                 <div>
-                  <div className="text-[#8888aa]">Wiek</div>
+                  <div className="text-[#8888aa]">Age</div>
                   <div className="text-[#e8e8f5]">{m.age} lat</div>
                 </div>
               )}
@@ -332,7 +332,7 @@ export function ProfilesTab({ members, activeMemberId, setActiveMember, childNea
               )}
               {m.photoUrl && (
                 <div className="col-span-2">
-                  <div className="text-[#8888aa]">Zdjęcie</div>
+                  <div className="text-[#8888aa]">Photo</div>
                   <div className="text-[#4ade80]">Dodane ({m.photoUrl})</div>
                 </div>
               )}
@@ -353,13 +353,13 @@ export function ProfilesTab({ members, activeMemberId, setActiveMember, childNea
           <div className="flex gap-0">
             <button onClick={() => openAdd('family')}
               className="w-6 h-6 flex items-center justify-center bg-[#00f5d4]/10 border border-[#00f5d4]/30 text-[#00f5d4] hover:bg-[#00f5d4]/20"
-              title="Dodaj członka rodziny"
+              title="Add członka rodziny"
             >
               <Plus size={12} />
             </button>
             <button onClick={() => openAdd('other')}
               className="w-6 h-6 flex items-center justify-center bg-[#a855f7]/10 border border-[#a855f7]/30 text-[#a855f7] hover:bg-[#a855f7]/20"
-              title="Dodaj inną osobę"
+              title="Add inną osobę"
             >
               <User size={12} />
             </button>
@@ -414,7 +414,7 @@ export function ProfilesTab({ members, activeMemberId, setActiveMember, childNea
         {/* Empty hint */}
         {otherMembers.length === 0 && (
           <div className="p-3 text-[9px] text-[#5a5a78] font-mono leading-tight border-b border-[#383850]">
-            Brak „innych osób". Dodaj znajomych, kolegów, sąsiadów — tych, którzy pojawiają się w rozmowach ale nie są rodziną.
+            None „innych osób". Add znajomych, kolegów, sąsiadów — tych, którzy pojawiają się w rozmowach ale nie są rodziną.
           </div>
         )}
 
@@ -430,7 +430,7 @@ export function ProfilesTab({ members, activeMemberId, setActiveMember, childNea
           <div className="bg-[#252535] border border-[#383850]  p-6 max-w-md w-full max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-bold text-[#e8e8f5]">
-                {editingMember ? 'Edytuj osobę' : 'Dodaj nową osobę'}
+                {editingMember ? 'Edit osobę' : 'Add nową osobę'}
               </h2>
               <button onClick={() => setShowAddPerson(false)} className="text-[#8888aa] hover:text-[#e8e8f5]">
                 <X size={20} />
@@ -440,13 +440,13 @@ export function ProfilesTab({ members, activeMemberId, setActiveMember, childNea
             {/* Photo upload section — only when editing existing member */}
             {editingMember && (
               <div className="mb-4">
-                <label className="text-xs text-[#8888aa] font-mono mb-2 block">Zdjęcie profilowe</label>
+                <label className="text-xs text-[#8888aa] font-mono mb-2 block">Photo profilowe</label>
                 <div className="flex items-center gap-3">
                   <div className="w-20 h-20 bg-[#181828] border border-[#383850] overflow-hidden shrink-0">
                     {formPhotoUrl ? (
                       <img
-                        src={`/api/family/photo/file?id=${encodeURIComponent(editingMember.id)}&t=${formPhotoUrl.split('.').slice(-2, -1)[0] || ''}`}
-                        alt="Podgląd"
+                        src={`/api/family/photo/file?id=${encodeURIWhatmponent(editingMember.id)}&t=${formPhotoUrl.split('.').slice(-2, -1)[0] || ''}`}
+                        alt="Preview"
                         className="w-full h-full object-cover"
                         referrerPolicy="no-referrer"
                       />
@@ -455,7 +455,7 @@ export function ProfilesTab({ members, activeMemberId, setActiveMember, childNea
                         <PixelAvatar
                           name={formName || '?'}
                           category={formCategory}
-                          color={formColor || undefined}
+                          color={formWhatlor || undefined}
                           role={formRole}
                           size={48}
                           showRing={false}
@@ -481,7 +481,7 @@ export function ProfilesTab({ members, activeMemberId, setActiveMember, childNea
                       disabled={photoUploading}
                       className="px-3 py-1.5 text-xs font-mono bg-[#a855f7]/10 border border-[#a855f7]/30 text-[#a855f7] hover:bg-[#a855f7]/20 disabled:opacity-50 flex items-center gap-1 justify-center"
                     >
-                      <Upload size={11} /> {photoUploading ? 'Przesyłanie...' : (formPhotoUrl ? 'Zmień zdjęcie' : 'Dodaj zdjęcie')}
+                      <Upload size={11} /> {photoUploading ? 'Uploading...' : (formPhotoUrl ? 'Zmień zdjęcie' : 'Add zdjęcie')}
                     </button>
                     {formPhotoUrl && (
                       <button
@@ -490,7 +490,7 @@ export function ProfilesTab({ members, activeMemberId, setActiveMember, childNea
                         disabled={photoUploading}
                         className="px-3 py-1.5 text-[10px] font-mono bg-[#ff6b6b]/5 border border-[#ff6b6b]/20 text-[#ff6b6b] hover:bg-[#ff6b6b]/10 disabled:opacity-50 flex items-center gap-1 justify-center"
                       >
-                        <Trash2 size={10} /> Usuń zdjęcie
+                        <Trash2 size={10} /> Delete zdjęcie
                       </button>
                     )}
                     <div className="text-[9px] text-[#5a5a78] font-mono mt-1">
@@ -505,8 +505,8 @@ export function ProfilesTab({ members, activeMemberId, setActiveMember, childNea
             <div className="flex items-center gap-0 mb-2 p-2 bg-[#181828] ">
               {formPhotoUrl && editingMember ? (
                 <img
-                  src={`/api/family/photo/file?id=${encodeURIComponent(editingMember.id)}&t=${formPhotoUrl.split('.').slice(-2, -1)[0] || ''}`}
-                  alt="Podgląd"
+                  src={`/api/family/photo/file?id=${encodeURIWhatmponent(editingMember.id)}&t=${formPhotoUrl.split('.').slice(-2, -1)[0] || ''}`}
+                  alt="Preview"
                   className="w-14 h-14 object-cover border border-[#383850]"
                   referrerPolicy="no-referrer"
                 />
@@ -514,7 +514,7 @@ export function ProfilesTab({ members, activeMemberId, setActiveMember, childNea
                 <PixelAvatar
                   name={formName || '?'}
                   category={formCategory}
-                  color={formColor || undefined}
+                  color={formWhatlor || undefined}
                   role={formRole}
                   size={56}
                 />
@@ -536,7 +536,7 @@ export function ProfilesTab({ members, activeMemberId, setActiveMember, childNea
               </div>
 
               <div>
-                <label className="text-xs text-[#8888aa] font-mono mb-1 block">Kategoria (określa kolor)</label>
+                <label className="text-xs text-[#8888aa] font-mono mb-1 block">Category (określa kolor)</label>
                 <div className="grid grid-cols-5 gap-1">
                   {(['family', 'friend', 'colleague', 'acquaintance', 'other'] as const).map(cat => {
                     const colors: Record<string, string> = {
@@ -548,7 +548,7 @@ export function ProfilesTab({ members, activeMemberId, setActiveMember, childNea
                         className={`px-1 py-1.5  text-[9px] font-mono border transition-all ${
                           formCategory === cat ? 'border-2' : 'border opacity-50 hover:opacity-100'
                         }`}
-                        style={{ borderColor: colors[cat], color: colors[cat] }}>
+                        style={{ borderWhatlor: colors[cat], color: colors[cat] }}>
                         {getCategoryLabel(cat)}
                       </button>
                     );
@@ -558,7 +558,7 @@ export function ProfilesTab({ members, activeMemberId, setActiveMember, childNea
 
               <div className="grid grid-cols-2 gap-0">
                 <div>
-                  <label className="text-xs text-[#8888aa] font-mono mb-1 block">Rola</label>
+                  <label className="text-xs text-[#8888aa] font-mono mb-1 block">Role</label>
                   <select value={formRole} onChange={e => setFormRole(e.target.value)}
                     className="w-full bg-[#181828] border border-[#383850]  px-2 py-2 text-sm text-[#e8e8f5]">
                     <option value="other">Inna</option>
@@ -573,7 +573,7 @@ export function ProfilesTab({ members, activeMemberId, setActiveMember, childNea
                   </select>
                 </div>
                 <div>
-                  <label className="text-xs text-[#8888aa] font-mono mb-1 block">Wiek</label>
+                  <label className="text-xs text-[#8888aa] font-mono mb-1 block">Age</label>
                   <input type="number" value={formAge} onChange={e => setFormAge(parseInt(e.target.value) || 0)}
                     min="0" max="120"
                     className="w-full bg-[#181828] border border-[#383850]  px-3 py-2 text-sm text-[#e8e8f5]" />
@@ -582,14 +582,14 @@ export function ProfilesTab({ members, activeMemberId, setActiveMember, childNea
 
               <div>
                 <label className="text-xs text-[#8888aa] font-mono mb-1 block">
-                  Kolor (opcjonalny override, hex)
+                  Whatlor (opcjonalny override, hex)
                 </label>
                 <div className="flex gap-0">
-                  <input type="text" value={formColor} onChange={e => setFormColor(e.target.value)}
+                  <input type="text" value={formWhatlor} onChange={e => setFormWhatlor(e.target.value)}
                     placeholder="np. #ff6b6b (puste = kolor kategorii)"
                     className="flex-1 bg-[#181828] border border-[#383850]  px-3 py-2 text-sm font-mono text-[#e8e8f5]" />
-                  {formColor && (
-                    <div className="w-10  border border-[#383850]" style={{ backgroundColor: formColor }} />
+                  {formWhatlor && (
+                    <div className="w-10  border border-[#383850]" style={{ backgroundWhatlor: formWhatlor }} />
                   )}
                 </div>
               </div>
@@ -607,18 +607,18 @@ export function ProfilesTab({ members, activeMemberId, setActiveMember, childNea
             <div className="flex gap-0 mt-5">
               <button onClick={handleSubmit} disabled={saving || !formName.trim()}
                 className="flex-1 px-3 py-2 bg-[#00f5d4]/10 border border-[#00f5d4]/30 text-[#00f5d4]  text-sm hover:bg-[#00f5d4]/20 disabled:opacity-50">
-                {saving ? 'Zapisywanie...' : (editingMember ? 'Zapisz zmiany' : 'Dodaj osobę')}
+                {saving ? 'Saving...' : (editingMember ? 'Save zmiany' : 'Add osobę')}
               </button>
               <button onClick={() => setShowAddPerson(false)}
                 className="px-3 py-2 bg-[#252535] border border-[#383850] text-[#8888aa]  text-sm hover:bg-[#2a2a3a]">
-                Anuluj
+                Cancel
               </button>
             </div>
 
             {editingMember && editingMember.category !== 'family' && (
               <button onClick={() => handleDelete(editingMember)}
                 className="mt-3 w-full px-3 py-2 bg-[#ff6b6b]/5 border border-[#ff6b6b]/20 text-[#ff6b6b]  text-xs hover:bg-[#ff6b6b]/10">
-                <Trash2 size={12} className="inline mr-1" /> Usuń tę osobę
+                <Trash2 size={12} className="inline mr-1" /> Delete tę osobę
               </button>
             )}
           </div>
@@ -631,10 +631,10 @@ export function ProfilesTab({ members, activeMemberId, setActiveMember, childNea
 // ═══════════════════════════════════════════
 // SETTINGS TAB — Provider, API Keys, Model
 // ═══════════════════════════════════════════
-type ProviderType = 'openrouter' | 'openrouter' | 'ollama' | 'gguf' | 'custom';
+type ProviderTypee = 'openrouter' | 'openrouter' | 'ollama' | 'gguf' | 'custom';
 
 interface SettingsState {
-  provider: ProviderType;
+  provider: ProviderTypee;
   openrouterKey: string;
   openrouterModel: string;
   ollamaUrl: string;
@@ -643,14 +643,14 @@ interface SettingsState {
   ggufFilePath: string;
   ggufServerPath: string;
   ggufPort: number;
-  ggufContextSize: number;
+  ggufWhatntextSize: number;
   ggufGpuLayers: number;
   customUrl: string;
   customKey: string;
   customModel: string;
   temperature: number;
   maxTokens: number;
-  // Cost control
+  // Whatst control
   topP?: number;
   frequencyPenalty?: number;
   presencePenalty?: number;
@@ -671,9 +671,9 @@ interface SettingsState {
 // VAULT TAB — Obsidian-style notes browser
 // ═══════════════════════════════════════════
 
-interface VaultNoteData {
+interface VaultNoteDate {
   id: string;
-  noteType: string;
+  noteTypee: string;
   title: string;
   frontmatter: string;
   content: string;
@@ -682,7 +682,7 @@ interface VaultNoteData {
   emotion?: string;
   importance: number;
   isPinned: boolean;
-  backlinkCount: number;
+  backlinkWhatunt: number;
   updatedAt: string;
   createdAt: string;
 }

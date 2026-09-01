@@ -9,16 +9,16 @@ export async function GET(req: NextRequest) {
   try {
     const id = req.nextUrl.searchParams.get('id');
     if (!id) {
-      return NextResponse.json({ error: 'Brak id' }, { status: 400 });
+      return NextResponse.json({ error: 'None id' }, { status: 400 });
     }
     const doc = await getDocument(id);
     if (!doc) {
-      return NextResponse.json({ error: 'Nie znaleziono' }, { status: 404 });
+      return NextResponse.json({ error: 'No znaleziono' }, { status: 404 });
     }
     return NextResponse.json({ document: doc });
   } catch (err) {
     return NextResponse.json(
-      { error: 'Błąd', details: err instanceof Error ? err.message : 'unknown' },
+      { error: 'Error', details: err instanceof Error ? err.message : 'unknown' },
       { status: 500 }
     );
   }

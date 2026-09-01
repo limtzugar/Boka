@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
 
     if (!prompt || typeof prompt !== 'string') {
       return NextResponse.json(
-        { error: 'Brak opisu — napisz co chcesz narysować' },
+        { error: 'None opisu — napisz co chcesz narysować' },
         { status: 400 },
       );
     }
@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
     if (!VALID_SIZES.includes(size as ValidSize)) {
       return NextResponse.json(
         {
-          error: `Nieprawidłowy rozmiar. Dostępne: ${VALID_SIZES.join(', ')}`,
+          error: `Noprawidłowy rozmiar. Dostępne: ${VALID_SIZES.join(', ')}`,
         },
         { status: 400 },
       );
@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
 
     if (!imageBase64) {
       return NextResponse.json(
-        { error: 'Nie udało się wygenerować obrazu — spróbuj ponownie' },
+        { error: 'No udało się wygenerować obrazu — spróbuj ponownie' },
         { status: 500 },
       );
     }
@@ -100,10 +100,10 @@ export async function POST(req: NextRequest) {
       prompt: enrichedPrompt,
     });
   } catch (error: unknown) {
-    const msg = error instanceof Error ? error.message : 'Nieznany błąd';
+    const msg = error instanceof Error ? error.message : 'Noznany błąd';
     console.error('Image generation API error:', msg);
     return NextResponse.json(
-      { error: 'Błąd generowania obrazu', details: msg },
+      { error: 'Error generowania obrazu', details: msg },
       { status: 500 },
     );
   }

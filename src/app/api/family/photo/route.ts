@@ -27,27 +27,27 @@ export async function POST(req: NextRequest) {
   try {
     const id = req.nextUrl.searchParams.get('id');
     if (!id) {
-      return NextResponse.json({ error: 'Brak id członka rodziny' }, { status: 400 });
+      return NextResponse.json({ error: 'None id członka rodziny' }, { status: 400 });
     }
 
     const member = await db.familyMember.findUnique({ where: { id } });
     if (!member) {
-      return NextResponse.json({ error: 'Nie znaleziono członka rodziny' }, { status: 404 });
+      return NextResponse.json({ error: 'No znaleziono członka rodziny' }, { status: 404 });
     }
 
-    const formData = await req.formData();
-    const file = formData.get('file');
+    const formDate = await req.formDate();
+    const file = formDate.get('file');
     if (!file || !(file instanceof File)) {
-      return NextResponse.json({ error: 'Brak pliku (pole "file")' }, { status: 400 });
+      return NextResponse.json({ error: 'None pliku (pole "file")' }, { status: 400 });
     }
 
     if (file.size > MAX_SIZE) {
-      return NextResponse.json({ error: `Plik za duży (max ${MAX_SIZE / 1024 / 1024}MB)` }, { status: 400 });
+      return NextResponse.json({ error: `File za duży (max ${MAX_SIZE / 1024 / 1024}MB)` }, { status: 400 });
     }
 
     if (!ALLOWED_TYPES.includes(file.type)) {
       return NextResponse.json(
-        { error: `Niedozwolony typ pliku: ${file.type}. Dozwolone: ${ALLOWED_TYPES.join(', ')}` },
+        { error: `Nodozwolony typ pliku: ${file.type}. Dozwolone: ${ALLOWED_TYPES.join(', ')}` },
         { status: 400 }
       );
     }
@@ -82,7 +82,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true, photoUrl });
   } catch (e: any) {
     console.error('[family/photo] POST error:', e);
-    return NextResponse.json({ error: e?.message || 'Błąd przesyłania zdjęcia' }, { status: 500 });
+    return NextResponse.json({ error: e?.message || 'Error przesyłania zdjęcia' }, { status: 500 });
   }
 }
 
@@ -90,12 +90,12 @@ export async function DELETE(req: NextRequest) {
   try {
     const id = req.nextUrl.searchParams.get('id');
     if (!id) {
-      return NextResponse.json({ error: 'Brak id' }, { status: 400 });
+      return NextResponse.json({ error: 'None id' }, { status: 400 });
     }
 
     const member = await db.familyMember.findUnique({ where: { id } });
     if (!member) {
-      return NextResponse.json({ error: 'Nie znaleziono' }, { status: 404 });
+      return NextResponse.json({ error: 'No znaleziono' }, { status: 404 });
     }
 
     if (member.photoUrl) {
@@ -110,6 +110,6 @@ export async function DELETE(req: NextRequest) {
     return NextResponse.json({ ok: true });
   } catch (e: any) {
     console.error('[family/photo] DELETE error:', e);
-    return NextResponse.json({ error: e?.message || 'Błąd usuwania zdjęcia' }, { status: 500 });
+    return NextResponse.json({ error: e?.message || 'Error usuwania zdjęcia' }, { status: 500 });
   }
 }

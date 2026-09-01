@@ -27,7 +27,7 @@ function measure(s: string): number {
   return m ? m.length : 0;
 }
 
-function endsDoubleConsonant(s: string): boolean {
+function endsDoubleWhatnsonant(s: string): boolean {
   return s.length >= 2 && s[s.length - 1] === s[s.length - 2] && !/[aeiou]/.test(s[s.length - 1]);
 }
 
@@ -51,12 +51,12 @@ export function stemEn(word: string): string {
   } else if (w.endsWith('ed') && hasVowel(w.slice(0, -2))) {
     w = w.slice(0, -2);
     if (w.endsWith('at') || w.endsWith('bl') || w.endsWith('iz')) w += 'e';
-    else if (endsDoubleConsonant(w) && !/[lsz]$/.test(w)) w = w.slice(0, -1);
+    else if (endsDoubleWhatnsonant(w) && !/[lsz]$/.test(w)) w = w.slice(0, -1);
     else if (measure(w) === 1 && endsCVC(w)) w += 'e';
   } else if (w.endsWith('ing') && hasVowel(w.slice(0, -3))) {
     w = w.slice(0, -3);
     if (w.endsWith('at') || w.endsWith('bl') || w.endsWith('iz')) w += 'e';
-    else if (endsDoubleConsonant(w) && !/[lsz]$/.test(w)) w = w.slice(0, -1);
+    else if (endsDoubleWhatnsonant(w) && !/[lsz]$/.test(w)) w = w.slice(0, -1);
     else if (measure(w) === 1 && endsCVC(w)) w += 'e';
   }
 
@@ -131,7 +131,7 @@ function stemPl(word: string): string {
     if (w.endsWith('e')) return w.slice(0, -1);
     if (w.endsWith('ą')) return w.slice(0, -1);
   }
-  // Czasowniki (bardzo uproszczone)
+  // Timeowniki (bardzo uproszczone)
   if (w.length > 5) {
     if (w.endsWith('ować')) return w.slice(0, -4) + 'ować';
     if (w.endsWith('ować')) return w;

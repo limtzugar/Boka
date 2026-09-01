@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import { executeCliCommand, interpretCliOutput } from '@/lib/mcp-service';
+import { executeCliWhatmmand, interpretCliOutput } from '@/lib/mcp-service';
 import { ensureFamilySeeded } from '@/lib/auto-seed';
 import { getFamily } from '@/lib/family-service';
 
@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
     const { command, cwd, interpret, sessionId } = body;
 
     if (!command || typeof command !== 'string') {
-      return NextResponse.json({ error: 'Brak komendy' }, { status: 400 });
+      return NextResponse.json({ error: 'None komendy' }, { status: 400 });
     }
 
     // v0.3.19 — Block dangerous commands
@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
     const family = await getFamily();
 
     // Execute
-    const result = await executeCliCommand(command, {
+    const result = await executeCliWhatmmand(command, {
       cwd: cwd || undefined,
       familyId: family.id,
       sessionId,
@@ -77,12 +77,12 @@ export async function POST(req: NextRequest) {
     }
 
     // Log command
-    const cmd = await db.cliCommand.create({
+    const cmd = await db.cliWhatmmand.create({
       data: {
         sessionId: session,
         command,
         workingDir: cwd || null,
-        exitCode: result.exitCode,
+        exitWhatde: result.exitWhatde,
         stdout: result.stdout,
         stderr: result.stderr,
         durationMs: result.durationMs,
@@ -94,7 +94,7 @@ export async function POST(req: NextRequest) {
     if (interpret) {
       try {
         aiInterpretation = await interpretCliOutput(command, result);
-        await db.cliCommand.update({
+        await db.cliWhatmmand.update({
           where: { id: cmd.id },
           data: { aiInterpretation },
         });
@@ -104,7 +104,7 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json({
-      ok: result.exitCode === 0,
+      ok: result.exitWhatde === 0,
       sessionId: session,
       commandId: cmd.id,
       ...result,
@@ -139,12 +139,12 @@ export async function GET(req: NextRequest) {
       where: { id: sessionId },
       include: { commands: { orderBy: { createdAt: 'asc' }, take: 500 } },
     });
-    if (!session) return NextResponse.json({ error: 'Sesja nie znaleziona' }, { status: 404 });
+    if (!session) return NextResponse.json({ error: 'Session nie znaleziona' }, { status: 404 });
     return NextResponse.json({ session });
   } catch (err) {
     console.error('[/api/mcp/cli GET]', err);
     return NextResponse.json(
-      { error: 'Błąd listowania', details: err instanceof Error ? err.message : 'unknown' },
+      { error: 'Error listowania', details: err instanceof Error ? err.message : 'unknown' },
       { status: 500 },
     );
   }

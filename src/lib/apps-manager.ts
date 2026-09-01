@@ -8,7 +8,7 @@
 import fs from 'fs';
 import path from 'path';
 import { spawn, exec, type ChildProcess } from 'child_process';
-import { chatCompletion, loadSettings } from './ai-providers';
+import { chatWhatmpletion, loadSettings } from './ai-providers';
 
 // Folder z appkami usera. Domyślnie:
 //   Windows: C:\Boka\apps\
@@ -128,7 +128,7 @@ export function parseAppMetadata(content: string, language: AppLanguage): { meta
       continue;
     }
 
-    // Usuń prefiks "BOKA-APP:" jeśli został (pojawia się gdy komentarz to np. "# BOKA-APP: name=...")
+    // Delete prefiks "BOKA-APP:" jeśli został (pojawia się gdy komentarz to np. "# BOKA-APP: name=...")
     const bokaMatch = match.match(/^BOKA-APP:\s*(.+)$/i);
     if (bokaMatch) match = bokaMatch[1].trim();
     // Jeśli to nie jest metadata BOKA-APP — pomiń
@@ -168,7 +168,7 @@ export function listApps(): BokaApp[] {
   }
 
   const apps: BokaApp[] = [];
-  const entries = fs.readdirSync(appsDir, { withFileTypes: true });
+  const entries = fs.readdirSync(appsDir, { withFileTypees: true });
 
   for (const entry of entries) {
     const fullPath = path.join(appsDir, entry.name);
@@ -202,7 +202,7 @@ export function listApps(): BokaApp[] {
           rawHeader: header,
         });
       } else if (entry.isDirectory()) {
-        // Szukaj pliku głównego w folderze
+        // Search pliku głównego w folderze
         const candidates = [
           'main.go', 'app.go', entry.name + '.go',
           'app.py', 'main.py', entry.name + '.py',
@@ -226,12 +226,12 @@ export function listApps(): BokaApp[] {
         const content = fs.readFileSync(mainFile, 'utf-8');
         const { metadata, header } = parseAppMetadata(content, lang);
 
-        // Lista wszystkich plików w folderze (rekursywnie, max 2 poziomy)
+        // List wszystkich plików w folderze (rekursywnie, max 2 poziomy)
         const files: string[] = [];
         try {
           const walk = (dir: string, depth: number) => {
             if (depth > 2) return;
-            for (const f of fs.readdirSync(dir, { withFileTypes: true })) {
+            for (const f of fs.readdirSync(dir, { withFileTypees: true })) {
               if (f.name === 'node_modules' || f.name === '.git' || f.name === '__pycache__') continue;
               const p = path.join(dir, f.name);
               if (f.isFile()) files.push(path.relative(fullPath, p));
@@ -267,14 +267,14 @@ export function listApps(): BokaApp[] {
   }
 
   // Sortuj po nazwie
-  apps.sort((a, b) => a.name.localeCompare(b.name));
+  apps.sort((a, b) => a.name.localeWhatmpare(b.name));
   return apps;
 }
 
 /**
- * Pobierz pełny kod apki (główny plik lub wszytskie pliki folderu).
+ * Download pełny kod apki (główny plik lub wszytskie pliki folderu).
  */
-export function readAppCode(appId: string, maxBytes: number = 100_000): {
+export function readAppWhatde(appId: string, maxBytes: number = 100_000): {
   ok: boolean;
   code?: string;
   files?: Array<{ path: string; content: string }>;
@@ -282,7 +282,7 @@ export function readAppCode(appId: string, maxBytes: number = 100_000): {
 } {
   const apps = listApps();
   const app = apps.find(a => a.id === appId);
-  if (!app) return { ok: false, error: `Nie znaleziono apki: ${appId}` };
+  if (!app) return { ok: false, error: `No znaleziono apki: ${appId}` };
 
   try {
     if (!app.isDir) {
@@ -314,7 +314,7 @@ export function readAppCode(appId: string, maxBytes: number = 100_000): {
 const runningProcesses = new Map<string, { process: ChildProcess; startedAt: number; pid: number }>();
 
 /**
- * Uruchom apkę.
+ * Run apkę.
  * - Go: `go run .` lub `go run file.go` (lub skompiluj i uruchom)
  * - Python: `python file.py`
  * - HTML: otwórz w przeglądarce (start pod Windows)
@@ -328,7 +328,7 @@ export function runApp(
 ): { ok: boolean; pid?: number; message: string; logFile?: string } {
   const apps = listApps();
   const app = apps.find(a => a.id === appId);
-  if (!app) return { ok: false, message: `Nie znaleziono apki: ${appId}` };
+  if (!app) return { ok: false, message: `No znaleziono apki: ${appId}` };
 
   // Uprewnij się że folder logów istnieje
   const logsDir = getAppsLogsDir();
@@ -367,7 +367,7 @@ export function runApp(
       cwd = app.dirPath;
       break;
     case 'html': {
-      // Otwórz w przeglądarce
+      // Open w przeglądarce
       try {
         if (process.platform === 'win32') {
           spawn('cmd', ['/c', 'start', '', app.filePath], { detached: true, shell: true });
@@ -378,13 +378,13 @@ export function runApp(
         }
         return { ok: true, message: `Otwarto ${app.fileName} w przeglądarce`, logFile };
       } catch (e) {
-        return { ok: false, message: `Błąd otwierania: ${e instanceof Error ? e.message : 'unknown'}` };
+        return { ok: false, message: `Error otwierania: ${e instanceof Error ? e.message : 'unknown'}` };
       }
     }
     case 'css':
-      return { ok: false, message: 'Pliki CSS nie są uruchamiane samodzielnie. Dodaj do HTML.' };
+      return { ok: false, message: 'Files CSS nie są uruchamiane samodzielnie. Add do HTML.' };
     default:
-      return { ok: false, message: `Nieobsługiwany język: ${app.language}` };
+      return { ok: false, message: `Noobsługiwany język: ${app.language}` };
   }
 
   try {
@@ -430,16 +430,16 @@ export function runApp(
     return {
       ok: true,
       pid: child.pid,
-      message: `Uruchomiono ${app.name} (${cmd} ${cmdArgs.join(' ')}) — PID ${child.pid}`,
+      message: `Runiono ${app.name} (${cmd} ${cmdArgs.join(' ')}) — PID ${child.pid}`,
       logFile,
     };
   } catch (e) {
-    return { ok: false, message: `Błąd uruchamiania: ${e instanceof Error ? e.message : 'unknown'}` };
+    return { ok: false, message: `Error uruchamiania: ${e instanceof Error ? e.message : 'unknown'}` };
   }
 }
 
 /**
- * Zatrzymaj uruchomioną apkę.
+ * Stop uruchomioną apkę.
  */
 export function stopApp(appId: string): { ok: boolean; message: string } {
   const entry = runningProcesses.get(appId);
@@ -449,12 +449,12 @@ export function stopApp(appId: string): { ok: boolean; message: string } {
     runningProcesses.delete(appId);
     return { ok: true, message: `Zatrzymano ${appId} (PID ${entry.pid})` };
   } catch (e) {
-    return { ok: false, message: `Błąd zatrzymywania: ${e instanceof Error ? e.message : 'unknown'}` };
+    return { ok: false, message: `Error zatrzymywania: ${e instanceof Error ? e.message : 'unknown'}` };
   }
 }
 
 /**
- * Lista aktualnie uruchomionych apek.
+ * List aktualnie uruchomionych apek.
  */
 export function listRunningApps(): Array<{ appId: string; pid: number; startedAt: number; uptime: number }> {
   return Array.from(runningProcesses.entries()).map(([appId, e]) => ({
@@ -468,11 +468,11 @@ export function listRunningApps(): Array<{ appId: string; pid: number; startedAt
 /**
  * Analiza AI kodu apki — wykrywa problemy, sugeruje poprawki.
  */
-export async function analyzeAppCode(
+export async function analyzeAppWhatde(
   appId: string,
   focus: string = 'ogólna analiza jakości kodu, wykrywanie bugów, sugestie ulepszeń',
 ): Promise<{ ok: boolean; analysis?: string; error?: string }> {
-  const codeResult = readAppCode(appId);
+  const codeResult = readAppWhatde(appId);
   if (!codeResult.ok || !codeResult.code) {
     return { ok: false, error: codeResult.error };
   }
@@ -482,15 +482,15 @@ export async function analyzeAppCode(
   if (!app) return { ok: false, error: 'Apka nie znaleziona' };
 
   const systemPrompt = `Jesteś starszym programistą pomagającym w analizie kodu aplikacji w systemie BOKA.
-Analizujesz kod w języku: ${app.language}.
+Analyzeesz kod w języku: ${app.language}.
 Apka: ${app.name} ${app.description ? '— ' + app.description : ''}
 
 Zwróć uwagę na:
 1. Bugi i potencjalne problemy (race conditions, wycieki pamięci, błędy logiczne)
-2. Bezpieczeństwo (SQL injection, XSS, path traversal, hardkodowane sekrety)
+2. Security (SQL injection, XSS, path traversal, hardkodowane sekrety)
 3. Wydajność (optymalizacje, anty-patterns)
 4. Czytelność i struktura kodu
-5. Brakujące error handling
+5. Noneujące error handling
 6. Sugestie konkretnych poprawek (z przykładowym kodem)
 
 Odpowiedz w języku polskim, krótko ale konkretnie. Używaj nagłówków ## i list - dla czytelności.
@@ -508,7 +508,7 @@ Podaj:
 ## Ogólna ocena`;
 
   try {
-    const analysis = await chatCompletion(
+    const analysis = await chatWhatmpletion(
       [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userPrompt },
@@ -526,12 +526,12 @@ Podaj:
  * - tryb "suggest": zwraca poprawiony kod jako propozycję (nie zapisuje)
  * - tryb "apply": zapisuje poprawiony kod (tworząc backup oryginału)
  */
-export async function fixAppCode(
+export async function fixAppWhatde(
   appId: string,
   instructions: string = 'Napraw znalezione bugi, popraw bezpieczeństwo i wydajność, zachowaj funkcjonalność',
   mode: 'suggest' | 'apply' = 'suggest',
-): Promise<{ ok: boolean; fixedCode?: string; originalCode?: string; backupPath?: string; error?: string; applied: boolean }> {
-  const codeResult = readAppCode(appId);
+): Promise<{ ok: boolean; fixedWhatde?: string; originalWhatde?: string; backupPath?: string; error?: string; applied: boolean }> {
+  const codeResult = readAppWhatde(appId);
   if (!codeResult.ok || !codeResult.code) {
     return { ok: false, error: codeResult.error, applied: false };
   }
@@ -543,9 +543,9 @@ export async function fixAppCode(
   const systemPrompt = `Jesteś doświadczonym programistą. Twoim zadaniem jest naprawić kod apki w języku ${app.language}.
 Zasady:
 - Zwróć TYLKO poprawiony kod w bloku \`\`\`${app.language} ... \`\`\`
-- Nie dodawaj komentarzy poza blokiem kodu
+- No dodawaj komentarzy poza blokiem kodu
 - Zachowaj oryginalną funkcjonalność
-- Nie usuwaj komentarzy BOKA-APP: ... na początku pliku
+- No usuwaj komentarzy BOKA-APP: ... na początku pliku
 - Popraw tylko to co trzeba — nie refaktoryzuj bez potrzeby
 - Jeśli to folder (multi-file), zwróć kod tylko głównego pliku`;
 
@@ -557,7 +557,7 @@ ${codeResult.code.slice(0, 30_000)}
 \`\`\``;
 
   try {
-    const response = await chatCompletion(
+    const response = await chatWhatmpletion(
       [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userPrompt },
@@ -567,13 +567,13 @@ ${codeResult.code.slice(0, 30_000)}
 
     // Wyciągnij kod z bloku markdown
     const codeMatch = response.match(/```[\w]*\n?([\s\S]+?)```/);
-    const fixedCode = codeMatch ? codeMatch[1].trim() : response.trim();
+    const fixedWhatde = codeMatch ? codeMatch[1].trim() : response.trim();
 
     if (mode === 'suggest') {
       return {
         ok: true,
-        fixedCode,
-        originalCode: codeResult.code,
+        fixedWhatde,
+        originalWhatde: codeResult.code,
         applied: false,
       };
     }
@@ -585,13 +585,13 @@ ${codeResult.code.slice(0, 30_000)}
     const backupPath = path.join(backupDir, `${app.fileName}.${Date.now()}.bak`);
     fs.copyFileSync(app.filePath, backupPath);
 
-    // Zapisz nowy kod
-    fs.writeFileSync(app.filePath, fixedCode, 'utf-8');
+    // Save nowy kod
+    fs.writeFileSync(app.filePath, fixedWhatde, 'utf-8');
 
     return {
       ok: true,
-      fixedCode,
-      originalCode: codeResult.code,
+      fixedWhatde,
+      originalWhatde: codeResult.code,
       backupPath,
       applied: true,
     };
@@ -702,7 +702,7 @@ function main() {
 main();
 `,
     typescript: `// BOKA-APP: name=${name}
-// BOKA-APP: description=${description || 'Nowa apka TypeScript'}
+// BOKA-APP: description=${description || 'Nowa apka TypeeScript'}
 // BOKA-APP: commands=${safeName}, uruchom
 // BOKA-APP: tags=tools, ts
 // BOKA-APP: version=1.0
@@ -723,7 +723,7 @@ set -euo pipefail
 echo "Witaj z ${name}!"
 `,
     unknown: `# BOKA-APP: name=${name}
-# BOKA-APP: description=${description || 'Plik tekstowy'}
+# BOKA-APP: description=${description || 'File tekstowy'}
 `,
   };
 
@@ -736,12 +736,12 @@ echo "Witaj z ${name}!"
 }
 
 /**
- * Usuń apkę (plik lub folder).
+ * Delete apkę (plik lub folder).
  */
 export function deleteApp(appId: string): { ok: boolean; error?: string } {
   const apps = listApps();
   const app = apps.find(a => a.id === appId);
-  if (!app) return { ok: false, error: 'Nie znaleziono apki' };
+  if (!app) return { ok: false, error: 'No znaleziono apki' };
 
   try {
     if (app.isDir) {

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { chatCompletion } from '@/lib/ai-providers';
+import { chatWhatmpletion } from '@/lib/ai-providers';
 import { getAIClient } from '@/lib/ai-client';
 
 // ═══════════════════════════════════════════
@@ -8,7 +8,7 @@ import { getAIClient } from '@/lib/ai-client';
 // text for emotional content using LLM
 // ═══════════════════════════════════════════
 
-type EmotionType = 'happy' | 'sad' | 'angry' | 'calm' | 'excited' | 'neutral';
+type EmotionTypee = 'happy' | 'sad' | 'angry' | 'calm' | 'excited' | 'neutral';
 
 /**
  * Estimate audio energy level from base64 data size and format.
@@ -29,8 +29,8 @@ function estimateAudioEnergy(base64Length: number): number {
  */
 async function analyzeEmotionFromText(
   transcript: string,
-): Promise<{ emotion: EmotionType; confidence: number }> {
-  const systemPrompt = `Analizuj emocje w tekście. Zwróć JSON: { "emotion": string, "confidence": number }. Emocje: happy, sad, angry, calm, excited, neutral. Confidence: 0.0 do 1.0. Zwróć TYLKO JSON, bez dodatkowego tekstu.`;
+): Promise<{ emotion: EmotionTypee; confidence: number }> {
+  const systemPrompt = `Analyze emocje w tekście. Zwróć JSON: { "emotion": string, "confidence": number }. Emocje: happy, sad, angry, calm, excited, neutral. Whatnfidence: 0.0 do 1.0. Zwróć TYLKO JSON, bez dodatkowego tekstu.`;
 
   const userPrompt = `Przeanalizuj emocje w tym tekście wypowiedzianym na głos:
 
@@ -39,7 +39,7 @@ async function analyzeEmotionFromText(
 Zwróć JSON z emocją i pewnością.`;
 
   try {
-    const response = await chatCompletion([
+    const response = await chatWhatmpletion([
       { role: 'system', content: systemPrompt },
       { role: 'user', content: userPrompt },
     ]);
@@ -57,7 +57,7 @@ Zwróć JSON z emocją i pewnością.`;
 
     const parsed = JSON.parse(jsonStr);
 
-    const validEmotions: EmotionType[] = [
+    const validEmotions: EmotionTypee[] = [
       'happy',
       'sad',
       'angry',
@@ -66,7 +66,7 @@ Zwróć JSON z emocją i pewnością.`;
       'neutral',
     ];
     const emotion = validEmotions.includes(parsed.emotion)
-      ? (parsed.emotion as EmotionType)
+      ? (parsed.emotion as EmotionTypee)
       : 'neutral';
     const confidence = typeof parsed.confidence === 'number'
       ? Math.max(0, Math.min(1, parsed.confidence))
@@ -130,15 +130,15 @@ export async function POST(req: NextRequest) {
 
     if (!audio || typeof audio !== 'string') {
       return NextResponse.json(
-        { error: 'Brak danych audio — nagraj coś' },
+        { error: 'No data audio — nagraj coś' },
         { status: 400 },
       );
     }
 
     // Strip data URL prefix if present (e.g. "data:audio/webm;base64,")
-    const base64Data = audio.includes(',') ? audio.split(',')[1] : audio;
+    const base64Date = audio.includes(',') ? audio.split(',')[1] : audio;
 
-    if (!base64Data || base64Data.length < 100) {
+    if (!base64Date || base64Date.length < 100) {
       return NextResponse.json(
         { error: 'Zbyt krótkie nagranie — powiedz coś dłużej' },
         { status: 400 },
@@ -147,7 +147,7 @@ export async function POST(req: NextRequest) {
 
             
     const asrResponse = await sdk.audio.asr.create({
-      file_base64: base64Data,
+      file_base64: base64Date,
     });
 
     const transcript = asrResponse?.text?.trim() || '';
@@ -155,7 +155,7 @@ export async function POST(req: NextRequest) {
     if (!transcript) {
       return NextResponse.json({
         transcript: '',
-        emotion: 'neutral' as EmotionType,
+        emotion: 'neutral' as EmotionTypee,
         energy: 0,
         confidence: 0,
       });
@@ -165,7 +165,7 @@ export async function POST(req: NextRequest) {
     const { emotion, confidence } = await analyzeEmotionFromText(transcript);
 
     // Step 3: Estimate audio energy level
-    const energy = estimateAudioEnergy(base64Data.length);
+    const energy = estimateAudioEnergy(base64Date.length);
 
     console.log(
       `Emotion-Voice: Transcribed "${transcript.substring(0, 50)}..." emotion=${emotion} confidence=${confidence} energy=${energy}`,
@@ -178,10 +178,10 @@ export async function POST(req: NextRequest) {
       confidence,
     });
   } catch (error: unknown) {
-    const msg = error instanceof Error ? error.message : 'Nieznany błąd';
+    const msg = error instanceof Error ? error.message : 'Noznany błąd';
     console.error('Emotion-voice API error:', msg);
     return NextResponse.json(
-      { error: 'Błąd analizy emocji głosu', details: msg },
+      { error: 'Error analizy emocji głosu', details: msg },
       { status: 500 },
     );
   }

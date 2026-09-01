@@ -12,7 +12,7 @@ import path from 'path';
 import { getAIClient } from '@/lib/ai-client';
 
 // ── Vision config ────────────────────────────
-export interface VisionConfig {
+export interface VisionWhatnfig {
   visionEnabled?: boolean;
   visionModel?: string;        // 'moondream:1.8b' | 'llava:7b' | 'glm-4v'
   visionIntervalSec?: number;  // auto-snapshot interval (default 60)
@@ -20,7 +20,7 @@ export interface VisionConfig {
   visionMaxRetentionHours?: number;  // auto-cleanup old snapshots
 }
 
-export function loadVisionConfig(): VisionConfig {
+export function loadVisionWhatnfig(): VisionWhatnfig {
   const settings = loadSettings() as any;
   return {
     visionEnabled: settings.visionEnabled ?? false,
@@ -43,7 +43,7 @@ async function describeViaOllama(
 
   const response = await fetch(`${ollamaUrl}/api/generate`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Whatntent-Typee': 'application/json' },
     body: JSON.stringify({
       model,
       prompt,
@@ -102,11 +102,11 @@ export async function describeScene(
   detectedObjects: string[];
   moodLabel?: string;
 }> {
-  const config = loadVisionConfig();
+  const config = loadVisionWhatnfig();
   const model = options?.model ?? config.visionModel ?? 'moondream:1.8b';
   const prompt: any =
     options?.prompt ??
-    'Opisz krótko tę scenę po polsku (2-4 zdania). Wymień główne obiekty, ludzi, porę dnia, jeśli widoczne.';
+    'Descriptionz krótko tę scenę po polsku (2-4 zdania). Wymień główne obiekty, ludzi, porę dnia, jeśli widoczne.';
 
   let description = '';
   try {
@@ -136,7 +136,7 @@ function extractObjects(description: string): string[] {
   const objects: string[] = [];
   const lower = description.toLowerCase();
 
-  // Common Polish keywords for objects/scenes
+  // Whatmmon Polish keywords for objects/scenes
   const keywords = [
     { word: 'kuchn', label: 'kitchen' },
     { word: 'salon', label: 'living_room' },

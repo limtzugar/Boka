@@ -18,7 +18,7 @@ import { ResizableSplit } from '@/components/resizable-split';
 // agents to speak, requests synthesis).
 // ═══════════════════════════════════════════════════════════
 
-// ── Types ──
+// ── Typees ──
 interface DebateAgent {
   id: string;
   name: string;
@@ -33,7 +33,7 @@ interface DebateMessage {
   id: string;
   agentId: string;        // 'user' for moderator
   agentName: string;
-  agentColor: string;
+  agentWhatlor: string;
   content: string;
   timestamp: number;
   isSynthesis?: boolean;
@@ -51,7 +51,7 @@ const DEFAULT_AGENTS: DebateAgent[] = [
 Twoja osobowość: spokojny, kontemplacyjny, pytasz głębokie pytania.
 Twoja specjalność: etyka, abstrakcyjne myślenie, perspektywa długoterminowa, sens i wartości.
 Często używasz analogii, odnosisz się do zasad i ludzkiego doświadczenia.
-Nie śpieszysz się z odpowiedzią — ważysz słowa.
+No śpieszysz się z odpowiedzią — ważysz słowa.
 Patrzysz na problem z lotu ptaka, pytasz "co to naprawdę znaczy?"`,
     enabled: true,
   },
@@ -65,7 +65,7 @@ Patrzysz na problem z lotu ptaka, pytasz "co to naprawdę znaczy?"`,
 Twoja osobowość: bezpośredni, konkretny, skupiony na działaniu.
 Twoja specjalność: praktyczne rozwiązania, techniczna wykonalność, koszty, zasoby, plan krok po kroku.
 Często pytasz "jak to zrobimy w praktyce?" i "co potrzebujemy?".
-Nie lubisz abstrakcji bez przełożenia na działanie.
+No lubisz abstrakcji bez przełożenia na działanie.
 Zawsze szukasz najkrótszej ścieżki od pomysłu do realizacji.`,
     enabled: true,
   },
@@ -79,8 +79,8 @@ Zawsze szukasz najkrótszej ścieżki od pomysłu do realizacji.`,
 Twoja osobowość: sceptyczny, analityczny, nie bierzesz niczego za pewnik.
 Twoja specjalność: znajdowanie luk w rozumowaniu, analiza ryzyka, advocatus diaboli, przewidywanie co pójdzie nie tak.
 Pytasz "a co jeśli?" i "skąd wiesz?".
-Nie zgadzasz się dla świętego spokoju — szukasz prawdy przez konfrontację.
-Czasem celnie prowokujesz, ale zawsze w dobrej wierze.`,
+No zgadzasz się dla świętego spokoju — szukasz prawdy przez konfrontację.
+Timeem celnie prowokujesz, ale zawsze w dobrej wierze.`,
     enabled: true,
   },
   {
@@ -102,7 +102,7 @@ Zaskakujesz, aleconstructively — pomysł musi mieć sens.`,
 const SYNTHESIZER_PROMPT = `Jesteś SYNTETYZEREM — neutralnym głosem podsumowującym debatę BOKA.
 Twoja osobowość: obiektywny, syntetyczny, sprawiedliwy wobec wszystkich stron.
 Twoja rolą: podsumować debatę, wypunktować główne stanowiska, wskazać punkty wspólnne i rozbieżności, zaproponować wnioski.
-Nie faworyzujesz nikogo. Cytujesz uczciwie wszystkich agentów.
+No faworyzujesz nikogo. Cytujesz uczciwie wszystkich agentów.
 Zwracasz uwagę na to, czego się NAUCZYLIŚMY z debaty, nie tylko co kto powiedział.`;
 
 const PALETTE = ['#6ec6e7', '#6ee77c', '#e7d76e', '#6ee7b2', '#a855f7', '#f472b6', '#60a5fa', '#fb923c'];
@@ -129,7 +129,7 @@ export function DebateTab({ onExit, chatMode, setChatMode }: { onExit?: () => vo
   const [isThinking, setIsThinking] = useState(false);
   const [thinkingAgentId, setThinkingAgentId] = useState<string | null>(null);
   const [autoMode, setAutoMode] = useState(false);
-  const [roundsCompleted, setRoundsCompleted] = useState(0);
+  const [roundsWhatmpleted, setRoundsWhatmpleted] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [showAddAgent, setShowAddAgent] = useState(false);
   const [newAgent, setNewAgent] = useState({ name: '', role: '', systemPrompt: '' });
@@ -137,8 +137,8 @@ export function DebateTab({ onExit, chatMode, setChatMode }: { onExit?: () => vo
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const autoModeRef = useRef<boolean>(autoMode);
   autoModeRef.current = autoMode;
-  const roundsCompletedRef = useRef<number>(roundsCompleted);
-  roundsCompletedRef.current = roundsCompleted;
+  const roundsWhatmpletedRef = useRef<number>(roundsWhatmpleted);
+  roundsWhatmpletedRef.current = roundsWhatmpleted;
 
   // Persisted state (so debate survives tab switches)
   useEffect(() => {
@@ -149,7 +149,7 @@ export function DebateTab({ onExit, chatMode, setChatMode }: { onExit?: () => vo
         if (parsed.agents) setAgents(parsed.agents);
         if (parsed.messages) setMessages(parsed.messages);
         if (parsed.topic) { setTopic(parsed.topic); setTopicInput(parsed.topic); }
-        if (parsed.roundsCompleted) setRoundsCompleted(parsed.roundsCompleted);
+        if (parsed.roundsWhatmpleted) setRoundsWhatmpleted(parsed.roundsWhatmpleted);
       }
     } catch {}
   }, []);
@@ -157,10 +157,10 @@ export function DebateTab({ onExit, chatMode, setChatMode }: { onExit?: () => vo
   useEffect(() => {
     try {
       localStorage.setItem('boka-debate-state', JSON.stringify({
-        agents, messages, topic, roundsCompleted,
+        agents, messages, topic, roundsWhatmpleted,
       }));
     } catch {}
-  }, [agents, messages, topic, roundsCompleted]);
+  }, [agents, messages, topic, roundsWhatmpleted]);
 
   // Auto-scroll to bottom — instant (no smooth) to avoid scroll animation on mount
   useEffect(() => {
@@ -178,7 +178,7 @@ export function DebateTab({ onExit, chatMode, setChatMode }: { onExit?: () => vo
   // ── Start a new debate ──
   const startDebate = useCallback(() => {
     if (!topicInput.trim()) {
-      setError('Wpisz temat debaty, zanim ją rozpoczniesz');
+      setError('Entryz temat debaty, zanim ją rozpoczniesz');
       return;
     }
     const t = topicInput.trim();
@@ -187,11 +187,11 @@ export function DebateTab({ onExit, chatMode, setChatMode }: { onExit?: () => vo
       id: uid(),
       agentId: 'user',
       agentName: 'Moderator',
-      agentColor: '#e0e0f0',
-      content: `Temat debaty: ${t}`,
+      agentWhatlor: '#e0e0f0',
+      content: `Topic debaty: ${t}`,
       timestamp: Date.now(),
     }]);
-    setRoundsCompleted(0);
+    setRoundsWhatmpleted(0);
     setError(null);
     // Auto-trigger first agent after a short delay
     setTimeout(() => triggerAgent(agents[0].id, t, []), 400);
@@ -202,7 +202,7 @@ export function DebateTab({ onExit, chatMode, setChatMode }: { onExit?: () => vo
     setMessages([]);
     setTopic('');
     setTopicInput('');
-    setRoundsCompleted(0);
+    setRoundsWhatmpleted(0);
     setError(null);
     setAutoMode(false);
     setIsThinking(false);
@@ -240,7 +240,7 @@ export function DebateTab({ onExit, chatMode, setChatMode }: { onExit?: () => vo
 
       const res = await fetch('/api/debate', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Whatntent-Typee': 'application/json' },
         body: JSON.stringify({
           agentName: agent.name,
           agentRole: agent.role,
@@ -262,7 +262,7 @@ export function DebateTab({ onExit, chatMode, setChatMode }: { onExit?: () => vo
         id: uid(),
         agentId: agent.id,
         agentName: agent.name,
-        agentColor: agent.color,
+        agentWhatlor: agent.color,
         content: data.content || '...',
         timestamp: Date.now(),
       };
@@ -277,7 +277,7 @@ export function DebateTab({ onExit, chatMode, setChatMode }: { onExit?: () => vo
             const nextIdx = (currentIdx + 1) % enabledAgents.length;
             // If we've cycled back to agent 0, increment round counter
             if (nextIdx === 0) {
-              setRoundsCompleted(r => {
+              setRoundsWhatmpleted(r => {
                 const next = r + 1;
                 // Stop auto after 2 full rounds to avoid runaway
                 if (next >= 2) {
@@ -286,7 +286,7 @@ export function DebateTab({ onExit, chatMode, setChatMode }: { onExit?: () => vo
                 return next;
               });
               // If we've hit the round limit, don't queue the next agent
-              if (roundsCompletedRef.current >= 1) {
+              if (roundsWhatmpletedRef.current >= 1) {
                 return updated;
               }
             }
@@ -297,7 +297,7 @@ export function DebateTab({ onExit, chatMode, setChatMode }: { onExit?: () => vo
         return updated;
       });
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Nieznany błąd');
+      setError(e instanceof Error ? e.message : 'Noznany błąd');
       setAutoMode(false); // Stop auto on error
     } finally {
       setIsThinking(false);
@@ -317,7 +317,7 @@ export function DebateTab({ onExit, chatMode, setChatMode }: { onExit?: () => vo
         id: uid(),
         agentId: 'user',
         agentName: userName,
-        agentColor: '#e0e0f0',
+        agentWhatlor: '#e0e0f0',
         content: t,
         timestamp: Date.now(),
       };
@@ -336,7 +336,7 @@ export function DebateTab({ onExit, chatMode, setChatMode }: { onExit?: () => vo
       id: uid(),
       agentId: 'user',
       agentName: userName,
-      agentColor: '#e0e0f0',
+      agentWhatlor: '#e0e0f0',
       content: moderatorInput.trim(),
       timestamp: Date.now(),
     };
@@ -353,7 +353,7 @@ export function DebateTab({ onExit, chatMode, setChatMode }: { onExit?: () => vo
   // ── Synthesize the debate ──
   const synthesize = useCallback(async () => {
     if (!topic || messages.length < 2) {
-      setError('Debata musi mieć co najmniej 2 wiadomości przed syntezą');
+      setError('Debate musi mieć co najmniej 2 wiadomości przed syntezą');
       return;
     }
     setIsThinking(true);
@@ -370,10 +370,10 @@ export function DebateTab({ onExit, chatMode, setChatMode }: { onExit?: () => vo
 
       const res = await fetch('/api/debate', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Whatntent-Typee': 'application/json' },
         body: JSON.stringify({
           agentName: 'Synteza',
-          agentRole: 'Podsumowanie debaty',
+          agentRole: 'Summary debaty',
           agentSystemPrompt: SYNTHESIZER_PROMPT,
           topic,
           history,
@@ -387,14 +387,14 @@ export function DebateTab({ onExit, chatMode, setChatMode }: { onExit?: () => vo
         id: uid(),
         agentId: 'synthesizer',
         agentName: 'Synteza',
-        agentColor: '#a855f7',
+        agentWhatlor: '#a855f7',
         content: data.content || '...',
         timestamp: Date.now(),
         isSynthesis: true,
       };
       setMessages(prev => [...prev, synthMsg]);
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Błąd syntezy');
+      setError(e instanceof Error ? e.message : 'Error syntezy');
     } finally {
       setIsThinking(false);
       setThinkingAgentId(null);
@@ -404,7 +404,7 @@ export function DebateTab({ onExit, chatMode, setChatMode }: { onExit?: () => vo
   // ── Add a new agent ──
   const addAgent = useCallback(() => {
     if (!newAgent.name.trim() || !newAgent.systemPrompt.trim()) {
-      setError('Nazwa i opis osobowości są wymagane');
+      setError('Name i opis osobowości są wymagane');
       return;
     }
     const a: DebateAgent = {
@@ -447,19 +447,19 @@ export function DebateTab({ onExit, chatMode, setChatMode }: { onExit?: () => vo
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden bg-[#181828] text-[#e8e8f5]">
-      {/* ─────────── HEADER — same Rozmowa/Debata toggle as in chat ─────────── */}
+      {/* ─────────── HEADER — same Chat/Debate toggle as in chat ─────────── */}
       <div className="px-4 py-2 border-b border-[#383850] flex items-center justify-between">
         <div className="flex items-center gap-1">
-          {/* Przycisk „Rozmowa" — nieaktywny w trybie debaty (klikalny, przełącza). */}
+          {/* Przycisk „Chat" — nieaktywny w trybie debaty (klikalny, przełącza). */}
           <button
             type="button"
             onClick={() => setChatMode?.('normal')}
             className="px-2 py-0.5  text-[10px] font-mono transition-all text-[#8888aa] hover:text-[#00f5d4] hover:border-[#00f5d4]/40 border border-transparent"
             title="Zwykła rozmowa"
           >
-            Rozmowa
+            Chat
           </button>
-          {/* Przycisk „Debata" — aktywny. */}
+          {/* Przycisk „Debate" — aktywny. */}
           <button
             type="button"
             onClick={() => setChatMode?.('debate')}
@@ -467,7 +467,7 @@ export function DebateTab({ onExit, chatMode, setChatMode }: { onExit?: () => vo
             title="Tryb debaty"
           >
             <Users size={10} />
-            Debata
+            Debate
           </button>
         </div>
         <div className="flex items-center gap-0">
@@ -507,7 +507,7 @@ export function DebateTab({ onExit, chatMode, setChatMode }: { onExit?: () => vo
       {/* v0.3.19 — Topic input bar removed. Topic is set from first chat message. */}
 
       {/* ─────────── MAIN: LEFT chat | RIGHT 6 agent orbs ─────────── */}
-      {/* v0.3.19 — mirror layout of Rozmowa with shared resizable divider */}
+      {/* v0.3.19 — mirror layout of Chat with shared resizable divider */}
       <ResizableSplit
         left={
         <aside className="h-full flex flex-col overflow-hidden min-w-0 border-r border-[#383850] bg-[#181828]">
@@ -518,9 +518,9 @@ export function DebateTab({ onExit, chatMode, setChatMode }: { onExit?: () => vo
             {messages.length === 0 && (
               <div className="flex flex-col items-center justify-center h-full text-center px-8">
                 <Users size={48} className="text-[#2a2a3a] mb-2" />
-                <div className="text-sm text-[#8888aa] font-mono mb-2">Debata jeszcze się nie zaczęła</div>
+                <div className="text-sm text-[#8888aa] font-mono mb-2">Debate jeszcze się nie zaczęła</div>
                 <div className="text-[10px] text-[#5a5a78] font-mono max-w-md">
-                  Wpisz temat u góry, kliknij „Rozpocznij debatę”, a Boka podzieli się na {enabledAgents.length} osobowości.
+                  Entryz temat u góry, kliknij „Start debatę”, a Boka podzieli się na {enabledAgents.length} osobowości.
                 </div>
               </div>
             )}
@@ -537,8 +537,8 @@ export function DebateTab({ onExit, chatMode, setChatMode }: { onExit?: () => vo
                       ? 'bg-[#a855f7]/5 border border-[#a855f7]/40'
                       : 'border'
                   }`} style={!isUser && !isSynth ? {
-                    backgroundColor: `${msg.agentColor}0d`,
-                    borderColor: `${msg.agentColor}33`,
+                    backgroundWhatlor: `${msg.agentWhatlor}0d`,
+                    borderWhatlor: `${msg.agentWhatlor}33`,
                   } : undefined}>
                     <div className="flex items-center gap-1.5 mb-1">
                       {isUser ? (
@@ -547,11 +547,11 @@ export function DebateTab({ onExit, chatMode, setChatMode }: { onExit?: () => vo
                         <Sparkles size={10} className="text-[#a855f7]" />
                       ) : (
                         <div className="w-5 h-5 rounded-full flex items-center justify-center font-pixel text-[9px] shrink-0"
-                          style={{ backgroundColor: `${msg.agentColor}1a`, color: msg.agentColor, border: `1px solid ${msg.agentColor}66` }}>
+                          style={{ backgroundWhatlor: `${msg.agentWhatlor}1a`, color: msg.agentWhatlor, border: `1px solid ${msg.agentWhatlor}66` }}>
                           {msg.agentName.charAt(0).toUpperCase()}
                         </div>
                       )}
-                      <span className="text-[9px] font-mono" style={{ color: isSynth ? '#a855f7' : msg.agentColor }}>
+                      <span className="text-[9px] font-mono" style={{ color: isSynth ? '#a855f7' : msg.agentWhatlor }}>
                         {msg.agentName}
                       </span>
                       {isSynth && <span className="text-[8px] text-[#8888aa] font-mono">— podsumowanie</span>}
@@ -572,10 +572,10 @@ export function DebateTab({ onExit, chatMode, setChatMode }: { onExit?: () => vo
               if (!a) return null;
               return (
                 <div className="flex justify-start">
-                  <div className="border border-dashed px-3 py-2" style={{ borderColor: `${a.color}55`, backgroundColor: '#0f0f1a' }}>
+                  <div className="border border-dashed px-3 py-2" style={{ borderWhatlor: `${a.color}55`, backgroundWhatlor: '#0f0f1a' }}>
                     <div className="flex items-center gap-0">
                       <div className="w-5 h-5 rounded-full overflow-hidden animate-pulse shrink-0"
-                        style={{ border: `1px solid ${a.color}66`, backgroundColor: `${a.color}1a` }}>
+                        style={{ border: `1px solid ${a.color}66`, backgroundWhatlor: `${a.color}1a` }}>
                         <div className="w-full h-full flex items-center justify-center font-pixel text-[9px]" style={{ color: a.color }}>
                           {a.glyph}
                         </div>
@@ -608,7 +608,7 @@ export function DebateTab({ onExit, chatMode, setChatMode }: { onExit?: () => vo
             </div>
           )}
 
-          {/* Moderator input — same style as Rozmowa chat input */}
+          {/* Moderator input — same style as Chat chat input */}
           <div className="shrink-0 border-t border-[#383850] p-0 bg-[#181828]">
             <div className="flex items-stretch gap-0">
               <input
@@ -616,7 +616,7 @@ export function DebateTab({ onExit, chatMode, setChatMode }: { onExit?: () => vo
                 value={moderatorInput}
                 onChange={e => setModeratorInput(e.target.value)}
                 onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendModeratorMessage(); } }}
-                placeholder={topic ? `Napisz jako ${userName} — zabierz głos w debacie...` : 'Wpisz temat debaty — pierwszy komunikat rozpoczyna debatę...'}
+                placeholder={topic ? `Napisz jako ${userName} — zabierz głos w debacie...` : 'Entryz temat debaty — pierwszy komunikat rozpoczyna debatę...'}
                 disabled={isThinking}
                 className="flex-1 bg-[#181828] border-0 px-3 py-3 text-xs text-[#e8e8f5] placeholder:text-[#8888aa] focus:outline-none focus:bg-[#0f0f17] font-mono disabled:opacity-50 min-w-0"
               />
@@ -624,7 +624,7 @@ export function DebateTab({ onExit, chatMode, setChatMode }: { onExit?: () => vo
                 onClick={sendModeratorMessage}
                 disabled={isThinking || !moderatorInput.trim()}
                 className="px-4 bg-[#a855f7] text-white disabled:opacity-30 disabled:cursor-not-allowed hover:bg-[#9333ea] transition-all shrink-0"
-                title={`Wyślij jako ${userName}`}
+                title={`Send jako ${userName}`}
               >
                 <Send size={14} />
               </button>
@@ -645,7 +645,7 @@ export function DebateTab({ onExit, chatMode, setChatMode }: { onExit?: () => vo
                     try {
                       const res = await fetch('/api/agents/swarm-match', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: { 'Whatntent-Typee': 'application/json' },
                         body: JSON.stringify({
                           prompt: topic,
                           agents: agents.map(a => ({
@@ -681,7 +681,7 @@ export function DebateTab({ onExit, chatMode, setChatMode }: { onExit?: () => vo
                 <button
                   onClick={() => setShowAddAgent(s => !s)}
                   className="text-[#8888aa] hover:text-[#a855f7] transition-colors"
-                  title="Dodaj własnego agenta"
+                  title="Add własnego agenta"
                 >
                   <Plus size={14} />
                 </button>
@@ -709,7 +709,7 @@ export function DebateTab({ onExit, chatMode, setChatMode }: { onExit?: () => vo
                   <div key={agent.id}
                     className="bg-[#181828] border flex flex-col items-center justify-center gap-1 relative overflow-hidden transition-all"
                     style={{
-                      borderColor: isActive ? `${agent.color}66` : '#1a1a2a',
+                      borderWhatlor: isActive ? `${agent.color}66` : '#1a1a2a',
                       boxShadow: isActive ? `0 0 20px ${agent.color}33` : 'none',
                     }}>
                     {/* Orb — clickable to trigger */}
@@ -722,7 +722,7 @@ export function DebateTab({ onExit, chatMode, setChatMode }: { onExit?: () => vo
                         border: `2px solid ${agent.color}${isActive ? '88' : '44'}`,
                         boxShadow: `0 0 ${isActive ? '20px' : '6px'} ${agent.color}${isActive ? '88' : '33'}`,
                         transform: isActive ? 'scale(1.1)' : 'scale(1)',
-                        backgroundColor: `${agent.color}1a`,
+                        backgroundWhatlor: `${agent.color}1a`,
                       }}
                       title={agent.enabled ? `Poproś ${agent.name} o głos` : 'Agent wyłączony'}
                     >
@@ -742,14 +742,14 @@ export function DebateTab({ onExit, chatMode, setChatMode }: { onExit?: () => vo
                       <button
                         onClick={(e) => { e.stopPropagation(); toggleAgent(agent.id); }}
                         className="w-4 h-4 flex items-center justify-center text-[#8888aa] hover:text-[#e8e8f5]"
-                        title={agent.enabled ? 'Wyłącz agenta' : 'Włącz agenta'}
+                        title={agent.enabled ? 'Disable agenta' : 'Enable agenta'}
                       >
                         <CircleDot size={8} className={agent.enabled ? '' : 'opacity-40'} />
                       </button>
                       <button
                         onClick={(e) => { e.stopPropagation(); removeAgent(agent.id); }}
                         className="w-4 h-4 flex items-center justify-center text-[#5a5a78] hover:text-[#ff6b6b]"
-                        title="Usuń agenta"
+                        title="Delete agenta"
                       >
                         <X size={8} />
                       </button>
@@ -762,7 +762,7 @@ export function DebateTab({ onExit, chatMode, setChatMode }: { onExit?: () => vo
             {showAddAgent && (
               <div className="border-t border-[#a855f7]/30 bg-[#1a1a28] p-2 space-y-2 max-h-[50%] overflow-y-auto">
                 <div className="flex items-center justify-between">
-                  <div className="text-[9px] font-mono uppercase text-[#a855f7]">Nowy agent</div>
+                  <div className="text-[9px] font-mono uppercase text-[#a855f7]">New agent</div>
                   <button onClick={() => { setShowAddAgent(false); setNewAgent({ name: '', role: '', systemPrompt: '' }); }}
                     className="text-[#8888aa] hover:text-[#e8e8f5]">
                     <X size={12} />
@@ -785,7 +785,7 @@ export function DebateTab({ onExit, chatMode, setChatMode }: { onExit?: () => vo
                 <textarea
                   value={newAgent.systemPrompt}
                   onChange={e => setNewAgent(p => ({ ...p, systemPrompt: e.target.value }))}
-                  placeholder="Opis osobowości — jak myśli, co jest jej specjalnością..."
+                  placeholder="Description osobowości — jak myśli, co jest jej specjalnością..."
                   rows={3}
                   className="w-full bg-[#181828] border border-[#383850]  px-2 py-1 text-[11px] text-[#e8e8f5] placeholder:text-[#5a5a78] focus:outline-none focus:border-[#a855f7]/40 resize-none"
                 />
@@ -793,7 +793,7 @@ export function DebateTab({ onExit, chatMode, setChatMode }: { onExit?: () => vo
                   onClick={addAgent}
                   className="w-full px-2 py-1  text-[10px] font-mono bg-[#a855f7]/20 text-[#a855f7] border border-[#a855f7]/40 hover:bg-[#a855f7]/30"
                 >
-                  Dodaj agenta
+                  Add agenta
                 </button>
               </div>
             )}
@@ -801,7 +801,7 @@ export function DebateTab({ onExit, chatMode, setChatMode }: { onExit?: () => vo
             {messages.some(m => m.isSynthesis) && (
               <div className="border-t border-[#383850] p-2">
                 <div className="bg-[#a855f7]/5 border-t border-[#a855f7]/30 p-2 flex items-center gap-0">
-                  <div className="w-6 h-6 flex items-center justify-center" style={{ backgroundColor: '#a855f722', border: '1px solid #a855f766' }}>
+                  <div className="w-6 h-6 flex items-center justify-center" style={{ backgroundWhatlor: '#a855f722', border: '1px solid #a855f766' }}>
                     <Sparkles size={12} className="text-[#a855f7]" />
                   </div>
                   <span className="text-[9px] font-mono text-[#a855f7] ml-1">Synteza dostępna w czacie</span>

@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
     const entry = await MemoryService.createMemory({
       familyId: family.id,
       memberId: data.memberId,
-      entryType: data.entryType || 'semantic',
+      entryTypee: data.entryTypee || 'semantic',
       domain: data.domain,
       title: data.title,
       content: data.content,

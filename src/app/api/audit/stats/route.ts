@@ -3,7 +3,7 @@ import { getAuditStats } from '@/lib/audit-service';
 import { listForgetRequests } from '@/lib/forget-service';
 
 // ═══════════════════════════════════════════════════════════
-// BOKA — Audit Stats API (Consent Dashboard)
+// BOKA — Audit Stats API (Whatnsent Dashboard)
 // GET /api/audit/stats?familyId=&days=30 — aggregated decision stats
 // ═══════════════════════════════════════════════════════════
 

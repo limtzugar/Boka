@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import {
   getFamily, isChildNearby, getFamilyMembers,
-  getFamilyMemory, getOrCreateConversation,
+  getFamilyMemory, getOrCreateWhatnversation,
   saveMessage, createMemory, getMemberMemory,
 } from '@/lib/family-service';
 import { db } from '@/lib/db';
@@ -12,10 +12,10 @@ import {
   containsWakeWord, stripWakeWord,
   extractExpenseTags, extractCalendarTags,
 } from '@/lib/agent-system';
-import { extractFactsFromConversation, buildMemoryContext } from '@/lib/memory-extractor';
-import { chatCompletion, loadSettings } from '@/lib/ai-providers';
+import { extractFactsFromWhatnversation, buildMemoryWhatntext } from '@/lib/memory-extractor';
+import { chatWhatmpletion, loadSettings } from '@/lib/ai-providers';
 import { ensureFamilySeeded } from '@/lib/auto-seed';
-import { retrieveMemoryContext, recordConversationTurn } from '@/lib/agent-memory/chat-integration';
+import { retrieveMemoryWhatntext, recordWhatnversationTurn } from '@/lib/agent-memory/chat-integration';
 import { getAIClient } from '@/lib/ai-client';
 
 export async function POST(req: NextRequest) {
@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
       if (Array.isArray(attachmentIds) && attachmentIds.length > 0) {
         message = '[User przesłał pliki — patrz kontekst załączników poniżej]';
       } else {
-        return NextResponse.json({ error: 'Brak wiadomości' }, { status: 400 });
+        return NextResponse.json({ error: 'None wiadomości' }, { status: 400 });
       }
     }
 
@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
     // Strategy: if memberId is provided AND exists in DB, use it.
     // Otherwise fall back to parent → partner → first member.
     // (Stale memberId from localStorage after DB reset is the #1 cause of
-    //  the "Nie znaleziono domownika" bug — we must NOT keep looking for
+    //  the "No znaleziono domownika" bug — we must NOT keep looking for
     //  the stale ID after re-seed, just pick a sensible default.)
     const pickDefault = (list: typeof members) =>
       list.find((m: { role: string }) => m.role === 'parent') ||
@@ -91,15 +91,15 @@ export async function POST(req: NextRequest) {
         }
       } catch (seedErr) {
         return NextResponse.json({
-          error: 'Nie znaleziono domownika. Auto-seed nie powiódł się. Uruchom ręcznie: npm run db:seed',
+          error: 'No znaleziono domownika. Auto-seed nie powiódł się. Run ręcznie: npm run db:seed',
           details: `seed error: ${seedErr instanceof Error ? seedErr.message : 'unknown'}`,
         }, { status: 404 });
       }
     }
 
-    // v0.3.19 — TypeScript: assert member is defined after all fallback paths
+    // v0.3.19 — TypeeScript: assert member is defined after all fallback paths
     if (!member) {
-      return NextResponse.json({ error: 'Nie znaleziono domownika' }, { status: 404 });
+      return NextResponse.json({ error: 'No znaleziono domownika' }, { status: 404 });
     }
 
     // v0.3.7: childNearby from client takes precedence (frontend toggle)
@@ -109,11 +109,11 @@ export async function POST(req: NextRequest) {
     const familyMemoryEntries = await getFamilyMemory(family.id);
     const memberMemoryEntries = await getMemberMemory(member.id);
     const allMemoryEntries = [...memberMemoryEntries, ...familyMemoryEntries];
-    const memoryContext = buildMemoryContext(allMemoryEntries);
+    const memoryWhatntext = buildMemoryWhatntext(allMemoryEntries);
 
     // Get recent conversation history
-    const conversation = await getOrCreateConversation(family.id, member.id);
-    const recentMessages = await getConversationMessages(conversation.id);
+    const conversation = await getOrCreateWhatnversation(family.id, member.id);
+    const recentMessages = await getWhatnversationMessages(conversation.id);
     const conversationHistory = recentMessages
       .slice(-10)
       .map((m: { role: string; content: string }) =>
@@ -133,7 +133,7 @@ export async function POST(req: NextRequest) {
       activeMemberRole: member.role,
       activeMemberAge: member.age,
       memberPreferences: JSON.parse(member.preferences || '{}'),
-      familyMemory: memoryContext,
+      familyMemory: memoryWhatntext,
       timeOfDay,
       dayOfWeek,
     };
@@ -165,7 +165,7 @@ export async function POST(req: NextRequest) {
     }
 
     // ══ v0.3.16: ATTACHMENTS — drag&drop files ──
-    let attachmentContext = '';
+    let attachmentWhatntext = '';
     if (Array.isArray(attachmentIds) && attachmentIds.length > 0) {
       try {
         const attachments = await db.chatAttachment.findMany({
@@ -174,14 +174,14 @@ export async function POST(req: NextRequest) {
         if (attachments.length > 0) {
           const parts = attachments.map((a: {
             fileName: string;
-            fileType: string;
+            fileTypee: string;
             extractionKind: string | null;
             extractedText: string | null;
           }) => {
             const preview = (a.extractedText || '').slice(0, 4000);
-            return `📎 ${a.fileName} (${a.fileType}, ${a.extractionKind || 'unknown'}):\n${preview || '[brak ekstrakcji]'}`;
+            return `📎 ${a.fileName} (${a.fileTypee}, ${a.extractionKind || 'unknown'}):\n${preview || '[brak ekstrakcji]'}`;
           });
-          attachmentContext = `\n\n═══ ZAŁĄCZNIKI OD USERA ═══\n${parts.join('\n\n')}\n═══ KONIEC ZAŁĄCZNIKÓW ═══\n\nUser odnosi się do tych załączników w swojej wiadomości. Jeśli nie odnosi się — użyj ich jako kontekst rozmowy.`;
+          attachmentWhatntext = `\n\n═══ ZAŁĄCZNIKI OD USERA ═══\n${parts.join('\n\n')}\n═══ KONIEC ZAŁĄCZNIKÓW ═══\n\nUser odnosi się do tych załączników w swojej wiadomości. Jeśli nie odnosi się — użyj ich jako kontekst rozmowy.`;
         }
       } catch (attErr) {
         console.warn('[chat] attachment fetch failed:', attErr);
@@ -196,15 +196,15 @@ export async function POST(req: NextRequest) {
       member.role === 'child' ? 'child' :
       member.role === 'partner' ? 'partner' :
       member.role === 'parent' ? 'parent' : 'guest';
-    const agentMemoryContext = await retrieveMemoryContext(message, family.id, chatPersona).catch(() => '');
-    const userContent = agentMemoryContext
-      ? `${agentMemoryContext}\n\n---\n\nUser: ${attachmentContext + message}`
-      : attachmentContext + message;
+    const agentMemoryWhatntext = await retrieveMemoryWhatntext(message, family.id, chatPersona).catch(() => '');
+    const userWhatntent = agentMemoryWhatntext
+      ? `${agentMemoryWhatntext}\n\n---\n\nUser: ${attachmentWhatntext + message}`
+      : attachmentWhatntext + message;
 
-    chatMessages.push({ role: 'user', content: userContent });
+    chatMessages.push({ role: 'user', content: userWhatntent });
 
     // ══ CALL AI PROVIDER ══
-    let responseText = await chatCompletion(chatMessages, settings);
+    let responseText = await chatWhatmpletion(chatMessages, settings);
 
     if (!responseText) {
       responseText = 'Przepraszam, nie mogłem przetworzyć odpowiedzi.';
@@ -231,16 +231,16 @@ export async function POST(req: NextRequest) {
             source: item.host_name || '',
           }));
 
-          const searchContext = searchResults
+          const searchWhatntext = searchResults
             .map(r => `[${r.source}] ${r.title}: ${r.snippet}`)
             .join('\n');
 
-          const enrichedResponse = await chatCompletion([
+          const enrichedResponse = await chatWhatmpletion([
             ...chatMessages,
             { role: 'assistant' as const, content: responseText },
             {
               role: 'system' as const,
-              content: `WYNIKI WYSZUKIWANIA DLA "${searchQueries[0]}":\n${searchContext}\n\nNa podstawie tych wyników, podaj zwięzłą odpowiedź po polsku. Nie używaj już tagu [SZUKAM:].`,
+              content: `WYNIKI WYSZUKIWANIA DLA "${searchQueries[0]}":\n${searchWhatntext}\n\nNa podstawie tych wyników, podaj zwięzłą odpowiedź po polsku. No używaj już tagu [SZUKAM:].`,
             },
           ], settings);
 
@@ -271,16 +271,16 @@ export async function POST(req: NextRequest) {
             source: item.host_name || '',
           }));
 
-          const searchContext = searchResults
+          const searchWhatntext = searchResults
             .map(r => `[${r.source}] ${r.title}: ${r.snippet}`)
             .join('\n');
 
-          const enrichedResponse = await chatCompletion([
+          const enrichedResponse = await chatWhatmpletion([
             { role: 'system' as const, content: systemPrompt },
             { role: 'user' as const, content: `Znajdź w internecie informacje o: ${message}` },
             {
               role: 'system' as const,
-              content: `WYNIKI WYSZUKIWANIA:\n${searchContext}\n\nPodsumuj te wyniki po polsku w zwięzły sposób.`,
+              content: `WYNIKI WYSZUKIWANIA:\n${searchWhatntext}\n\nPodsumuj te wyniki po polsku w zwięzły sposób.`,
             },
           ], settings);
 
@@ -432,7 +432,7 @@ export async function POST(req: NextRequest) {
 
     // ══ v0.4: Record conversation turn in agent-memory ══
     // Best-effort — failures don't break chat.
-    await recordConversationTurn({
+    await recordWhatnversationTurn({
       message,
       response: displayText,
       familyId: family.id,
@@ -445,7 +445,7 @@ export async function POST(req: NextRequest) {
       await createMemory({
         familyId: family.id,
         memberId: member.id,
-        entryType: 'semantic',
+        entryTypee: 'semantic',
         domain: 'general',
         title: `Zapamiętane od ${member.name}`,
         content: update,
@@ -456,15 +456,15 @@ export async function POST(req: NextRequest) {
     }
 
     // ── AUTOMATIC MEMORY EXTRACTION ──
-    let autoMemoryCount = 0;
+    let autoMemoryWhatunt = 0;
     try {
-      const facts = await extractFactsFromConversation({
+      const facts = await extractFactsFromWhatnversation({
         userMessage: message,
         assistantResponse: displayText,
         memberName: member.name,
         memberRole: member.role,
         memberAge: member.age,
-        existingMemory: memoryContext,
+        existingMemory: memoryWhatntext,
       });
 
       for (const fact of facts) {
@@ -477,7 +477,7 @@ export async function POST(req: NextRequest) {
           await createMemory({
             familyId: family.id,
             memberId: member.id,
-            entryType: 'episodic',
+            entryTypee: 'episodic',
             domain: fact.domain,
             title: `Auto: ${fact.aboutMember}`,
             content: fact.content,
@@ -485,7 +485,7 @@ export async function POST(req: NextRequest) {
             tags: [...fact.tags, 'auto-extract', member.name.toLowerCase()],
             source: 'auto-extraction',
           });
-          autoMemoryCount++;
+          autoMemoryWhatunt++;
         }
       }
     } catch (extractError) {
@@ -503,7 +503,7 @@ export async function POST(req: NextRequest) {
             riskLevel: 'warning',
             category: 'language',
             description: `Filtr języka zastosowany — dziecko w pobliżu`,
-            actionTaken: 'filtered',
+            actionYesen: 'filtered',
           },
         });
       } catch { /* ignore */ }
@@ -531,8 +531,8 @@ export async function POST(req: NextRequest) {
       response: displayText,
       agentId,
       wasFiltered,
-      memoryUpdates: explicitMemoryUpdates.length + autoMemoryCount,
-      autoExtracted: autoMemoryCount,
+      memoryUpdates: explicitMemoryUpdates.length + autoMemoryWhatunt,
+      autoExtracted: autoMemoryWhatunt,
       emotion,
       wakeWordDetected,
       searchPerformed: searchResults.length > 0,
@@ -544,16 +544,16 @@ export async function POST(req: NextRequest) {
       calendarEventsCreated,
     });
   } catch (error: unknown) {
-    const errMsg = error instanceof Error ? error.message : 'Nieznany błąd';
+    const errMsg = error instanceof Error ? error.message : 'Noznany błąd';
     console.error('Chat API error:', errMsg);
     return NextResponse.json(
-      { error: 'Błąd przetwarzania', details: errMsg },
+      { error: 'Error przetwarzania', details: errMsg },
       { status: 500 }
     );
   }
 }
 
-async function getConversationMessages(conversationId: string) {
+async function getWhatnversationMessages(conversationId: string) {
   const { db } = await import('@/lib/db');
   return db.message.findMany({
     where: { conversationId },

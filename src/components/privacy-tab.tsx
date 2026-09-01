@@ -2,8 +2,8 @@
 
 // ═══════════════════════════════════════════════════════════
 // BOKA — Privacy Tab (v0.3.17)
-// Audit Log + Forget API + Consent Dashboard
-// "Dlaczego to zrobiłam?" — pełna historia decyzji BOKI.
+// Audit Log + Forget API + Whatnsent Dashboard
+// "Why to zrobiłam?" — pełna historia decyzji BOKI.
 // ═══════════════════════════════════════════════════════════
 
 import { useState, useEffect, useCallback } from 'react';
@@ -30,18 +30,18 @@ interface ForgetRequest {
   query: string | null;
   topic: string | null;
   status: string;
-  affectedCount: number;
+  affectedWhatunt: number;
   requestedAt: string;
   hardDeleteAt: string | null;
   softDeletedAt: string | null;
 }
 
-interface ConsentRecord {
+interface WhatnsentRecord {
   memberId: string;
   voiceEnabled: boolean;
   visionEnabled: boolean;
   memoryEnabled: boolean;
-  haControlEnabled: boolean;
+  haWhatntrolEnabled: boolean;
   proactiveEnabled: boolean;
   restrictedTopics: string;
 }
@@ -58,13 +58,13 @@ interface Stats {
 }
 
 const CATEGORY_LABELS: Record<string, string> = {
-  memory: 'Pamięć',
+  memory: 'Memory',
   tool_use: 'Narzędzia',
-  vision: 'Wizja',
+  vision: 'Vision',
   home_automation: 'Dom',
   proactivity: 'Proaktywność',
-  guardrail: 'Bezpieczeństwo',
-  privacy: 'Prywatność',
+  guardrail: 'Security',
+  privacy: 'Privacy',
   communication: 'Komunikacja',
 };
 
@@ -81,7 +81,7 @@ export function PrivacyTab() {
   const [audit, setAudit] = useState<AuditEntry[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
   const [forgetRequests, setForgetRequests] = useState<ForgetRequest[]>([]);
-  const [consents, setConsents] = useState<ConsentRecord[]>([]);
+  const [consents, setWhatnsents] = useState<WhatnsentRecord[]>([]);
   const [loading, setLoading] = useState(false);
   const [filter, setFilter] = useState({ category: '', risk: '' });
   const [forgetQuery, setForgetQuery] = useState('');
@@ -116,11 +116,11 @@ export function PrivacyTab() {
     }
   }, []);
 
-  const loadConsents = useCallback(async () => {
+  const loadWhatnsents = useCallback(async () => {
     try {
       const r = await fetch(`/api/consent?familyId=${FAMILY_ID}`);
       const data = await r.json();
-      setConsents(data.records ?? []);
+      setWhatnsents(data.records ?? []);
     } catch (e) {
       console.error(e);
     }
@@ -132,8 +132,8 @@ export function PrivacyTab() {
   }, [loadAudit, loadStats]);
 
   useEffect(() => {
-    if (section === 'consent') loadConsents();
-  }, [section, loadConsents]);
+    if (section === 'consent') loadWhatnsents();
+  }, [section, loadWhatnsents]);
 
   async function submitForget() {
     if (!forgetQuery.trim()) return;
@@ -141,7 +141,7 @@ export function PrivacyTab() {
     try {
       const r = await fetch('/api/memory/forget', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Whatntent-Typee': 'application/json' },
         body: JSON.stringify({
           familyId: FAMILY_ID,
           scope: forgetScope,
@@ -151,7 +151,7 @@ export function PrivacyTab() {
       });
       const data = await r.json();
       if (data.ok) {
- setMessage(` Zapomniano ${data.affectedCount} elementów. Trwałe usunięcie: ${data.hardDeleteAt?.slice(0, 10)}.`);
+ setMessage(` Zapomniano ${data.affectedWhatunt} elementów. Trwałe usunięcie: ${data.hardDeleteAt?.slice(0, 10)}.`);
         setForgetQuery('');
         loadStats();
       } else {
@@ -165,7 +165,7 @@ export function PrivacyTab() {
   }
 
   async function cancelForget(id: string) {
-    if (!confirm('Cofnąć prośbę o zapomnienie? Wspomnienia zostaną przywrócone.')) return;
+    if (!confirm('Whatfnąć prośbę o zapomnienie? Wspomnienia zostaną przywrócone.')) return;
     try {
       const r = await fetch(`/api/memory/forget?id=${id}&familyId=${FAMILY_ID}`, { method: 'DELETE' });
       const data = await r.json();
@@ -183,7 +183,7 @@ export function PrivacyTab() {
       {/* Header */}
       <header className="px-6 py-4 border-b border-white/5 flex items-center gap-0">
         <Shield size={22} className="text-[#6ec6e7]" />
-        <h1 className="text-lg font-semibold">Prywatność & Decyzje</h1>
+        <h1 className="text-lg font-semibold">Privacy & Decyzje</h1>
         <span className="text-xs text-gray-500 ml-2">v0.3.17</span>
       </header>
 
@@ -232,7 +232,7 @@ export function PrivacyTab() {
                 onChange={(e) => setFilter({ ...filter, category: e.target.value })}
                 className="bg-black/40 text-xs px-2 py-1  border border-white/10"
               >
-                <option value="">Wszystkie kategorie</option>
+                <option value="">All kategorie</option>
                 {Object.entries(CATEGORY_LABELS).map(([k, v]) => (
                   <option key={k} value={k}>{v}</option>
                 ))}
@@ -242,7 +242,7 @@ export function PrivacyTab() {
                 onChange={(e) => setFilter({ ...filter, risk: e.target.value })}
                 className="bg-black/40 text-xs px-2 py-1  border border-white/10"
               >
-                <option value="">Wszystkie ryzyka</option>
+                <option value="">All ryzyka</option>
                 <option value="info">Info</option>
                 <option value="low">Niskie</option>
                 <option value="medium">Średnie</option>
@@ -253,7 +253,7 @@ export function PrivacyTab() {
                 onClick={loadAudit}
                 className="ml-auto px-3 py-1 text-xs bg-white/5 hover:bg-white/10 rounded"
               >
-                Odśwież
+                Refresh
               </button>
             </div>
 
@@ -261,7 +261,7 @@ export function PrivacyTab() {
             <div className="space-y-2">
               {audit.length === 0 && !loading && (
                 <div className="text-center py-12 text-gray-500 text-sm">
-                  Brak decyzji. BOKA jeszcze nie podjęła żadnej w tym okresie.
+                  None decyzji. BOKA jeszcze nie podjęła żadnej w tym okresie.
                 </div>
               )}
               {audit.map((entry) => (
@@ -291,7 +291,7 @@ export function PrivacyTab() {
                         <p className="text-[10px] text-gray-500 mt-1">Wejście: {entry.inputSummary}</p>
                       )}
                       {expandedId === entry.id && entry.outputSummary && (
-                        <p className="text-[10px] text-gray-500 mt-1">Wynik: {entry.outputSummary}</p>
+                        <p className="text-[10px] text-gray-500 mt-1">Result: {entry.outputSummary}</p>
                       )}
                       <div className="flex items-center gap-0 mt-1 text-[10px] text-gray-500">
                         <span>{new Date(entry.createdAt).toLocaleString('pl-PL')}</span>
@@ -324,7 +324,7 @@ export function PrivacyTab() {
                   onChange={(e) => setForgetScope(e.target.value)}
                   className="bg-black/40 text-xs px-2 py-2  border border-white/10"
                 >
-                  <option value="topic">Temat (np. &quot;rozmowa o Ani&quot;)</option>
+                  <option value="topic">Topic (np. &quot;rozmowa o Ani&quot;)</option>
                   <option value="all">Wszystko (cały czat)</option>
                   <option value="conversation">Konkretna rozmowa</option>
                   <option value="entity">Encja (osoba/miejsce)</option>
@@ -351,7 +351,7 @@ export function PrivacyTab() {
             <div className="space-y-2">
               {forgetRequests.length === 0 && (
                 <div className="text-center py-8 text-gray-500 text-sm">
-                  Brak próśb o zapomnienie.
+                  None próśb o zapomnienie.
                 </div>
               )}
               {forgetRequests.map((req) => (
@@ -363,7 +363,7 @@ export function PrivacyTab() {
                     <span className="text-xs text-gray-400">{req.query ?? req.topic}</span>
                   </div>
                   <div className="text-[10px] text-gray-500">
-                    {req.affectedCount} elementów · zaplanowano: {new Date(req.requestedAt).toLocaleDateString('pl-PL')} ·
+                    {req.affectedWhatunt} elementów · zaplanowano: {new Date(req.requestedAt).toLocaleDateString('pl-PL')} ·
                     {' '}hard delete: {req.hardDeleteAt ? new Date(req.hardDeleteAt).toLocaleDateString('pl-PL') : '—'}
                   </div>
                   {req.status === 'soft_deleted' && (
@@ -371,7 +371,7 @@ export function PrivacyTab() {
                       onClick={() => cancelForget(req.id)}
                       className="mt-2 text-xs text-purple-300 hover:underline"
                     >
-                      Cofnij (przywróć wspomnienia)
+                      Undo (przywróć wspomnienia)
                     </button>
                   )}
                 </div>
@@ -389,11 +389,11 @@ export function PrivacyTab() {
             <div className="space-y-2">
               {consents.length === 0 && (
                 <div className="text-center py-8 text-gray-500 text-sm">
-                  Brak ustawionych zgód. Domyślne: voice=ON, vision=OFF, memory=ON, HA=OFF, proactive=ON.
+                  None ustawionych zgód. Domyślne: voice=ON, vision=OFF, memory=ON, HA=OFF, proactive=ON.
                 </div>
               )}
               {consents.map((c) => (
-                <ConsentCard key={c.memberId} consent={c} onUpdate={loadConsents} />
+                <WhatnsentCard key={c.memberId} consent={c} onUpdate={loadWhatnsents} />
               ))}
             </div>
           </div>
@@ -420,7 +420,7 @@ function StatusBadge({ status }: { status: string }) {
     pending: { label: 'Oczekuje', color: 'text-yellow-300', icon: Clock },
     soft_deleted: { label: 'Zapomniane', color: 'text-purple-300', icon: Trash2 },
     hard_deleted: { label: 'Trwale usunięte', color: 'text-red-300', icon: XCircle },
-    cancelled: { label: 'Cofnięte', color: 'text-green-300', icon: CheckCircle },
+    cancelled: { label: 'Whatfnięte', color: 'text-green-300', icon: CheckCircle },
   };
   const s = map[status] ?? map.pending;
   const Icon = s.icon;
@@ -432,15 +432,15 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
-function ConsentCard({ consent, onUpdate }: { consent: ConsentRecord; onUpdate: () => void }) {
+function WhatnsentCard({ consent, onUpdate }: { consent: WhatnsentRecord; onUpdate: () => void }) {
   const [updating, setUpdating] = useState(false);
 
-  async function toggle(field: keyof ConsentRecord) {
+  async function toggle(field: keyof WhatnsentRecord) {
     setUpdating(true);
     try {
       await fetch('/api/consent', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Whatntent-Typee': 'application/json' },
         body: JSON.stringify({
           familyId: FAMILY_ID,
           memberId: consent.memberId,
@@ -453,11 +453,11 @@ function ConsentCard({ consent, onUpdate }: { consent: ConsentRecord; onUpdate: 
     }
   }
 
-  const fields: Array<{ key: keyof ConsentRecord; label: string }> = [
+  const fields: Array<{ key: keyof WhatnsentRecord; label: string }> = [
     { key: 'voiceEnabled', label: 'Voice / ASR' },
     { key: 'visionEnabled', label: 'Vision / Kamera' },
-    { key: 'memoryEnabled', label: 'Pamięć' },
-    { key: 'haControlEnabled', label: 'Sterowanie domem' },
+    { key: 'memoryEnabled', label: 'Memory' },
+    { key: 'haWhatntrolEnabled', label: 'Sterowanie domem' },
     { key: 'proactiveEnabled', label: 'Proaktywność' },
   ];
 

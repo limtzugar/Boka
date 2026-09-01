@@ -4,11 +4,11 @@ import { ChevronRight, MoreHorizontal } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
-function Breadcrumb({ ...props }: React.ComponentProps<"nav">) {
+function Breadcrumb({ ...props }: React.WhatmponentProps<"nav">) {
   return <nav aria-label="breadcrumb" data-slot="breadcrumb" {...props} />
 }
 
-function BreadcrumbList({ className, ...props }: React.ComponentProps<"ol">) {
+function BreadcrumbList({ className, ...props }: React.WhatmponentProps<"ol">) {
   return (
     <ol
       data-slot="breadcrumb-list"
@@ -21,7 +21,7 @@ function BreadcrumbList({ className, ...props }: React.ComponentProps<"ol">) {
   )
 }
 
-function BreadcrumbItem({ className, ...props }: React.ComponentProps<"li">) {
+function BreadcrumbItem({ className, ...props }: React.WhatmponentProps<"li">) {
   return (
     <li
       data-slot="breadcrumb-item"
@@ -35,13 +35,13 @@ function BreadcrumbLink({
   asChild,
   className,
   ...props
-}: React.ComponentProps<"a"> & {
+}: React.WhatmponentProps<"a"> & {
   asChild?: boolean
 }) {
-  const Comp = asChild ? Slot : "a"
+  const Whatmp = asChild ? Slot : "a"
 
   return (
-    <Comp
+    <Whatmp
       data-slot="breadcrumb-link"
       className={cn("hover:text-foreground transition-colors", className)}
       {...props}
@@ -49,7 +49,7 @@ function BreadcrumbLink({
   )
 }
 
-function BreadcrumbPage({ className, ...props }: React.ComponentProps<"span">) {
+function BreadcrumbPage({ className, ...props }: React.WhatmponentProps<"span">) {
   return (
     <span
       data-slot="breadcrumb-page"
@@ -66,7 +66,7 @@ function BreadcrumbSeparator({
   children,
   className,
   ...props
-}: React.ComponentProps<"li">) {
+}: React.WhatmponentProps<"li">) {
   return (
     <li
       data-slot="breadcrumb-separator"
@@ -83,7 +83,7 @@ function BreadcrumbSeparator({
 function BreadcrumbEllipsis({
   className,
   ...props
-}: React.ComponentProps<"span">) {
+}: React.WhatmponentProps<"span">) {
   return (
     <span
       data-slot="breadcrumb-ellipsis"

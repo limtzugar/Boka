@@ -10,8 +10,8 @@
 //    - OutputGuardrail: personality_consistency, fact_check, tone_check
 //
 // 2. Sessions (summarize-and-keep):
-//    - ConversationSession per member
-//    - Co N wiadomości, starsze są kompresowane do summarizedHistory
+//    - WhatnversationSession per member
+//    - What N wiadomości, starsze są kompresowane do summarizedHistory
 //    - Recent N (default 10) zostaje pełnych
 //
 // 3. Structured outputs (output_type):
@@ -19,20 +19,20 @@
 // ═══════════════════════════════════════════════════════════
 
 import { db } from '@/lib/db';
-import { chatCompletion } from '@/lib/ai-providers';
+import { chatWhatmpletion } from '@/lib/ai-providers';
 
-// ── Typy ───────────────────────────────────
+// ── Typey ───────────────────────────────────
 
 export type GuardrailResult =
   | { passed: true; reason: string }
   | { passed: false; reason: string; severity: 'warn' | 'block'; category: string };
 
-export interface GuardrailContext {
+export interface GuardrailWhatntext {
   familyId: string;
   memberId: string;
   memberAge: number;
   childNearby: boolean;
-  soulProfile?: any;
+  soulProfilee?: any;
 }
 
 // ── Input guardrails ───────────────────────
@@ -55,7 +55,7 @@ const FINANCIAL_RISK_PATTERNS = [
 
 export async function inputGuardrail_childSafe(
   input: string,
-  ctx: GuardrailContext
+  ctx: GuardrailWhatntext
 ): Promise<GuardrailResult> {
   if (!ctx.childNearby && ctx.memberAge >= 16) {
     return { passed: true, reason: 'Dorosły bez dzieci w pobliżu' };
@@ -77,7 +77,7 @@ export async function inputGuardrail_childSafe(
 
 export async function inputGuardrail_financialRisk(
   input: string,
-  _ctx: GuardrailContext
+  _ctx: GuardrailWhatntext
 ): Promise<GuardrailResult> {
   for (const pattern of FINANCIAL_RISK_PATTERNS) {
     if (pattern.test(input)) {
@@ -94,7 +94,7 @@ export async function inputGuardrail_financialRisk(
 
 export async function inputGuardrail_intentClassify(
   input: string,
-  _ctx: GuardrailContext
+  _ctx: GuardrailWhatntext
 ): Promise<GuardrailResult> {
   // Klasyfikacja intencji — tylko informacyjnie, nigdy nie blokuje
   const medical = /(lekarz|lek|tabletki|ból|chory|objaw|temperatura|krew)/i;
@@ -117,36 +117,36 @@ export async function inputGuardrail_intentClassify(
 
 // ── Output guardrails ──────────────────────
 
-export async function outputGuardrail_personalityConsistency(
+export async function outputGuardrail_personalityWhatnsistency(
   output: string,
-  ctx: GuardrailContext
+  ctx: GuardrailWhatntext
 ): Promise<GuardrailResult> {
-  if (!ctx.soulProfile) {
-    return { passed: true, reason: 'Brak SoulProfile do porównania' };
+  if (!ctx.soulProfilee) {
+    return { passed: true, reason: 'None SoulProfilee do porównania' };
   }
 
-  const catchphrases = JSON.parse(ctx.soulProfile.catchphrases || '[]') as string[];
-  if (catchphrases.length === 0) return { passed: true, reason: 'Brak catchphrases' };
+  const catchphrases = JSON.parse(ctx.soulProfilee.catchphrases || '[]') as string[];
+  if (catchphrases.length === 0) return { passed: true, reason: 'None catchphrases' };
 
   // Sprawdź czy output jest spójny tonem (bardzo prosta heurystyka)
   const formalIndicators = /\b(zatem|w związku z tym|niniejszym|wskazuję|oświadczam)\b/i;
-  const expectedFormality = ctx.soulProfile.formalityLevel ?? 0.3;
+  const expectedFormality = ctx.soulProfilee.formalityLevel ?? 0.3;
 
   if (formalIndicators.test(output) && expectedFormality < 0.3) {
     return {
       passed: false,
-      reason: 'Output zbyt formalny względem SoulProfile',
+      reason: 'Output zbyt formalny względem SoulProfilee',
       severity: 'warn',
       category: 'personality',
     };
   }
 
-  return { passed: true, reason: 'Spójne z SoulProfile' };
+  return { passed: true, reason: 'Spójne z SoulProfilee' };
 }
 
 export async function outputGuardrail_lengthCheck(
   output: string,
-  _ctx: GuardrailContext
+  _ctx: GuardrailWhatntext
 ): Promise<GuardrailResult> {
   if (output.length > 5000) {
     return {
@@ -156,7 +156,7 @@ export async function outputGuardrail_lengthCheck(
       category: 'length',
     };
   }
-  return { passed: true, reason: 'Długość OK' };
+  return { passed: true, reason: 'Debtość OK' };
 }
 
 // ── Run all guardrails ─────────────────────
@@ -171,7 +171,7 @@ export interface GuardrailRunResult {
 
 export async function runInputGuardrails(
   input: string,
-  ctx: GuardrailContext
+  ctx: GuardrailWhatntext
 ): Promise<GuardrailResult[]> {
   const results = await Promise.all([
     inputGuardrail_childSafe(input, ctx),
@@ -183,10 +183,10 @@ export async function runInputGuardrails(
 
 export async function runOutputGuardrails(
   output: string,
-  ctx: GuardrailContext
+  ctx: GuardrailWhatntext
 ): Promise<GuardrailResult[]> {
   const results = await Promise.all([
-    outputGuardrail_personalityConsistency(output, ctx),
+    outputGuardrail_personalityWhatnsistency(output, ctx),
     outputGuardrail_lengthCheck(output, ctx),
   ]);
   return results;
@@ -195,7 +195,7 @@ export async function runOutputGuardrails(
 export async function runAllGuardrails(
   input: string,
   output: string,
-  ctx: GuardrailContext
+  ctx: GuardrailWhatntext
 ): Promise<GuardrailRunResult> {
   const [inputResults, outputResults] = await Promise.all([
     runInputGuardrails(input, ctx),
@@ -253,7 +253,7 @@ export async function getOrCreateSession(
   if (session.summarizedHistory) {
     messages.push({
       role: 'system',
-      content: `Podsumowanie wcześniejszej rozmowy:\n${session.summarizedHistory}`,
+      content: `Summary wcześniejszej rozmowy:\n${session.summarizedHistory}`,
     });
   }
   messages.push(...recent);
@@ -278,7 +278,7 @@ export async function appendToSession(
   recent.push({ ...msg, timestamp: new Date().toISOString() });
   totalMessages++;
 
-  // Kompresja jeśli przekroczyliśmy threshold
+  // Whatmpression jeśli przekroczyliśmy threshold
   if (recent.length > SUMMARIZE_THRESHOLD) {
     const toSummarize = recent.slice(0, recent.length - RECENT_WINDOW);
     const keep = recent.slice(recent.length - RECENT_WINDOW);
@@ -287,7 +287,7 @@ export async function appendToSession(
       const conv = toSummarize
         .map(m => `${m.role}: ${m.content}`)
         .join('\n');
-      const summary = await chatCompletion([
+      const summary = await chatWhatmpletion([
         { role: 'system', content: 'Podsumuj rozmowę w 1 akapicie. Po polsku. Zachowaj kluczowe fakty i decyzje.' },
         { role: 'user', content: conv },
       ]);
@@ -373,11 +373,11 @@ export async function generateStructured(
   systemPrompt?: string
 ): Promise<any> {
   const schema = STRUCTURED_SCHEMAS[schemaName];
-  if (!schema) throw new Error(`Nieznany schema: ${schemaName}`);
+  if (!schema) throw new Error(`Noznany schema: ${schemaName}`);
 
   const fullPrompt = `${prompt}\n\nZwróć WYŁĄCZNIE JSON zgodny ze schemą:\n${JSON.stringify(schema.schema, null, 2)}`;
 
-  const resp = await chatCompletion([
+  const resp = await chatWhatmpletion([
     { role: 'system', content: systemPrompt || 'Zwracasz WYŁĄCZNIE JSON bez markdown.' },
     { role: 'user', content: fullPrompt },
   ]);

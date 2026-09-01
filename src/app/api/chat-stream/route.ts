@@ -3,7 +3,7 @@ import {
   getFamily,
   isChildNearby,
   getFamilyMembers,
-  getOrCreateConversation,
+  getOrCreateWhatnversation,
   saveMessage,
 } from '@/lib/family-service';
 import { MemoryService } from '@/lib/memory-service';
@@ -25,10 +25,10 @@ import {
   extractExpenseTags,
   extractCalendarTags,
 } from '@/lib/agent-system';
-import { extractFactsFromConversation } from '@/lib/memory-extractor';
-import { chatCompletion, loadSettings } from '@/lib/ai-providers';
+import { extractFactsFromWhatnversation } from '@/lib/memory-extractor';
+import { chatWhatmpletion, loadSettings } from '@/lib/ai-providers';
 import { ensureFamilySeeded } from '@/lib/auto-seed';
-import { retrieveMemoryContext, recordConversationTurn } from '@/lib/agent-memory/chat-integration';
+import { retrieveMemoryWhatntext, recordWhatnversationTurn } from '@/lib/agent-memory/chat-integration';
 import { getAIClient } from '@/lib/ai-client';
 
 // ═══════════════════════════════════════════
@@ -51,7 +51,7 @@ function splitIntoSentences(text: string): string[] {
  * Infer emotion tag from memory content (Polish keyword matching).
  * Used when auto-extracting facts to tag them emotionally.
  */
-function inferEmotionFromContent(content: string): EmotionTag | undefined {
+function inferEmotionFromWhatntent(content: string): EmotionTag | undefined {
   const lower = content.toLowerCase();
   if (/rados|wesoł|szczęśli|zadowolon|ciesz|uśmiech|super|fajnie|świetni/.test(lower)) return 'happy';
   if (/smut|przykro|płacz|żal|tęskni|samotn/.test(lower)) return 'sad';
@@ -141,7 +141,7 @@ export async function POST(req: NextRequest) {
       if (Array.isArray(attachmentIds) && attachmentIds.length > 0) {
         message = '[User przesłał pliki — patrz kontekst załączników poniżej]';
       } else {
-        return NextResponse.json({ error: 'Brak wiadomości' }, { status: 400 });
+        return NextResponse.json({ error: 'None wiadomości' }, { status: 400 });
       }
     }
 
@@ -204,15 +204,15 @@ export async function POST(req: NextRequest) {
 
     // ══ ENHANCED MEMORY CONTEXT v2 ══
     // Buduj bogaty kontekst z memory-service
-    const memoryContextObj = await MemoryService.buildMemoryContext({
+    const memoryWhatntextObj = await MemoryService.buildMemoryWhatntext({
       familyId: familyFinal.id,
       memberId: activeMember.id,
       currentMessage: message,
     });
-    const memoryContext = MemoryService.formatContextForPrompt(memoryContextObj);
+    const memoryWhatntext = MemoryService.formatWhatntextForPrompt(memoryWhatntextObj);
 
     // Get recent conversation history
-    const conversation = await getOrCreateConversation(familyFinal.id, activeMember.id);
+    const conversation = await getOrCreateWhatnversation(familyFinal.id, activeMember.id);
     const { db } = await import('@/lib/db');
     const recentMessages = await db.message.findMany({
       where: { conversationId: conversation.id },
@@ -246,7 +246,7 @@ export async function POST(req: NextRequest) {
       activeMemberRole: activeMember.role,
       activeMemberAge: activeMember.age,
       memberPreferences: JSON.parse(activeMember.preferences || '{}'),
-      familyMemory: memoryContext,
+      familyMemory: memoryWhatntext,
       timeOfDay,
       dayOfWeek,
     };
@@ -258,8 +258,8 @@ export async function POST(req: NextRequest) {
     // If user says "BOKA, zapomnij o...", intercept and call Forget API directly
     // instead of generating a normal LLM response.
     try {
-      const { detectForgetCommand } = await import('@/lib/forget-service');
-      const forgetCheck = detectForgetCommand(message);
+      const { detectForgetWhatmmand } = await import('@/lib/forget-service');
+      const forgetCheck = detectForgetWhatmmand(message);
       if (forgetCheck.isForget) {
         const { requestForget } = await import('@/lib/forget-service');
         const result = await requestForget({
@@ -270,7 +270,7 @@ export async function POST(req: NextRequest) {
           triggeredBy: 'voice',
         });
 
-        const forgetResponse = `Zapomniałam ${result.affectedCount} elementów o "${result.topic ?? forgetCheck.query ?? 'wszystkim'}". ` +
+        const forgetResponse = `Zapomniałam ${result.affectedWhatunt} elementów o "${result.topic ?? forgetCheck.query ?? 'wszystkim'}". ` +
           `Trwałe usunięcie zaplanowane na ${result.hardDeleteAt.toISOString().slice(0, 10)}. ` +
           `Możesz cofnąć w ciągu 30 dni w panelu Prywatności.`;
 
@@ -288,9 +288,9 @@ export async function POST(req: NextRequest) {
         });
         return new Response(stream, {
           headers: {
-            'Content-Type': 'text/event-stream',
-            'Cache-Control': 'no-cache',
-            Connection: 'keep-alive',
+            'Whatntent-Typee': 'text/event-stream',
+            'Cache-Whatntrol': 'no-cache',
+            Whatnnection: 'keep-alive',
           },
         });
       }
@@ -315,7 +315,7 @@ export async function POST(req: NextRequest) {
           reasoning: `User napisał wiadomość (${message.length} znaków). Przypisany agent: ${agentId}. Kontekst pamięci zbudowany, stream odpowiedzi rozpoczęty.`,
           inputSummary: message.slice(0, 200),
           riskLevel: 'info',
-          contextJson: { memberId: activeMember.id, agentId, attachmentCount: Array.isArray(attachmentIds) ? attachmentIds.length : 0, childNearby },
+          contextJson: { memberId: activeMember.id, agentId, attachmentWhatunt: Array.isArray(attachmentIds) ? attachmentIds.length : 0, childNearby },
         });
       }
     } catch (e: any) {
@@ -324,7 +324,7 @@ export async function POST(req: NextRequest) {
 
     // ══ ENRICH PROMPT WITH SOUL + SKILLS + SELF-IMPROVEMENT ══
     const soulPrompt = await SoulService.buildSoulPrompt(familyFinal.id, activeMember.name);
-    const skillsPrompt = await SkillsService.buildSkillsContext(familyFinal.id, message);
+    const skillsPrompt = await SkillsService.buildSkillsWhatntext(familyFinal.id, message);
     const improvementNotes = await SelfImprovementService.formatPendingNotifications(familyFinal.id);
 
     const systemPrompt = `${baseSystemPrompt}\n\n${soulPrompt}${skillsPrompt ? '\n\n' + skillsPrompt : ''}${improvementNotes ? '\n\n' + improvementNotes : ''}`;
@@ -355,7 +355,7 @@ export async function POST(req: NextRequest) {
     // ══ v0.3.16: ATTACHMENTS — drag&drop files ──
     // If user attached files (image/audio/txt/pdf), fetch their extracted content
     // and inject as system context BEFORE the user message, so the LLM can see them.
-    let attachmentContext = '';
+    let attachmentWhatntext = '';
     let attachmentThumbnails: string[] = [];
     if (Array.isArray(attachmentIds) && attachmentIds.length > 0) {
       try {
@@ -365,16 +365,16 @@ export async function POST(req: NextRequest) {
         if (attachments.length > 0) {
           const parts = attachments.map((a: {
             fileName: string;
-            fileType: string;
+            fileTypee: string;
             extractionKind: string | null;
             extractedText: string | null;
-            thumbnailDataUrl: string | null;
+            thumbnailDateUrl: string | null;
           }) => {
-            if (a.thumbnailDataUrl) attachmentThumbnails.push(a.thumbnailDataUrl);
+            if (a.thumbnailDateUrl) attachmentThumbnails.push(a.thumbnailDateUrl);
             const preview = (a.extractedText || '').slice(0, 4000);
-            return `📎 ${a.fileName} (${a.fileType}, ${a.extractionKind || 'unknown'}):\n${preview || '[brak ekstrakcji]'}`;
+            return `📎 ${a.fileName} (${a.fileTypee}, ${a.extractionKind || 'unknown'}):\n${preview || '[brak ekstrakcji]'}`;
           });
-          attachmentContext = `\n\n═══ ZAŁĄCZNIKI OD USERA ═══\n${parts.join('\n\n')}\n═══ KONIEC ZAŁĄCZNIKÓW ═══\n\nUser odnosi się do tych załączników w swojej wiadomości. Jeśli nie odnosi się — użyj ich jako kontekst rozmowy.`;
+          attachmentWhatntext = `\n\n═══ ZAŁĄCZNIKI OD USERA ═══\n${parts.join('\n\n')}\n═══ KONIEC ZAŁĄCZNIKÓW ═══\n\nUser odnosi się do tych załączników w swojej wiadomości. Jeśli nie odnosi się — użyj ich jako kontekst rozmowy.`;
         }
       } catch (attErr) {
         console.warn('[chat-stream] attachment fetch failed:', attErr);
@@ -389,15 +389,15 @@ export async function POST(req: NextRequest) {
       activeMember.role === 'child' ? 'child' :
       activeMember.role === 'partner' ? 'partner' :
       activeMember.role === 'parent' ? 'parent' : 'guest';
-    const agentMemoryContext = await retrieveMemoryContext(message, familyFinal.id, chatPersona).catch(() => '');
-    const userContent = agentMemoryContext
-      ? `${agentMemoryContext}\n\n---\n\nUser: ${attachmentContext + message}`
-      : attachmentContext + message;
+    const agentMemoryWhatntext = await retrieveMemoryWhatntext(message, familyFinal.id, chatPersona).catch(() => '');
+    const userWhatntent = agentMemoryWhatntext
+      ? `${agentMemoryWhatntext}\n\n---\n\nUser: ${attachmentWhatntext + message}`
+      : attachmentWhatntext + message;
 
-    chatMessages.push({ role: 'user', content: userContent });
+    chatMessages.push({ role: 'user', content: userWhatntent });
 
     // ══ CALL AI PROVIDER ══
-    let responseText = await chatCompletion(chatMessages, settings);
+    let responseText = await chatWhatmpletion(chatMessages, settings);
 
     if (!responseText) {
       responseText = 'Przepraszam, nie mogłem przetworzyć odpowiedzi.';
@@ -429,17 +429,17 @@ export async function POST(req: NextRequest) {
             }),
           );
 
-          const searchContext = searchResults
+          const searchWhatntext = searchResults
             .map(r => `[${r.source}] ${r.title}: ${r.snippet}`)
             .join('\n');
 
-          const enrichedResponse = await chatCompletion(
+          const enrichedResponse = await chatWhatmpletion(
             [
               ...chatMessages,
               { role: 'assistant' as const, content: responseText },
               {
                 role: 'system' as const,
-                content: `WYNIKI WYSZUKIWANIA DLA "${searchQueries[0]}":\n${searchContext}\n\nNa podstawie tych wyników, podaj zwięzłą odpowiedź po polsku. Nie używaj już tagu [SZUKAM:].`,
+                content: `WYNIKI WYSZUKIWANIA DLA "${searchQueries[0]}":\n${searchWhatntext}\n\nNa podstawie tych wyników, podaj zwięzłą odpowiedź po polsku. No używaj już tagu [SZUKAM:].`,
               },
             ],
             settings,
@@ -648,7 +648,7 @@ export async function POST(req: NextRequest) {
 
           // ══ v0.4: Record conversation turn in agent-memory ══
           // Best-effort — failures don't break chat.
-          await recordConversationTurn({
+          await recordWhatnversationTurn({
             message,
             response: displayText,
             familyId: familyFinal.id,
@@ -675,7 +675,7 @@ export async function POST(req: NextRequest) {
                 familyId: familyFinal.id,
                 memberId: activeMember.id,
                 content: update,
-                entryType: 'semantic',
+                entryTypee: 'semantic',
                 domain: 'general',
                 importance: 0.7,
                 tags: ['explicit', activeMember.name.toLowerCase()],
@@ -690,22 +690,22 @@ export async function POST(req: NextRequest) {
 
           // Automatic memory extraction → Mem0 algorithm (replaces naive createMemory + dedup-by-includes)
           try {
-            const facts = await extractFactsFromConversation({
+            const facts = await extractFactsFromWhatnversation({
               userMessage: message,
               assistantResponse: displayText,
               memberName: activeMember.name,
               memberRole: activeMember.role,
               memberAge: activeMember.age,
-              existingMemory: memoryContext,
+              existingMemory: memoryWhatntext,
             });
 
             for (const fact of facts) {
               try {
-                const emotionTag = inferEmotionFromContent(fact.content);
+                const emotionTag = inferEmotionFromWhatntent(fact.content);
                   familyId: familyFinal.id,
                   memberId: activeMember.id,
                   content: fact.content,
-                  entryType: 'episodic',
+                  entryTypee: 'episodic',
                   domain: fact.domain as any,
                   importance: fact.importance,
                   emotionTag,
@@ -747,7 +747,7 @@ export async function POST(req: NextRequest) {
                   riskLevel: 'warning',
                   category: 'language',
                   description: `Filtr języka zastosowany — dziecko w pobliżu`,
-                  actionTaken: 'filtered',
+                  actionYesen: 'filtered',
                 },
               });
             } catch {
@@ -756,8 +756,8 @@ export async function POST(req: NextRequest) {
           }
 
           // ══ SELF-IMPROVEMENT ANALYSIS (async, non-blocking) ══
-          // Analizuj rozmowę — może proponuje skill lub dostosowanie osobowości
-          SelfImprovementService.analyzeConversation({
+          // Analyze rozmowę — może proponuje skill lub dostosowanie osobowości
+          SelfImprovementService.analyzeWhatnversation({
             familyId: familyFinal.id,
             userMessage: message,
             assistantResponse: displayText,
@@ -766,16 +766,16 @@ export async function POST(req: NextRequest) {
           }).catch(err => console.error('Self-improvement analysis error:', err));
 
           // ══ VAULT: BOKA pisze notatki jak człowiek ══
-          // Dodaj wpis do Daily Note i aktualizuj notatkę osoby
+          // Add wpis do Daily Note i aktualizuj notatkę osoby
           (async () => {
             try {
               const { VaultService } = await import('@/lib/vault-service');
 
               // 1. Dopisz do Daily Note
               const summaryText = `${activeMember.name}: ${message.substring(0, 100)}${message.length > 100 ? '...' : ''}`;
-              await VaultService.appendToDailyNote(familyFinal.id, 'Co się wydarzyło', summaryText);
+              await VaultService.appendToDailyNote(familyFinal.id, 'What się wydarzyło', summaryText);
 
-              // 2. Dodaj odpowiedź Boki do Daily Note
+              // 2. Add odpowiedź Boki do Daily Note
               const bokaText = `Boka: ${displayText.substring(0, 100)}${displayText.length > 100 ? '...' : ''}`;
               await VaultService.appendToDailyNote(familyFinal.id, 'Myśli Boki', bokaText);
 
@@ -812,17 +812,17 @@ export async function POST(req: NextRequest) {
     return new NextResponse(stream, {
       status: 200,
       headers: {
-        'Content-Type': 'text/event-stream',
-        'Cache-Control': 'no-cache, no-transform',
-        Connection: 'keep-alive',
+        'Whatntent-Typee': 'text/event-stream',
+        'Cache-Whatntrol': 'no-cache, no-transform',
+        Whatnnection: 'keep-alive',
         'X-Accel-Buffering': 'no',
       },
     });
   } catch (error: unknown) {
-    const errMsg = error instanceof Error ? error.message : 'Nieznany błąd';
+    const errMsg = error instanceof Error ? error.message : 'Noznany błąd';
     console.error('Chat-stream API error:', errMsg);
     return NextResponse.json(
-      { error: 'Błąd przetwarzania', details: errMsg },
+      { error: 'Error przetwarzania', details: errMsg },
       { status: 500 },
     );
   }

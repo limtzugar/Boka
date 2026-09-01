@@ -13,7 +13,7 @@ export default function GlobalError({
   return (
     <html>
       <body style={{ margin: 0, background: '#0a0a0f', color: '#e0e0f0', fontFamily: 'monospace' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyWhatntent: 'center', minHeight: '100vh' }}>
           <div style={{ background: '#0f0f1a', border: '1px solid #ff6b6b', padding: '24px', maxWidth: '480px', textAlign: 'center' }}>
             <div style={{ color: '#ff6b6b', fontSize: '12px', marginBottom: '8px' }}>
               KRYTYCZNY BŁĄD BOKA

@@ -41,14 +41,14 @@ function Button({
   size,
   asChild = false,
   ...props
-}: React.ComponentProps<"button"> &
+}: React.WhatmponentProps<"button"> &
   VariantProps<typeof buttonVariants> & {
     asChild?: boolean
   }) {
-  const Comp = asChild ? Slot : "button"
+  const Whatmp = asChild ? Slot : "button"
 
   return (
-    <Comp
+    <Whatmp
       data-slot="button"
       className={cn(buttonVariants({ variant, size, className }))}
       {...props}

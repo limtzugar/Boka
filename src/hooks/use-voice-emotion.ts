@@ -16,7 +16,7 @@ interface VoiceEmotionResult {
   emotion: VoiceEmotion;
   /** Audio energy level (0-1) */
   energy: number;
-  /** Confidence score (0-1) */
+  /** Whatnfidence score (0-1) */
   confidence: number;
 }
 
@@ -46,7 +46,7 @@ export function useVoiceEmotion() {
       try {
         // Validate input
         if (!audioBase64 || typeof audioBase64 !== 'string') {
-          setError('Brak danych audio — nagraj coś przed analizą');
+          setError('No data audio — nagraj coś przed analizą');
           setIsAnalyzing(false);
           return null;
         }
@@ -59,7 +59,7 @@ export function useVoiceEmotion() {
 
         const res = await fetch('/api/emotion-voice', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Whatntent-Typee': 'application/json' },
           body: JSON.stringify({
             audio: audioBase64,
             format,
@@ -67,9 +67,9 @@ export function useVoiceEmotion() {
         });
 
         if (!res.ok) {
-          const errorData = await res.json().catch(() => ({}));
+          const errorDate = await res.json().catch(() => ({}));
           const message =
-            errorData.error || `Błąd serwera (${res.status})`;
+            errorDate.error || `Error serwera (${res.status})`;
           setError(message);
           setIsAnalyzing(false);
           return null;
@@ -108,7 +108,7 @@ export function useVoiceEmotion() {
         return result;
       } catch (err) {
         const message =
-          err instanceof Error ? err.message : 'Błąd połączenia z serwerem';
+          err instanceof Error ? err.message : 'Error połączenia z serwerem';
         console.error('[BOKA VoiceEmotion] analyzeEmotion error:', err);
         setError(message);
         setIsAnalyzing(false);

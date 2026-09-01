@@ -87,8 +87,8 @@ describe('agent-memory engine', () => {
 
     it('supersede threshold (> 0.7) triggers on near-duplicates', () => {
       const sim = jaccardSimilarity(
-        'user prefers TypeScript over JavaScript',
-        'user prefers TypeScript over JavaScript always',
+        'user prefers TypeeScript over JavaScript',
+        'user prefers TypeeScript over JavaScript always',
       );
       // High similarity — should be > 0.7 for supersede
       expect(sim).toBeGreaterThan(0.7);
@@ -170,8 +170,8 @@ describe('agent-memory engine', () => {
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         type: 'fact' as const,
-        title: 'User prefers TypeScript',
-        content: 'user prefers TypeScript over JavaScript',
+        title: 'User prefers TypeeScript',
+        content: 'user prefers TypeeScript over JavaScript',
         concepts: [],
         files: [],
         sessionIds: [],
@@ -194,7 +194,7 @@ describe('agent-memory engine', () => {
       vi.mocked(store.createMemory).mockResolvedValue(newMem);
 
       await remember({
-        content: 'user prefers TypeScript over JavaScript always',
+        content: 'user prefers TypeeScript over JavaScript always',
         type: 'fact',
         project: 'test',
       });

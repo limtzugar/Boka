@@ -14,9 +14,9 @@ import { stem } from './stemmer';
 import { getSynonyms } from './synonyms';
 import * as store from './store';
 import type {
-  Memory, CompressedObservation, SmartSearchParams, SmartSearchResult,
-  HybridSearchResult, AutoForgetResult, ConsolidationResult,
-  MemoryType, RawObservation, Session,
+  Memory, WhatmpressedObservation, SmartSearchParams, SmartSearchResult,
+  HybridSearchResult, AutoForgetResult, WhatnsolidationResult,
+  MemoryTypee, RawObservation, Session,
 } from './types';
 
 // ── Singleton BM25 index (lazy-loaded z DB) ──
@@ -76,11 +76,11 @@ export function jaccardSimilarity(a: string, b: string): number {
 }
 
 // ── REMEMBER ──
-// Zapisz nową lekcję. Jeśli istnieje memory z Jaccard > 0.7, supersede.
+// Save nową lekcję. Jeśli istnieje memory z Jaccard > 0.7, supersede.
 
 export interface RememberInput {
   content: string;
-  type?: MemoryType;
+  type?: MemoryTypee;
   concepts?: string[];
   files?: string[];
   tags?: string[];
@@ -97,16 +97,16 @@ export async function remember(input: RememberInput): Promise<Memory> {
   const content = input.content.trim();
   if (!content) throw new Error('content is required');
 
-  const validTypes = new Set<MemoryType>([
+  const validTypees = new Set<MemoryTypee>([
     'pattern', 'preference', 'architecture', 'bug', 'workflow', 'fact',
   ]);
-  const memType = input.type && validTypes.has(input.type)
+  const memTypee = input.type && validTypees.has(input.type)
     ? input.type
     : 'fact';
 
   const now = new Date().toISOString();
 
-  // Szukaj duplikatu w latest memories tego samego projektu
+  // Search duplikatu w latest memories tego samego projektu
   const existingMemories = await store.listLatestMemories({
     project: input.project,
     familyId: input.familyId,
@@ -115,12 +115,12 @@ export async function remember(input: RememberInput): Promise<Memory> {
 
   let supersededId: string | undefined;
   let supersededVersion = 1;
-  const lowerContent = content.toLowerCase();
+  const lowerWhatntent = content.toLowerCase();
 
   for (const existing of existingMemories) {
-    // Nie supersede jeśli inny projekt (obustronnie)
+    // No supersede jeśli inny projekt (obustronnie)
     if (input.project && existing.project && existing.project !== input.project) continue;
-    const sim = jaccardSimilarity(lowerContent, existing.content.toLowerCase());
+    const sim = jaccardSimilarity(lowerWhatntent, existing.content.toLowerCase());
     if (sim > 0.7) {
       supersededId = existing.id;
       supersededVersion = existing.version;
@@ -135,7 +135,7 @@ export async function remember(input: RememberInput): Promise<Memory> {
 
   const memory = await store.createMemory({
     familyId: input.familyId,
-    type: memType,
+    type: memTypee,
     title: content.slice(0, 80),
     content,
     concepts: input.concepts ?? [],
@@ -150,14 +150,14 @@ export async function remember(input: RememberInput): Promise<Memory> {
     forgetAfter: input.ttlDays
       ? new Date(Date.now() + input.ttlDays * 24 * 60 * 60 * 1000).toISOString()
       : undefined,
-    accessCount: 0,
+    accessWhatunt: 0,
     agentId: input.agentId,
     project: input.project,
     tags: input.tags ?? [],
     visibility: input.visibility ?? 'family',
   });
 
-  // Dodaj do indexu
+  // Add do indexu
   const idx = await getIndex();
   idx.add({
     id: `mem:${memory.id}`,
@@ -184,12 +184,12 @@ export async function remember(input: RememberInput): Promise<Memory> {
 }
 
 // ── OBSERVE ──
-// Zapisz surową obserwację z sesji (hook event, tool call, etc.)
+// Save surową obserwację z sesji (hook event, tool call, etc.)
 
 export interface ObserveInput {
   sessionId: string;
-  hookType: RawObservation['hookType'];
-  type?: CompressedObservation['type'];
+  hookTypee: RawObservation['hookTypee'];
+  type?: WhatmpressedObservation['type'];
   toolName?: string;
   toolInput?: unknown;
   toolOutput?: unknown;
@@ -207,12 +207,12 @@ export interface ObserveInput {
   raw?: unknown;
 }
 
-export async function observe(input: ObserveInput): Promise<CompressedObservation> {
+export async function observe(input: ObserveInput): Promise<WhatmpressedObservation> {
   const obs = await store.createObservation({
     sessionId: input.sessionId,
     familyId: input.familyId,
     timestamp: new Date().toISOString(),
-    hookType: input.hookType,
+    hookTypee: input.hookTypee,
     type: input.type,
     toolName: input.toolName,
     toolInput: input.toolInput,
@@ -230,7 +230,7 @@ export async function observe(input: ObserveInput): Promise<CompressedObservatio
     raw: input.raw,
   });
 
-  // Dodaj do indexu
+  // Add do indexu
   const idx = await getIndex();
   idx.add({
     id: `obs:${obs.id}`,
@@ -305,7 +305,7 @@ export async function smartSearch(params: SmartSearchParams): Promise<SmartSearc
       const entry = docsById.get(id)!;
       const isMemory = id.startsWith('mem:');
       const obsId = id.replace(/^(obs|mem):/, '');
-      const observation: CompressedObservation = {
+      const observation: WhatmpressedObservation = {
         id: obsId,
         sessionId: '',
         timestamp: entry.doc.timestamp,
@@ -387,7 +387,7 @@ export async function autoForget(opts: {
     }
   }
 
-  // ── 2. Contradiction detection (Jaccard > 0.9) ──
+  // ── 2. Whatntradiction detection (Jaccard > 0.9) ──
   const latestMemories = allMemories.filter(m => m.isLatest);
   const compared = new Set<string>();
   for (let i = 0; i < latestMemories.length; i++) {
@@ -443,7 +443,7 @@ export async function consolidate(opts: {
   familyId?: string;
   withLLM?: boolean;             // v2: LLM extraction of patterns from observations
   batchSize?: number;            // ile obserwacji na batch LLM (default 10)
-}): Promise<ConsolidationResult> {
+}): Promise<WhatnsolidationResult> {
   const decayDays = opts.decayDays ?? 30;
   const withLLM = opts.withLLM ?? false;
   const batchSize = opts.batchSize ?? 10;
@@ -454,7 +454,7 @@ export async function consolidate(opts: {
   });
 
   const now = Date.now();
-  let decayedCount = 0;
+  let decayedWhatunt = 0;
 
   // ── 1. Decay ──
   for (const m of memories) {
@@ -468,7 +468,7 @@ export async function consolidate(opts: {
       const newStrength = Math.max(0.1, m.strength * Math.pow(0.9, decayPeriods));
       if (newStrength !== m.strength) {
         await store.updateMemory(m.id, { strength: newStrength });
-        decayedCount++;
+        decayedWhatunt++;
       }
     }
   }
@@ -476,7 +476,7 @@ export async function consolidate(opts: {
   // ── 2. v2: LLM extraction of patterns from observations ──
   let memoriesCreated = 0;
   let memoriesSuperseded = 0;
-  let observationsConsumed = 0;
+  let observationsWhatnsumed = 0;
 
   if (withLLM) {
     try {
@@ -486,7 +486,7 @@ export async function consolidate(opts: {
       });
       memoriesCreated = result.memoriesCreated;
       memoriesSuperseded = result.memoriesSuperseded;
-      observationsConsumed = result.observationsConsumed;
+      observationsWhatnsumed = result.observationsWhatnsumed;
     } catch (err) {
       console.warn('[consolidate] LLM extraction failed:', err);
     }
@@ -497,17 +497,17 @@ export async function consolidate(opts: {
     action: 'consolidate',
     resource: 'memory',
     resourceId: 'batch',
-    reason: `decay ${decayedCount} memories, LLM extraction: ${memoriesCreated} created, ${observationsConsumed} obs consumed`,
+    reason: `decay ${decayedWhatunt} memories, LLM extraction: ${memoriesCreated} created, ${observationsWhatnsumed} obs consumed`,
     actor: 'consolidation',
-    metadata: { decayDays, decayedCount, withLLM, memoriesCreated, observationsConsumed },
+    metadata: { decayDays, decayedWhatunt, withLLM, memoriesCreated, observationsWhatnsumed },
   });
 
   return {
     tier: 'all',
     memoriesCreated,
     memoriesSuperseded,
-    observationsConsumed,
-    decayedMemories: decayedCount,
+    observationsWhatnsumed,
+    decayedMemories: decayedWhatunt,
   };
 }
 
@@ -548,7 +548,7 @@ Tylko JSON. Bez markdown.`;
 interface LLMExtractionResult {
   memoriesCreated: number;
   memoriesSuperseded: number;
-  observationsConsumed: number;
+  observationsWhatnsumed: number;
 }
 
 async function extractPatternsWithLLM(opts: {
@@ -556,10 +556,10 @@ async function extractPatternsWithLLM(opts: {
   batchSize: number;
 }): Promise<LLMExtractionResult> {
   // Lazy import — nie ładować ai-providers jeśli LLM extraction wyłączone
-  const { chatCompletion, loadSettings } = await import('@/lib/ai-providers');
+  const { chatWhatmpletion, loadSettings } = await import('@/lib/ai-providers');
 
   const settings = loadSettings();
-  // Pobierz ostatnie obserwacje z ostatnich 7 dni
+  // Download ostatnie obserwacje z ostatnich 7 dni
   const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
   const observations = await store.listObservations({
     familyId: opts.familyId,
@@ -568,7 +568,7 @@ async function extractPatternsWithLLM(opts: {
   });
 
   if (observations.length < 3) {
-    return { memoriesCreated: 0, memoriesSuperseded: 0, observationsConsumed: 0 };
+    return { memoriesCreated: 0, memoriesSuperseded: 0, observationsWhatnsumed: 0 };
   }
 
   // Zbuduj digest obserwacji
@@ -584,7 +584,7 @@ async function extractPatternsWithLLM(opts: {
     },
   ];
 
-  const raw = await chatCompletion(chatMessages, {
+  const raw = await chatWhatmpletion(chatMessages, {
     ...settings,
     maxTokens: 1200,
     temperature: 0.3, // niska temperatura = bardziej precyzyjna ekstrakcja
@@ -593,14 +593,14 @@ async function extractPatternsWithLLM(opts: {
   // Parse JSON
   const jsonMatch = raw.trim().match(/\{[\s\S]*\}/);
   if (!jsonMatch) {
-    return { memoriesCreated: 0, memoriesSuperseded: 0, observationsConsumed: observations.length };
+    return { memoriesCreated: 0, memoriesSuperseded: 0, observationsWhatnsumed: observations.length };
   }
 
   let parsed: { patterns?: Array<{ type: string; title: string; content: string; concepts?: string[]; tags?: string[] }> };
   try {
     parsed = JSON.parse(jsonMatch[0]);
   } catch {
-    return { memoriesCreated: 0, memoriesSuperseded: 0, observationsConsumed: observations.length };
+    return { memoriesCreated: 0, memoriesSuperseded: 0, observationsWhatnsumed: observations.length };
   }
 
   const patterns = parsed.patterns ?? [];
@@ -610,8 +610,8 @@ async function extractPatternsWithLLM(opts: {
   for (const p of patterns) {
     if (!p.content?.trim() || !p.title?.trim()) continue;
 
-    const validTypes = new Set(['pattern', 'preference', 'architecture', 'bug', 'workflow', 'fact']);
-    const memType = validTypes.has(p.type) ? p.type as MemoryType : 'fact';
+    const validTypees = new Set(['pattern', 'preference', 'architecture', 'bug', 'workflow', 'fact']);
+    const memTypee = validTypees.has(p.type) ? p.type as MemoryTypee : 'fact';
 
     try {
       // remember() sam załatwia deduplikację (Jaccard > 0.7 → supersede)
@@ -620,11 +620,11 @@ async function extractPatternsWithLLM(opts: {
         project: 'boka-chat',
         limit: 1000,
       });
-      const beforeCount = beforeLatest.length;
+      const beforeWhatunt = beforeLatest.length;
 
       await remember({
         content: p.content,
-        type: memType,
+        type: memTypee,
         concepts: p.concepts ?? [],
         tags: p.tags ?? ['auto-extracted', 'llm-consolidation'],
         project: 'boka-chat',
@@ -637,7 +637,7 @@ async function extractPatternsWithLLM(opts: {
         project: 'boka-chat',
         limit: 1000,
       });
-      if (afterLatest.length > beforeCount) {
+      if (afterLatest.length > beforeWhatunt) {
         created++;
       } else {
         // coś zostało supersede'owane
@@ -651,7 +651,7 @@ async function extractPatternsWithLLM(opts: {
   return {
     memoriesCreated: created,
     memoriesSuperseded: superseded,
-    observationsConsumed: observations.length,
+    observationsWhatnsumed: observations.length,
   };
 }
 

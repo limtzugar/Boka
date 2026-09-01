@@ -14,7 +14,7 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { id, args, timeout } = body as { id: string; args?: string[]; timeout?: number };
 
-    if (!id) return NextResponse.json({ ok: false, message: 'Brak id' }, { status: 400 });
+    if (!id) return NextResponse.json({ ok: false, message: 'None id' }, { status: 400 });
 
     const result = runApp(id, args || [], { timeout });
     return NextResponse.json(result);

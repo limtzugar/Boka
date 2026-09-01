@@ -19,28 +19,28 @@ type ValidCategory = (typeof VALID_CATEGORIES)[number];
 
 /**
  * GET — List reminders for a member
- * Query params: memberId (required), includeCompleted? (boolean)
+ * Query params: memberId (required), includeWhatmpleted? (boolean)
  */
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const memberId = searchParams.get('memberId');
-    const includeCompleted = searchParams.get('includeCompleted') === 'true';
+    const includeWhatmpleted = searchParams.get('includeWhatmpleted') === 'true';
 
     if (!memberId) {
       return NextResponse.json(
-        { error: 'Brak parametru memberId' },
+        { error: 'None parametru memberId' },
         { status: 400 },
       );
     }
 
     const where: {
       memberId: string;
-      isCompleted?: boolean;
+      isWhatmpleted?: boolean;
     } = { memberId };
 
-    if (!includeCompleted) {
-      where.isCompleted = false;
+    if (!includeWhatmpleted) {
+      where.isWhatmpleted = false;
     }
 
     const reminders = await db.reminder.findMany({
@@ -50,10 +50,10 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ reminders });
   } catch (error: unknown) {
-    const msg = error instanceof Error ? error.message : 'Nieznany błąd';
+    const msg = error instanceof Error ? error.message : 'Noznany błąd';
     console.error('Reminders GET error:', msg);
     return NextResponse.json(
-      { error: 'Błąd pobierania przypomnień', details: msg },
+      { error: 'Error pobierania przypomnień', details: msg },
       { status: 500 },
     );
   }
@@ -71,21 +71,21 @@ export async function POST(req: NextRequest) {
     // Validate required fields
     if (!memberId || typeof memberId !== 'string') {
       return NextResponse.json(
-        { error: 'Brak identyfikatora domownika' },
+        { error: 'None identyfikatora domownika' },
         { status: 400 },
       );
     }
 
     if (!title || typeof title !== 'string') {
       return NextResponse.json(
-        { error: 'Brak tytułu przypomnienia' },
+        { error: 'None tytułu przypomnienia' },
         { status: 400 },
       );
     }
 
     if (!dueDate) {
       return NextResponse.json(
-        { error: 'Brak daty przypomnienia' },
+        { error: 'None daty przypomnienia' },
         { status: 400 },
       );
     }
@@ -94,7 +94,7 @@ export async function POST(req: NextRequest) {
     const parsedDueDate = new Date(dueDate);
     if (isNaN(parsedDueDate.getTime())) {
       return NextResponse.json(
-        { error: 'Nieprawidłowa data — użyj formatu ISO (np. 2025-03-15T09:00:00)' },
+        { error: 'Noprawidłowa data — użyj formatu ISO (np. 2025-03-15T09:00:00)' },
         { status: 400 },
       );
     }
@@ -103,7 +103,7 @@ export async function POST(req: NextRequest) {
     if (!VALID_CATEGORIES.includes(category as ValidCategory)) {
       return NextResponse.json(
         {
-          error: `Nieprawidłowa kategoria. Dostępne: ${VALID_CATEGORIES.join(', ')}`,
+          error: `Noprawidłowa kategoria. Dostępne: ${VALID_CATEGORIES.join(', ')}`,
         },
         { status: 400 },
       );
@@ -116,7 +116,7 @@ export async function POST(req: NextRequest) {
 
     if (!member) {
       return NextResponse.json(
-        { error: 'Nie znaleziono domownika' },
+        { error: 'No znaleziono domownika' },
         { status: 404 },
       );
     }
@@ -139,10 +139,10 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ reminder }, { status: 201 });
   } catch (error: unknown) {
-    const msg = error instanceof Error ? error.message : 'Nieznany błąd';
+    const msg = error instanceof Error ? error.message : 'Noznany błąd';
     console.error('Reminders POST error:', msg);
     return NextResponse.json(
-      { error: 'Błąd tworzenia przypomnienia', details: msg },
+      { error: 'Error tworzenia przypomnienia', details: msg },
       { status: 500 },
     );
   }
@@ -172,7 +172,7 @@ export async function DELETE(req: NextRequest) {
 
     if (!reminderId || typeof reminderId !== 'string') {
       return NextResponse.json(
-        { error: 'Brak identyfikatora przypomnienia' },
+        { error: 'None identyfikatora przypomnienia' },
         { status: 400 },
       );
     }
@@ -184,7 +184,7 @@ export async function DELETE(req: NextRequest) {
 
     if (!existing) {
       return NextResponse.json(
-        { error: 'Przypomnienie nie istnieje' },
+        { error: 'Reminder nie istnieje' },
         { status: 404 },
       );
     }
@@ -201,10 +201,10 @@ export async function DELETE(req: NextRequest) {
       deletedId: reminderId,
     });
   } catch (error: unknown) {
-    const msg = error instanceof Error ? error.message : 'Nieznany błąd';
+    const msg = error instanceof Error ? error.message : 'Noznany błąd';
     console.error('Reminders DELETE error:', msg);
     return NextResponse.json(
-      { error: 'Błąd usuwania przypomnienia', details: msg },
+      { error: 'Error usuwania przypomnienia', details: msg },
       { status: 500 },
     );
   }

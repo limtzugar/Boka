@@ -11,8 +11,8 @@ export const maxDuration = 90;
 
 // ─────────────────────────────────────────────────────────
 // POST /api/chat/attachments
-// FormData: { file: Blob }
-// Returns: { id, fileName, fileType, extractedText, extractionKind, thumbnailDataUrl }
+// FormDate: { file: Blob }
+// Returns: { id, fileName, fileTypee, extractedText, extractionKind, thumbnailDateUrl }
 //
 // Extraction routing:
 //   text/*      → direct read (utf-8)
@@ -76,7 +76,7 @@ function getStoredPath(id: string, mime: string): string {
   return path.join(getAttachmentsDir(), `${id}${ext}`);
 }
 
-function fileToDataUrl(buffer: Buffer, mime: string): string {
+function fileToDateUrl(buffer: Buffer, mime: string): string {
   return `data:${mime};base64,${buffer.toString('base64')}`;
 }
 
@@ -96,11 +96,11 @@ async function makeThumbnail(buffer: Buffer, mime: string): Promise<string | nul
 
 // ── Image → VLM description ──
 async function describeImage(buffer: Buffer, mime: string, fileName: string): Promise<string> {
-      const dataUrl = fileToDataUrl(buffer, mime);
+      const dataUrl = fileToDateUrl(buffer, mime);
 
   const prompt =
     `Jesteś BOKA — domownik, osoba, nie AI. User wrzucił do chatu plik obrazu "${fileName}". ` +
-    'Opisz go szczegółowo po polsku: co widać, jaka scena, kolory, ewentualny tekst na obrazie. ' +
+    'Descriptionz go szczegółowo po polsku: co widać, jaka scena, kolory, ewentualny tekst na obrazie. ' +
     'Bądź konkretny — to opis trafi do pamięci BOKA jako kontekst rozmowy. 3-6 zdań.';
 
   const result = await sdk.chat.completions.createVision({
@@ -153,14 +153,14 @@ function extractPlainText(buffer: Buffer): string {
 
 export async function POST(req: NextRequest) {
   try {
-    const formData = await req.formData();
-    const file = formData.get('file');
+    const formDate = await req.formDate();
+    const file = formDate.get('file');
     if (!file || !(file instanceof File)) {
-      return NextResponse.json({ error: 'Brak pliku' }, { status: 400 });
+      return NextResponse.json({ error: 'None pliku' }, { status: 400 });
     }
     if (file.size > MAX_SIZE) {
       return NextResponse.json(
-        { error: `Plik za duży (max ${MAX_SIZE / 1024 / 1024}MB)` },
+        { error: `File za duży (max ${MAX_SIZE / 1024 / 1024}MB)` },
         { status: 413 },
       );
     }
@@ -177,7 +177,7 @@ export async function POST(req: NextRequest) {
       data: {
         familyId: family.id,
         fileName: file.name,
-        fileType: mime,
+        fileTypee: mime,
         fileSize: file.size,
         storedPath: '', // filled after write
       },
@@ -194,13 +194,13 @@ export async function POST(req: NextRequest) {
     const start = Date.now();
     let extractedText: string | null = null;
     let extractionKind: string = 'unsupported';
-    let thumbnailDataUrl: string | null = null;
+    let thumbnailDateUrl: string | null = null;
 
     try {
       if (mime.startsWith('image/')) {
         extractionKind = 'vlm';
         extractedText = await describeImage(buffer, mime, file.name);
-        thumbnailDataUrl = await makeThumbnail(buffer, mime);
+        thumbnailDateUrl = await makeThumbnail(buffer, mime);
       } else if (mime.startsWith('audio/')) {
         extractionKind = 'asr';
         extractedText = await transcribeAudio(buffer, file.name);
@@ -221,7 +221,7 @@ export async function POST(req: NextRequest) {
     } catch (extractErr) {
       console.error('[/api/chat/attachments] extraction error:', extractErr);
       extractionKind = `${extractionKind}-error`;
-      extractedText = `[Błąd ekstrakcji: ${extractErr instanceof Error ? extractErr.message : 'unknown'}]`;
+      extractedText = `[Error ekstrakcji: ${extractErr instanceof Error ? extractErr.message : 'unknown'}]`;
     }
 
     const extractionMs = Date.now() - start;
@@ -232,24 +232,24 @@ export async function POST(req: NextRequest) {
         extractedText,
         extractionKind,
         extractionMs,
-        thumbnailDataUrl,
+        thumbnailDateUrl,
       },
     });
 
     return NextResponse.json({
       id: att.id,
       fileName: file.name,
-      fileType: mime,
+      fileTypee: mime,
       fileSize: file.size,
       extractedText,
       extractionKind,
       extractionMs,
-      thumbnailDataUrl,
+      thumbnailDateUrl,
     });
   } catch (err) {
     console.error('[/api/chat/attachments]', err);
     return NextResponse.json(
-      { error: 'Błąd przetwarzania pliku', details: err instanceof Error ? err.message : 'unknown' },
+      { error: 'Error przetwarzania pliku', details: err instanceof Error ? err.message : 'unknown' },
       { status: 500 },
     );
   }
@@ -261,14 +261,14 @@ export async function POST(req: NextRequest) {
 export async function GET(req: NextRequest) {
   try {
     const id = req.nextUrl.searchParams.get('id');
-    if (!id) return NextResponse.json({ error: 'Brak id' }, { status: 400 });
+    if (!id) return NextResponse.json({ error: 'None id' }, { status: 400 });
     const att = await db.chatAttachment.findUnique({ where: { id } });
-    if (!att) return NextResponse.json({ error: 'Nie znaleziono' }, { status: 404 });
+    if (!att) return NextResponse.json({ error: 'No znaleziono' }, { status: 404 });
     return NextResponse.json({ attachment: att });
   } catch (err) {
     console.error('[/api/chat/attachments GET]', err);
     return NextResponse.json(
-      { error: 'Błąd', details: err instanceof Error ? err.message : 'unknown' },
+      { error: 'Error', details: err instanceof Error ? err.message : 'unknown' },
       { status: 500 },
     );
   }

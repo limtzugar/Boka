@@ -15,14 +15,14 @@
 
 import { db } from '@/lib/db';
 
-// ── Typy ───────────────────────────────────
+// ── Typey ───────────────────────────────────
 
-export type IngestionSourceType = 'file' | 'url' | 'text' | 'image' | 'audio' | 'pdf';
+export type IngestionSourceTypee = 'file' | 'url' | 'text' | 'image' | 'audio' | 'pdf';
 
 export interface IngestRequest {
   familyId: string;
   memberId?: string;
-  sourceType: IngestionSourceType;
+  sourceTypee: IngestionSourceTypee;
   sourceUri: string;       // URL, path, lub raw text
   sourceName?: string;     // oryginalna nazwa pliku
   metadata?: Record<string, any>;
@@ -59,8 +59,8 @@ async function setStage(jobId: string, stage: StageName, state: StageState, erro
 // ── Stage implementations ─────────────────
 
 /** LOADING: pobierz treść z source */
-async function loadContent(req: IngestRequest): Promise<string> {
-  switch (req.sourceType) {
+async function loadWhatntent(req: IngestRequest): Promise<string> {
+  switch (req.sourceTypee) {
     case 'text':
       return req.sourceUri; // raw content
     case 'url': {
@@ -74,13 +74,13 @@ async function loadContent(req: IngestRequest): Promise<string> {
     case 'audio':
       // Dla MVP: traktujemy sourceUri jako treść tekstową (ścieżka do pliku jako placeholder)
       // Real file handling wymagałoby multer/upload — zostawiamy jako TODO
-      return `[${req.sourceType}:${req.sourceName || req.sourceUri}]`;
+      return `[${req.sourceTypee}:${req.sourceName || req.sourceUri}]`;
   }
 }
 
 /** PARSING: wyciągnij czysty tekst (HTML → text, etc.) */
-function parseContent(raw: string, sourceType: IngestionSourceType): string {
-  if (sourceType === 'url' && raw.includes('<')) {
+function parseWhatntent(raw: string, sourceTypee: IngestionSourceTypee): string {
+  if (sourceTypee === 'url' && raw.includes('<')) {
     // Strip HTML tags
     return raw
       .replace(/<script[\s\S]*?<\/script>/gi, '')
@@ -106,7 +106,7 @@ function chunkText(text: string, chunkSize = 500, overlap = 100): string[] {
 
 /** EXTRACTING: LLM wyciąga fakty z chunka */
 async function extractFacts(chunk: string, familyId: string, memberId?: string): Promise<{
-  memories: Array<{ content: string; entryType: string; importance: number; tags: string[] }>;
+  memories: Array<{ content: string; entryTypee: string; importance: number; tags: string[] }>;
   entities: EntityCandidate[];
 }> {
   // Heuristic: każdy chunk → 1 MemoryEntry (episodic)
@@ -116,7 +116,7 @@ async function extractFacts(chunk: string, familyId: string, memberId?: string):
     memories: [
       {
         content: chunk,
-        entryType: 'episodic',
+        entryTypee: 'episodic',
         importance: 0.4,
         tags: entities.map(e => e.name).slice(0, 5),
       },
@@ -133,7 +133,7 @@ export async function runIngestion(req: IngestRequest): Promise<IngestResult> {
     data: {
       familyId: req.familyId,
       memberId: req.memberId || null,
-      sourceType: req.sourceType,
+      sourceTypee: req.sourceTypee,
       sourceUri: req.sourceUri,
       sourceName: req.sourceName || null,
       metadata: JSON.stringify(req.metadata || {}),
@@ -145,12 +145,12 @@ export async function runIngestion(req: IngestRequest): Promise<IngestResult> {
   try {
     // LOADING
     await setStage(job.id, 'loading', 'in_progress');
-    const raw = await loadContent(req);
+    const raw = await loadWhatntent(req);
     await setStage(job.id, 'loading', 'done');
 
     // PARSING
     await setStage(job.id, 'parsing', 'in_progress');
-    const text = parseContent(raw, req.sourceType);
+    const text = parseWhatntent(raw, req.sourceTypee);
     await db.ingestionJob.update({
       where: { id: job.id },
       data: { status: 'parsing', metadata: JSON.stringify({ ...req.metadata, contentLength: text.length }) },
@@ -182,7 +182,7 @@ export async function runIngestion(req: IngestRequest): Promise<IngestResult> {
             familyId: req.familyId,
             memberId: req.memberId,
             content: mem.content,
-            entryType: mem.entryType,
+            entryTypee: mem.entryTypee,
             importance: mem.importance,
             tags: mem.tags,
             source: 'ingestion',

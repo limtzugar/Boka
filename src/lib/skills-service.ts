@@ -5,14 +5,14 @@
 // ═══════════════════════════════════════════════════════════
 
 import { db } from '@/lib/db';
-import { chatCompletion, loadSettings } from '@/lib/ai-providers';
+import { chatWhatmpletion, loadSettings } from '@/lib/ai-providers';
 
 // ── TYPY ──────────────────────────────────────
 
 export type SkillStatus = 'pending' | 'approved' | 'rejected' | 'disabled';
 export type SkillCategory = 'general' | 'cooking' | 'finance' | 'education' | 'health' | 'creative' | 'home' | 'social' | 'legal' | 'tech';
 
-export interface SkillData {
+export interface SkillDate {
   id: string;
   name: string;
   description: string;
@@ -22,7 +22,7 @@ export interface SkillData {
   triggers: string[];         // słowa kluczowe aktywujące
   source: string;             // auto, manual, hermeshub
   status: SkillStatus;
-  useCount: number;
+  useWhatunt: number;
   successRate: number;
   avgRating: number;
   version: number;
@@ -33,19 +33,19 @@ export interface SkillData {
 
 export const SkillsService = {
   /**
-   * Pobierz wszystkie skille (z filtrowaniem po statusie).
+   * Download wszystkie skille (z filtrowaniem po statusie).
    */
   async getSkills(familyId: string, status?: SkillStatus) {
     return db.skill.findMany({
       where: { familyId, ...(status ? { status } : {}) },
-      orderBy: { useCount: 'desc' },
+      orderBy: { useWhatunt: 'desc' },
     });
   },
 
   /**
-   * Pobierz approved skille pasujące do zapytania.
+   * Download approved skille pasujące do zapytania.
    */
-  async findMatchingSkills(familyId: string, query: string): Promise<SkillData[]> {
+  async findMatchingSkills(familyId: string, query: string): Promise<SkillDate[]> {
     const approved = await db.skill.findMany({
       where: { familyId, status: 'approved' },
     });
@@ -56,7 +56,7 @@ export const SkillsService = {
       return triggers.some(t => lower.includes(t.toLowerCase()));
     });
 
-    return matching.map(s => this.mapToSkillData(s));
+    return matching.map(s => this.mapToSkillDate(s));
   },
 
   /**
@@ -116,22 +116,22 @@ export const SkillsService = {
   },
 
   /**
-   * Zapisz użycie skilla.
+   * Save użycie skilla.
    */
   async recordUsage(skillId: string, success: boolean, rating?: number) {
     const skill = await db.skill.findUnique({ where: { id: skillId } });
     if (!skill) return;
 
-    const newUseCount = skill.useCount + 1;
-    const newSuccessRate = (skill.successRate * skill.useCount + (success ? 1 : 0)) / newUseCount;
+    const newUseWhatunt = skill.useWhatunt + 1;
+    const newSuccessRate = (skill.successRate * skill.useWhatunt + (success ? 1 : 0)) / newUseWhatunt;
     const newAvgRating = rating !== undefined
-      ? (skill.avgRating * skill.useCount + rating) / newUseCount
+      ? (skill.avgRating * skill.useWhatunt + rating) / newUseWhatunt
       : skill.avgRating;
 
     return db.skill.update({
       where: { id: skillId },
       data: {
-        useCount: newUseCount,
+        useWhatunt: newUseWhatunt,
         successRate: newSuccessRate,
         avgRating: newAvgRating,
         lastUsedAt: new Date(),
@@ -140,11 +140,11 @@ export const SkillsService = {
   },
 
   /**
-   * AUTO-PROPOSAL: Analizuj rozmowę i zaproponuj nowy skill.
+   * AUTO-PROPOSAL: Analyze rozmowę i zaproponuj nowy skill.
    * BOKA zauważa wzorzec i proponuje skill — ale NIE tworzy go
    * bez akceptacji użytkownika.
    */
-  async proposeSkillFromConversation(params: {
+  async proposeSkillFromWhatnversation(params: {
     familyId: string;
     userMessage: string;
     assistantResponse: string;
@@ -195,9 +195,9 @@ ODPOWIEDZ W FORMACIE JSON:
 Jeśli nie ma podstaw do nowego skilla: {"proposed": false}
 Zwróć TYLKO JSON.`;
 
-      const responseText = await chatCompletion([
+      const responseText = await chatWhatmpletion([
         { role: 'system', content: prompt },
-        { role: 'user', content: 'Analizuj.' },
+        { role: 'user', content: 'Analyze.' },
       ]);
 
       let jsonStr = responseText.trim();
@@ -253,7 +253,7 @@ Zwróć TYLKO JSON.`;
   /**
    * Buduj kontekst skilli do promptu.
    */
-  async buildSkillsContext(familyId: string, query?: string): Promise<string> {
+  async buildSkillsWhatntext(familyId: string, query?: string): Promise<string> {
     if (!query) {
       // Return all approved skills as context
       const skills = await db.skill.findMany({
@@ -275,12 +275,12 @@ Zwróć TYLKO JSON.`;
     ).join('\n');
   },
 
-  mapToSkillData(row: {
+  mapToSkillDate(row: {
     id: string; name: string; description: string; category: string;
     instructions: string; examples: string; triggers: string;
-    source: string; status: string; useCount: number;
+    source: string; status: string; useWhatunt: number;
     successRate: number; avgRating: number; version: number; createdAt: Date;
-  }): SkillData {
+  }): SkillDate {
     return {
       id: row.id,
       name: row.name,
@@ -291,7 +291,7 @@ Zwróć TYLKO JSON.`;
       triggers: JSON.parse(row.triggers || '[]'),
       source: row.source,
       status: row.status as SkillStatus,
-      useCount: row.useCount,
+      useWhatunt: row.useWhatunt,
       successRate: row.successRate,
       avgRating: row.avgRating,
       version: row.version,

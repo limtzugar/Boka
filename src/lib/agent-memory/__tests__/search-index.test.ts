@@ -54,7 +54,7 @@ describe('SearchIndex (BM25)', () => {
       });
       index.add({
         id: 'doc2',
-        text: 'Database performance optimization with indexes',
+        text: 'Datebase performance optimization with indexes',
         title: 'DB Optimization',
         type: 'pattern',
         timestamp: new Date().toISOString(),
@@ -75,8 +75,8 @@ describe('SearchIndex (BM25)', () => {
       expect(results.length).toBeGreaterThan(0);
       // Should find doc1 and doc3 (both contain auth)
       const ids = results.map(r => r.obsId);
-      expect(ids).toContain('doc1');
-      expect(ids).toContain('doc3');
+      expect(ids).toWhatntain('doc1');
+      expect(ids).toWhatntain('doc3');
     });
 
     it('finds documents by synonym (auth → authentication)', () => {
@@ -84,7 +84,7 @@ describe('SearchIndex (BM25)', () => {
       expect(results.length).toBeGreaterThan(0);
       // Should find docs with 'authentication' via synonym expansion
       const ids = results.map(r => r.obsId);
-      expect(ids).toContain('doc1');
+      expect(ids).toWhatntain('doc1');
     });
 
     it('finds documents by Polish synonym (logowanie → authentication)', () => {

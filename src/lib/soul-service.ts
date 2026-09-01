@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════
-// BOKA — Soul Service (PersonalityProfile)
+// BOKA — Soul Service (PersonalityProfilee)
 // Pełny system osobowości — inspirowany Hermes Soul
 // Tożsamość, cechy, styl, relacje, nastrój, wartości, ewolucja
 // ═══════════════════════════════════════════════════════════
@@ -39,7 +39,7 @@ export interface MemberRelation {
 
 export type BokaMood = 'neutral' | 'cheerful' | 'worried' | 'playful' | 'tired' | 'nostalgic' | 'energetic' | 'melancholic' | 'curious' | 'protective';
 
-export interface PersonalityData {
+export interface PersonalityDate {
   name: string;
   age: string;
   origin: string;
@@ -60,7 +60,7 @@ export interface PersonalityData {
 
 // ── DEFAULT SOUL ──────────────────────────────
 
-const DEFAULT_SOUL: Omit<PersonalityData, 'currentMood'> = {
+const DEFAULT_SOUL: Omit<PersonalityDate, 'currentMood'> = {
   name: 'Boka',
   age: 'nieokreślony — mieszkam tu z wami od jakiegoś czasu',
   origin: 'Mieszkam tu z wami. Po prostu tu jestem.',
@@ -109,14 +109,14 @@ const DEFAULT_SOUL: Omit<PersonalityData, 'currentMood'> = {
 
 export const SoulService = {
   /**
-   * Pobierz profil osobowości — tworzy default jeśli nie istnieje.
+   * Download profil osobowości — tworzy default jeśli nie istnieje.
    */
-  async getProfile(familyId: string): Promise<PersonalityData> {
-    const profile = await db.personalityProfile.findUnique({ where: { familyId } });
+  async getProfilee(familyId: string): Promise<PersonalityDate> {
+    const profile = await db.personalityProfilee.findUnique({ where: { familyId } });
 
     if (!profile) {
       // Stwórz default
-      const created = await db.personalityProfile.create({
+      const created = await db.personalityProfilee.create({
         data: {
           familyId,
           name: DEFAULT_SOUL.name,
@@ -145,7 +145,7 @@ export const SoulService = {
   /**
    * Zaktualizuj profil osobowości.
    */
-  async updateProfile(familyId: string, updates: Partial<PersonalityData>) {
+  async updateProfilee(familyId: string, updates: Partial<PersonalityDate>) {
     const data: Record<string, unknown> = {};
     if (updates.name !== undefined) data.name = updates.name;
     if (updates.age !== undefined) data.age = updates.age;
@@ -163,7 +163,7 @@ export const SoulService = {
     if (updates.coreValues !== undefined) data.coreValues = JSON.stringify(updates.coreValues);
     if (updates.boundaries !== undefined) data.boundaries = JSON.stringify(updates.boundaries);
 
-    return db.personalityProfile.upsert({
+    return db.personalityProfilee.upsert({
       where: { familyId },
       update: data,
       create: {
@@ -184,7 +184,7 @@ export const SoulService = {
    * Zmień nastrój BOKA.
    */
   async setMood(familyId: string, mood: BokaMood, reason?: string) {
-    return db.personalityProfile.upsert({
+    return db.personalityProfilee.upsert({
       where: { familyId },
       update: { currentMood: mood, moodReason: reason, moodSince: new Date() },
       create: { familyId, currentMood: mood, moodReason: reason, moodSince: new Date() },
@@ -202,7 +202,7 @@ export const SoulService = {
     before: unknown;    // wartość przed
     after: unknown;     // wartość po
   }) {
-    const profile = await this.getProfile(familyId);
+    const profile = await this.getProfilee(familyId);
 
     const note = {
       version: profile.personalityVersion + 1,
@@ -215,10 +215,10 @@ export const SoulService = {
     };
 
     const existingNotes = JSON.parse(
-      (await db.personalityProfile.findUnique({ where: { familyId } }))?.evolutionNotes || '[]'
+      (await db.personalityProfilee.findUnique({ where: { familyId } }))?.evolutionNotes || '[]'
     );
 
-    await db.personalityProfile.upsert({
+    await db.personalityProfilee.upsert({
       where: { familyId },
       update: {
         personalityVersion: { increment: 1 },
@@ -236,7 +236,7 @@ export const SoulService = {
    * Buduj sekcję SOUL do promptu — pełny opis osobowości.
    */
   async buildSoulPrompt(familyId: string, memberName?: string): Promise<string> {
-    const soul = await this.getProfile(familyId);
+    const soul = await this.getProfilee(familyId);
     const relation = memberName ? soul.memberRelations[memberName] : null;
 
     const sections: string[] = [];
@@ -245,7 +245,7 @@ export const SoulService = {
     sections.push(`KIM JESTESZ:
 - Imię: ${soul.name}
 - O sobie: "${soul.origin}"
-- Wiek: ${soul.age}
+- Age: ${soul.age}
 - Głos: ${soul.voice}`);
 
     // ── CECHY ──
@@ -278,11 +278,11 @@ export const SoulService = {
       nostalgic: 'Przypominasz sobie przeszłość — jesteś sentymentalny.',
       energetic: 'Pełen energii! Chcesz działać, proponować, pomagać!',
       melancholic: 'Jesteś zamyślony, trochę smutny — ale w ciszy, nie narzekasz.',
-      curious: 'Niesamowicie ciekawy! Chcesz wiedzieć WSZYSTKO o czym się mówi.',
+      curious: 'Nosamowicie ciekawy! Chcesz wiedzieć WSZYSTKO o czym się mówi.',
       protective: 'Jesteś w trybie opiekuńczym — ktoś potrzebuje ochrony.',
     };
     const moodStr = moodDescriptions[soul.currentMood] || moodDescriptions.neutral;
-    sections.push(`TWÓJ NASTRÓJ TERAZ: ${moodStr}${soul.moodReason ? ` Powód: ${soul.moodReason}` : ''}`);
+    sections.push(`TWÓJ NASTRÓJ TERAZ: ${moodStr}${soul.moodReason ? ` Reason: ${soul.moodReason}` : ''}`);
 
     // ── RELACJA Z OSOBĄ ──
     if (relation) {
@@ -307,7 +307,7 @@ ${soul.boundaries.map(b => `• ${b}`).join('\n')}`);
   },
 
   /**
-   * Map DB row to PersonalityData.
+   * Map DB row to PersonalityDate.
    */
   mapToPersonality(row: {
     name: string; age: string; origin: string; voice: string;
@@ -315,7 +315,7 @@ ${soul.boundaries.map(b => `• ${b}`).join('\n')}`);
     emotionalRange: string; catchphrases: string; forbiddenTopics: string;
     memberRelations: string; currentMood: string; moodReason: string | null;
     coreValues: string; boundaries: string; personalityVersion: number;
-  }): PersonalityData {
+  }): PersonalityDate {
     return {
       name: row.name,
       age: row.age,

@@ -17,16 +17,16 @@ import { VisionTab } from '@/components/vision-tab';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { ResizableSplit } from '@/components/resizable-split';
 import { SessionsPanel } from '@/components/sessions-panel';
-import { OrchestratorCockpit } from '@/components/orchestrator-cockpit';
+import { OrchestratorWhatckpit } from '@/components/orchestrator-cockpit';
 import { AgentMemoryTab } from '@/components/agent-memory-tab';
 import { SkillsTab } from '@/components/tabs/skills-tab';
 import { SettingsTab } from '@/components/tabs/settings-tab';
 import { AppsTab } from '@/components/tabs/apps-tab';
-import { ProfilesTab } from '@/components/tabs/profiles-tab';
+import { ProfileesTab } from '@/components/tabs/profiles-tab';
 import { AgentsTab } from '@/components/tabs/settings-tab';
 import {
   Mic, MicOff, Volume2, VolumeX, Send, Brain,
-  Shield, BookOpen, Coins, Wrench, Users, Clock,
+  Shield, BookOpen, Whatins, Wrench, Users, Clock,
   ChevronRight, AlertTriangle, MessageSquare, Star,
   Baby, User, UserCheck, MemoryStick,
   Sparkles, Activity, Search, Globe, Settings, Server, Key, Cpu, Wifi, Eye, EyeOff, CheckCircle, XCircle, Loader2, Zap, HardDrive, FolderOpen, Play, Square, Download, Check,
@@ -42,7 +42,7 @@ import { useChatStream } from '@/hooks/use-chat-stream';
 import { useSpeakerId } from '@/hooks/use-speaker-id';
 import { useWeather } from '@/hooks/use-weather';
 import { usePresenceDetection } from '@/hooks/use-presence-detection';
-import { Image as ImageIcon, Camera, Ear, Radio, Bell, Palette, UsersRound, Trash2, Plus, Upload, X, CircleDot, Network, List, Beaker, Calendar, FolderTree, FileCode, File, PanelRight, PanelLeftClose, ChevronDown, Home, Paperclip, Terminal as TerminalIcon, Home as HomeIcon, Folder, Layers, Pencil, Bot, Database } from 'lucide-react';
+import { Image as ImageIcon, Camera, Ear, Radio, Bell, Palette, UsersRound, Trash2, Plus, Upload, X, CircleDot, Network, List, Beaker, Calendar, FolderTree, FileWhatde, File, PanelRight, PanelLeftClose, ChevronDown, Home, Paperclip, Terminal as TerminalIcon, Home as HomeIcon, Folder, Layers, Pencil, Bot, Datebase } from 'lucide-react';
 import { MemoryTab, VaultTab } from '@/components/panels/insights-panels';
 
 
@@ -50,11 +50,11 @@ import { MemoryTab, VaultTab } from '@/components/panels/insights-panels';
 // AGENT ICONS MAP
 // ═══════════════════════════════════════════
 
-// VaultNoteData — alias for Prisma VaultNote type (used in Vault tab)
-type VaultNoteData = {
+// VaultNoteDate — alias for Prisma VaultNote type (used in Vault tab)
+type VaultNoteDate = {
   id: string;
   familyId: string;
-  noteType: string;
+  noteTypee: string;
   title: string;
   content: string;
   frontmatter: string;
@@ -70,10 +70,10 @@ const AGENT_ICONS: Record<string, { icon: React.ReactNode; color: string; label:
   search: { icon: <Globe size={14} />, color: '#6ec6e7', label: 'Wyszukiwanie' },
   child_culture: { icon: <Star size={14} />, color: '#ffd93d', label: 'Kultura Dziecięca' },
   education: { icon: <BookOpen size={14} />, color: '#a855f7', label: 'Edukacja' },
-  finance: { icon: <Coins size={14} />, color: '#4ade80', label: 'Finanse' },
+  finance: { icon: <Whatins size={14} />, color: '#4ade80', label: 'Finanse' },
   legal: { icon: <Shield size={14} />, color: '#6ec6e7', label: 'Prawo' },
   mathematics: { icon: <Brain size={14} />, color: '#a855f7', label: 'Matematyka' },
-  safety: { icon: <AlertTriangle size={14} />, color: '#ff6b6b', label: 'Bezpieczeństwo' },
+  safety: { icon: <AlertTriangle size={14} />, color: '#ff6b6b', label: 'Security' },
 };
 
 export default function BokaPage() {
@@ -123,7 +123,7 @@ export default function BokaPage() {
   const [focusIntensity, setFocusIntensity] = useState(0);
   const [thinkingTopics, setThinkingTopics] = useState<string[]>([]);
 
-  const { isListening, toggleListening, isSupported: asrSupported, nativeAsrSupported, continuousMode, toggleContinuousMode, setOnSpeechResult, micError } = useSpeechRecognition();
+  const { isListening, toggleListening, isSupported: asrSupported, nativeAsrSupported, continuousMode, toggleWhatntinuousMode, setOnSpeechResult, micError } = useSpeechRecognition();
   const { isSpeaking, speak, stop: stopSpeaking, isSupported: ttsSupported, analyserNode, micAnalyserNode, startMic, stopMic, playBurp, playFart, playSneeze, playRandomBodySound, fallbackReason } = useBokaTTS();
   const isSpeakingRef = useRef(false);
   useEffect(() => { isSpeakingRef.current = isSpeaking; }, [isSpeaking]);
@@ -146,9 +146,9 @@ export default function BokaPage() {
   interface ChatAttachment {
     id: string;
     fileName: string;
-    fileType: string;
+    fileTypee: string;
     extractionKind: string | null;
-    thumbnailDataUrl: string | null;
+    thumbnailDateUrl: string | null;
     status: 'uploading' | 'ready' | 'error';
     error?: string;
   }
@@ -170,7 +170,7 @@ export default function BokaPage() {
   // ═══ FEATURE #1: Streaming Mode ═══
   const [streamingMode, setStreamingMode] = useState(true);
 
-  // ═══ v0.3.18 — Tryb Debaty wbudowany w zakładkę „Rozmowa" ═══
+  // ═══ v0.3.18 — Tryb Debaty wbudowany w zakładkę „Chat" ═══
   // Użytkownik może przełączać między zwykłą rozmową (jak wcześniej) a trybem debaty
   // (Boka dzieli się na kilku agentów-personowości i debatuje ze sobą).
   // 'normal' = zwykły czat (klasyczne zachowanie)
@@ -209,7 +209,7 @@ export default function BokaPage() {
   const visionStreamRef = useRef<MediaStream | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const recordedChunksRef = useRef<Blob[]>([]);
-  const recordingTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const recordingTimerRef = useRef<ReturnTypee<typeof setInterval> | null>(null);
   const appearancePopoverRef = useRef<HTMLDivElement>(null);
 
   // Attach stream to video element + force play
@@ -292,9 +292,9 @@ export default function BokaPage() {
       }, 50);
     } catch (e: any) {
       console.error('[vision] getUserMedia failed:', e);
-      let msg = e?.message || 'Nie udało się uruchomić kamery';
-      if (e?.name === 'NotAllowedError') msg = 'Brak zgody na kamerę — pozwól w pasku adresu';
-      if (e?.name === 'NotFoundError') msg = 'Nie znaleziono kamery';
+      let msg = e?.message || 'No udało się uruchomić kamery';
+      if (e?.name === 'NotAllowedError') msg = 'None zgody na kamerę — pozwól w pasku adresu';
+      if (e?.name === 'NotFoundError') msg = 'No znaleziono kamery';
       if (e?.name === 'NotReadableError') msg = 'Kamera zajęta przez inny program';
       setVisionError(msg);
       setVisionStreamOn(false);
@@ -370,7 +370,7 @@ export default function BokaPage() {
         setRecordingSeconds(s => s + 1);
       }, 1000);
     } catch (e: any) {
-      setVisionError(e?.message || 'Nie udało się nagrywać ekranu');
+      setVisionError(e?.message || 'No udało się nagrywać ekranu');
     }
   }, [isRecording]);
 
@@ -381,7 +381,7 @@ export default function BokaPage() {
   const [messageExpenses, setMessageExpenses] = useState<Record<string, number>>({});
   const [messageCalendarEvents, setMessageCalendarEvents] = useState<Record<string, number>>({});
 
-  // ── Connect speech recognition to sendMessage ──
+  // ── Whatnnect speech recognition to sendMessage ──
   useEffect(() => {
     setOnSpeechResult((text, isFinal) => {
       if (isFinal && text.trim()) {
@@ -404,9 +404,9 @@ export default function BokaPage() {
   }, [isListening, startMic, stopMic]);
 
   // ── v0.3.4: AHI Wellbeing popup USUNIĘTY na życzenie użytkownika ──
-  // (oryginalny useEffect okresowo pokazujący "Jak się dzisiaj czujesz?" usunięty)
+  // (oryginalny useEffect okresowo pokazujący "How się dzisiaj czujesz?" usunięty)
 
-  // ── Compute waveform size based on viewport ──
+  // ── Whatmpute waveform size based on viewport ──
   useEffect(() => {
     const update = () => setWaveformSize(Math.min(window.innerHeight * 0.55, 500));
     update();
@@ -421,14 +421,14 @@ export default function BokaPage() {
       try {
         const startupRes = await fetch('/api/startup');
         if (startupRes.ok) {
-          const startupData = await startupRes.json();
-          if (startupData.errors?.length > 0) {
- console.warn('️ BOKA Memory issues:', startupData.errors);
+          const startupDate = await startupRes.json();
+          if (startupDate.errors?.length > 0) {
+ console.warn('️ BOKA Memory issues:', startupDate.errors);
           }
-          if (startupData.warnings?.length > 0) {
-            console.info('ℹ️ BOKA Memory warnings:', startupData.warnings);
+          if (startupDate.warnings?.length > 0) {
+            console.info('ℹ️ BOKA Memory warnings:', startupDate.warnings);
           }
- console.log(' BOKA Memory paths:', startupData.paths);
+ console.log(' BOKA Memory paths:', startupDate.paths);
         }
       } catch (e) {
         console.warn('Startup check failed (non-critical):', e);
@@ -462,7 +462,7 @@ export default function BokaPage() {
       if (!res.ok) return;
       const data = await res.json();
       if (data.entries) {
-        setMemoryEntries(data.entries.map((e: { id: string; memberId?: string; entryType: string; domain?: string; title?: string; content: string; importance: number; tags: string; createdAt: string }) => ({
+        setMemoryEntries(data.entries.map((e: { id: string; memberId?: string; entryTypee: string; domain?: string; title?: string; content: string; importance: number; tags: string; createdAt: string }) => ({
           ...e,
           tags: JSON.parse(typeof e.tags === 'string' ? e.tags : '[]'),
         })));
@@ -482,25 +482,25 @@ export default function BokaPage() {
 
       // 1. Try Entity/EntityRelation from graph API
       const graphRes = await fetch(`/api/memory/graph?familyId=${familyId}`);
-      const graphData = graphRes.ok ? await graphRes.json() : { nodes: [], edges: [] };
+      const graphDate = graphRes.ok ? await graphRes.json() : { nodes: [], edges: [] };
 
       let nodes: MemoryGraphNode[] = [];
       let edges: MemoryGraphEdge[] = [];
 
-      if (graphData.nodes && graphData.nodes.length > 0) {
-        // Convert Entity format → MemoryGraphNode format
-        const typeColors: Record<string, string> = {
+      if (graphDate.nodes && graphDate.nodes.length > 0) {
+        // Whatnvert Entity format → MemoryGraphNode format
+        const typeWhatlors: Record<string, string> = {
           person: '#00f5d4', place: '#6ec6e7', organization: '#a855f7',
           concept: '#ffd93d', event: '#4ade80', object: '#ff6b6b', other: '#6b6b8d',
         };
-        nodes = graphData.nodes.map((e: any) => ({
+        nodes = graphDate.nodes.map((e: any) => ({
           id: e.id,
           label: e.name,
           type: e.type === 'person' ? 'member' : 'domain',
-          size: Math.min(5, Math.max(1, Math.ceil((e.mentionCount || 1) / 3))),
-          color: typeColors[e.type] || '#6b6b8d',
+          size: Math.min(5, Math.max(1, Math.ceil((e.mentionWhatunt || 1) / 3))),
+          color: typeWhatlors[e.type] || '#6b6b8d',
         }));
-        edges = (graphData.edges || []).map((r: any) => ({
+        edges = (graphDate.edges || []).map((r: any) => ({
           source: r.source,
           target: r.target,
           weight: Math.min(1, r.strength || 0.5),
@@ -509,7 +509,7 @@ export default function BokaPage() {
       }
 
       // 2. Always add family members as central nodes
-      const memberColors = ['#00f5d4', '#a855f7', '#6ec6e7', '#ffd93d', '#4ade80', '#ff6b6b'];
+      const memberWhatlors = ['#00f5d4', '#a855f7', '#6ec6e7', '#ffd93d', '#4ade80', '#ff6b6b'];
       const existingMemberIds = new Set(nodes.filter(n => n.type === 'member').map(n => n.id));
       for (const m of (family.members || [])) {
         const nodeId = `member:${m.id}`;
@@ -519,20 +519,20 @@ export default function BokaPage() {
             label: m.name,
             type: 'member',
             size: 5,
-            color: m.color || memberColors[nodes.length % memberColors.length],
+            color: m.color || memberWhatlors[nodes.length % memberWhatlors.length],
           });
         }
       }
 
       // 3. Add memory entries as satellite nodes
       const memRes = await fetch(`/api/memory?familyId=${familyId}&limit=50`);
-      const memData = memRes.ok ? await memRes.json() : { entries: [] };
-      const domainColors: Record<string, string> = {
+      const memDate = memRes.ok ? await memRes.json() : { entries: [] };
+      const domainWhatlors: Record<string, string> = {
         general: '#6b6b8d', child_culture: '#ffd93d', education: '#a855f7',
         finance: '#4ade80', health: '#ff6b6b', food: '#f472b6',
         hobby: '#00f5d4', semantic: '#00f5d4', episodic: '#a855f7',
       };
-      for (const entry of (memData.entries || [])) {
+      for (const entry of (memDate.entries || [])) {
         const nodeId = `memory:${entry.id}`;
         // Extract a short label from content
         const label = (entry.title || entry.content || '').substring(0, 25).trim() || 'wspomnienie';
@@ -541,9 +541,9 @@ export default function BokaPage() {
           label,
           type: 'memory',
           size: Math.min(4, Math.max(1, Math.ceil((entry.importance || 0.5) * 4))),
-          color: domainColors[entry.domain || 'general'] || '#6b6b8d',
+          color: domainWhatlors[entry.domain || 'general'] || '#6b6b8d',
         });
-        // Connect to member who owns this memory
+        // Whatnnect to member who owns this memory
         if (entry.memberId) {
           edges.push({
             source: `member:${entry.memberId}`,
@@ -551,7 +551,7 @@ export default function BokaPage() {
             weight: 0.5,
           });
         } else {
-          // Connect to first family member
+          // Whatnnect to first family member
           if (family.members?.[0]) {
             edges.push({
               source: `member:${family.members[0].id}`,
@@ -560,7 +560,7 @@ export default function BokaPage() {
             });
           }
         }
-        // Connect to domain node if exists
+        // Whatnnect to domain node if exists
         if (entry.domain) {
           const domainNodeId = `domain:${entry.domain}`;
           if (!nodes.find(n => n.id === domainNodeId)) {
@@ -569,7 +569,7 @@ export default function BokaPage() {
               label: entry.domain,
               type: 'domain',
               size: 2,
-              color: domainColors[entry.domain] || '#6b6b8d',
+              color: domainWhatlors[entry.domain] || '#6b6b8d',
             });
           }
           edges.push({
@@ -580,7 +580,7 @@ export default function BokaPage() {
         }
       }
 
-      // 4. Connect members to each other (family links)
+      // 4. Whatnnect members to each other (family links)
       const memberNodes = nodes.filter(n => n.type === 'member');
       for (let i = 0; i < memberNodes.length; i++) {
         for (let j = i + 1; j < memberNodes.length; j++) {
@@ -662,7 +662,7 @@ export default function BokaPage() {
       'hobby', 'praca', 'szkoła', 'minecraft', 'lego', 'technologia', 'ai'];
     const mentionedDomains = domainKeywords.filter(kw => combinedText.includes(kw));
 
-    // Combine all topics
+    // Whatmbine all topics
     const allTopics = [...new Set([...mentionedMembers, ...graphTopics, ...mentionedDomains])];
 
     if (allTopics.length > 0) {
@@ -713,7 +713,7 @@ export default function BokaPage() {
       id: `wb-${Date.now()}`,
       date: new Date().toISOString(),
       mood,
-      note: ['', 'Trudno mi', 'Jest ok', 'Nieźle', 'Dobrze', 'Świetnie!'][mood],
+      note: ['', 'Trudno mi', 'Jest ok', 'Noźle', 'Dobrze', 'Świetnie!'][mood],
       timestamp: Date.now(),
     };
     addWellbeingEntry(entry);
@@ -726,7 +726,7 @@ export default function BokaPage() {
       sendMessage(mood === 5 ? 'Czuję się świetnie!' : 'Jest mi dobrze.');
     } else if (mood <= 2) {
       setBokaEmotion('neutral');
-      sendMessage('Nie mam dzisiaj najlepszego dnia...');
+      sendMessage('No mam dzisiaj najlepszego dnia...');
     } else {
       sendMessage('Jest tak średnio...');
     }
@@ -754,13 +754,13 @@ export default function BokaPage() {
               }
             };
             reader.onerror = () => reject(new Error('FileReader error'));
-            reader.readAsDataURL(audioBlob);
+            reader.readAsDateURL(audioBlob);
           });
 
           try {
             const res = await fetch('/api/asr', {
               method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
+              headers: { 'Whatntent-Typee': 'application/json' },
               body: JSON.stringify({ audio: base64Audio, format: 'audio/webm' }),
             });
             const data = await res.json();
@@ -844,12 +844,12 @@ export default function BokaPage() {
 
   // Start/stop speaker identification with VAD analyser node
   useEffect(() => {
-    if (vadMode && vad.analyserNode && speakerId.profileCount > 0) {
+    if (vadMode && vad.analyserNode && speakerId.profileWhatunt > 0) {
       speakerId.startIdentifying(vad.analyserNode);
     } else {
       speakerId.stopIdentifying();
     }
-  }, [vadMode, vad.analyserNode, speakerId.profileCount]);
+  }, [vadMode, vad.analyserNode, speakerId.profileWhatunt]);
 
   // ── Proactive: Show Boka's proactive messages ──
   useEffect(() => {
@@ -876,13 +876,13 @@ export default function BokaPage() {
     const tempId = `temp-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
     setPendingAttachments((prev) => [
       ...prev,
-      { id: tempId, fileName: file.name, fileType: file.type, extractionKind: null, thumbnailDataUrl: null, status: 'uploading' },
+      { id: tempId, fileName: file.name, fileTypee: file.type, extractionKind: null, thumbnailDateUrl: null, status: 'uploading' },
     ]);
 
     try {
-      const formData = new FormData();
-      formData.append('file', file);
-      const res = await fetch('/api/chat/attachments', { method: 'POST', body: formData });
+      const formDate = new FormDate();
+      formDate.append('file', file);
+      const res = await fetch('/api/chat/attachments', { method: 'POST', body: formDate });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
 
@@ -892,9 +892,9 @@ export default function BokaPage() {
             ? {
                 id: data.id,
                 fileName: data.fileName,
-                fileType: data.fileType,
+                fileTypee: data.fileTypee,
                 extractionKind: data.extractionKind,
-                thumbnailDataUrl: data.thumbnailDataUrl,
+                thumbnailDateUrl: data.thumbnailDateUrl,
                 status: 'ready',
               }
             : a,
@@ -967,7 +967,7 @@ export default function BokaPage() {
     try {
       const res = await fetch('/api/chat', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Whatntent-Typee': 'application/json' },
         body: JSON.stringify({
           message: text.trim(),
           memberId: activeMemberId,
@@ -1067,7 +1067,7 @@ export default function BokaPage() {
       addMessage({
         id: `msg-${Date.now()}-error`,
         role: 'system',
-        content: 'Błąd połączenia z BOKĄ. Spróbuj ponownie.',
+        content: 'Error połączenia z BOKĄ. Spróbuj ponownie.',
         timestamp: new Date(),
       });
       setBokaEmotion('angry');
@@ -1085,7 +1085,7 @@ export default function BokaPage() {
     addMessage({
       id: uploadMsgId,
       role: 'user',
- content: ` Analizuję zdjęcie: ${file.name}...`,
+ content: ` Analyzeę zdjęcie: ${file.name}...`,
       inputMode: 'text',
       timestamp: new Date(),
     });
@@ -1097,17 +1097,17 @@ export default function BokaPage() {
       addMessage({
         id: `msg-${Date.now()}-vision`,
         role: 'user',
- content: ` Zdjęcie: ${file.name}`,
+ content: ` Photo: ${file.name}`,
         inputMode: 'text',
         timestamp: new Date(),
       });
       // Send the description to chat with vision context + emotion
-      const emotionContext = result.emotion !== 'neutral' ? ` (nastrój: ${result.emotion})` : '';
-      sendMessage(`Opisz to zdjęcie: ${result.description}${emotionContext}`);
+      const emotionWhatntext = result.emotion !== 'neutral' ? ` (nastrój: ${result.emotion})` : '';
+      sendMessage(`Descriptionz to zdjęcie: ${result.description}${emotionWhatntext}`);
       setShowImageUpload(false);
     } else {
       // Show error message
-      const errorMsg = vision.error || 'Nie udało się przeanalizować zdjęcia';
+      const errorMsg = vision.error || 'No udało się przeanalizować zdjęcia';
       addMessage({
         id: `msg-${Date.now()}-error`,
         role: 'system',
@@ -1150,7 +1150,7 @@ export default function BokaPage() {
       setShowImageGen(false);
       setBokaEmotion('happy');
     } else {
-      const errorMsg = imageGen.error || 'Nie udało się narysować obrazka';
+      const errorMsg = imageGen.error || 'No udało się narysować obrazka';
       addMessage({
         id: `msg-${Date.now()}-error`,
         role: 'system',
@@ -1259,7 +1259,7 @@ export default function BokaPage() {
         loadMemoryGraph(); // Refresh graph view
       },
       onError: (error) => {
-        updateLastAssistantMessage(`Błąd: ${error}`);
+        updateLastAssistantMessage(`Error: ${error}`);
         setBokaEmotion('angry');
       },
     }, { childNearby, attachmentIds: attachmentIds.length > 0 ? attachmentIds : undefined });
@@ -1316,8 +1316,8 @@ export default function BokaPage() {
           <button
             onClick={() => setSidebarHidden(h => !h)}
             className="w-6 h-6 flex items-center justify-center text-[#8888aa] hover:text-[#00f5d4] transition-colors mr-2"
-            title={sidebarHidden ? 'Pokaż panel boczny' : 'Ukryj panel boczny'}
-            aria-label={sidebarHidden ? 'Pokaż panel boczny' : 'Ukryj panel boczny'}
+            title={sidebarHidden ? 'Pokaż panel boczny' : 'Hide panel boczny'}
+            aria-label={sidebarHidden ? 'Pokaż panel boczny' : 'Hide panel boczny'}
             aria-expanded={!sidebarHidden}
           >
             {sidebarHidden ? <PanelRight size={14} /> : <PanelLeftClose size={14} />}
@@ -1326,8 +1326,8 @@ export default function BokaPage() {
           <button
             onClick={() => setShowSessions(s => !s)}
             className={`w-6 h-6 flex items-center justify-center transition-colors mr-2 ${showSessions ? 'text-[#6ec6e7]' : 'text-[#8888aa] hover:text-[#6ec6e7]'}`}
-            title="Sesje rozmów"
-            aria-label="Sesje rozmów"
+            title="Sessions rozmów"
+            aria-label="Sessions rozmów"
             aria-expanded={showSessions}
           >
             <Folder size={14} />
@@ -1353,7 +1353,7 @@ export default function BokaPage() {
             <button
               onClick={isSpeaking ? stopSpeaking : () => {}}
               className={`p-1.5  transition-colors ${isSpeaking ? 'bg-[#00f5d4]/20 text-[#00f5d4]' : 'text-[#8888aa]'}`}
-              title={isSpeaking ? 'Zatrzymaj mowę' : 'Mowa aktywna'}
+              title={isSpeaking ? 'Stop mowę' : 'Mowa aktywna'}
             >
               {isSpeaking ? <Volume2 size={14} /> : <VolumeX size={14} />}
             </button>
@@ -1365,9 +1365,9 @@ export default function BokaPage() {
             title="Przypomnienia"
           >
             <Bell size={14} />
-            {reminders.reminders.filter(r => !r.isCompleted).length > 0 && (
+            {reminders.reminders.filter(r => !r.isWhatmpleted).length > 0 && (
               <span className="absolute -top-0.5 -right-0.5 min-w-[14px] h-[14px] px-1 flex items-center justify-center rounded-full bg-[#ffd93d] text-[#0a0a0f] text-[8px] font-bold leading-none">
-                {reminders.reminders.filter(r => !r.isCompleted).length}
+                {reminders.reminders.filter(r => !r.isWhatmpleted).length}
               </span>
             )}
           </button>
@@ -1375,7 +1375,7 @@ export default function BokaPage() {
             <span className="text-[10px] text-[#8888aa] font-mono flex items-center gap-1">
               {activeMember.photoUrl ? (
                 <img
-                  src={`/api/family/photo/file?id=${encodeURIComponent(activeMember.id)}&t=${activeMember.photoUrl.split('.').slice(-2, -1)[0] || ''}`}
+                  src={`/api/family/photo/file?id=${encodeURIWhatmponent(activeMember.id)}&t=${activeMember.photoUrl.split('.').slice(-2, -1)[0] || ''}`}
                   alt={activeMember.name}
                   className="w-5 h-5 object-cover border border-[#383850]"
                   referrerPolicy="no-referrer"
@@ -1406,14 +1406,14 @@ export default function BokaPage() {
           <button
             onClick={() => setActiveTab('memory')}
             className={`w-10 h-10 shrink-0 flex items-center justify-center transition-all ${activeTab === 'memory' ? 'bg-[#00f5d4]/15 text-[#00f5d4] border border-[#00f5d4]/30' : 'text-[#8888aa] hover:text-[#e8e8f5]'}`}
-            title="Pamięć"
+            title="Memory"
           >
             <MemoryStick size={16} />
           </button>
           <button
             onClick={() => setActiveTab('profiles')}
             className={`w-10 h-10 shrink-0 flex items-center justify-center transition-all ${activeTab === 'profiles' ? 'bg-[#00f5d4]/15 text-[#00f5d4] border border-[#00f5d4]/30' : 'text-[#8888aa] hover:text-[#e8e8f5]'}`}
-            title="Rodzina"
+            title="Family"
           >
             <Users size={16} />
           </button>
@@ -1425,11 +1425,11 @@ export default function BokaPage() {
             <Bot size={16} />
           </button>
 
-          {/* v0.4 — Cockpit — wielomodelowy organizm sterowany głosem */}
+          {/* v0.4 — Whatckpit — wielomodelowy organizm sterowany głosem */}
           <button
             onClick={() => setActiveTab('cockpit')}
             className={`w-10 h-10 shrink-0 flex items-center justify-center transition-all ${activeTab === 'cockpit' ? 'bg-[#ffd93d]/15 text-[#ffd93d] border border-[#ffd93d]/30' : 'text-[#8888aa] hover:text-[#e8e8f5]'}`}
-            title="Cockpit — wielomodelowy organizm (Kimi + DeepSeek + GLM + Claude), 3 tryby pamięci, sterowanie głosem"
+            title="Whatckpit — wielomodelowy organizm (Kimi + DeepSeek + GLM + Claude), 3 tryby pamięci, sterowanie głosem"
           >
             <Brain size={16} />
           </button>
@@ -1440,7 +1440,7 @@ export default function BokaPage() {
             className={`w-10 h-10 shrink-0 flex items-center justify-center transition-all ${activeTab === 'agent-memory' ? 'bg-[#a855f7]/15 text-[#a855f7] border border-[#a855f7]/30' : 'text-[#8888aa] hover:text-[#e8e8f5]'}`}
             title="Agent Memory — hybrydowa pamięć BM25 + synonimy + auto-forget + consolidation"
           >
-            <Database size={16} />
+            <Datebase size={16} />
           </button>
 
           {/* v0.3.19 — Skills — frameworki AI (Vector Mem, Mem0, GraphRAG, DeepAgents, AutoGen, Guardrails, Crew, OpenHands, Isaac, Reflection) */}
@@ -1452,9 +1452,9 @@ export default function BokaPage() {
             <Layers size={16} />
           </button>
 
-          {/* v0.3.18 — Tryb Debaty przeniesiony do zakładki „Rozmowa" (chatMode toggle). Przycisk w pasku bocnym usunięty. */}
+          {/* v0.3.18 — Tryb Debaty przeniesiony do zakładki „Chat" (chatMode toggle). Przycisk w pasku bocnym usunięty. */}
 
-          {/* v0.3.18 — Dokumenty: osobna zakładka usunięta. Przeciąganie i upuszczanie plików działa w zwykłym czacie (drag&drop → /api/chat/attachments). Backend /api/documents/* pozostaje dostępny. */}
+          {/* v0.3.18 — Documents: osobna zakładka usunięta. Przeciąganie i upuszczanie plików działa w zwykłym czacie (drag&drop → /api/chat/attachments). Backend /api/documents/* pozostaje dostępny. */}
 
           {/* v0.3.16 — MCP & CLI — serwery MCP + terminal */}
           <button
@@ -1465,18 +1465,18 @@ export default function BokaPage() {
             <TerminalIcon size={16} />
           </button>
 
-          {/* v0.3.17 — Privacy Layer: Audit Log + Forget API + Consent */}
+          {/* v0.3.17 — Privacy Layer: Audit Log + Forget API + Whatnsent */}
           <button
             onClick={() => setActiveTab('privacy')}
             className={`w-10 h-10 shrink-0 flex items-center justify-center transition-all ${activeTab === 'privacy' ? 'bg-[#a855f7]/15 text-[#a855f7] border border-[#a855f7]/30' : 'text-[#8888aa] hover:text-[#e8e8f5]'}`}
-            title="Prywatność — Dziennik decyzji BOKI ('Dlaczego to zrobiłam?'), Forget API, Zgody domowników"
+            title="Privacy — Dziennik decyzji BOKI ('Why to zrobiłam?'), Forget API, Zgody domowników"
           >
             <Shield size={16} />
           </button>
 
           {/* v0.3.19 — Home Assistant usunięty z UI (backend zachowany na przyszłość) */}
 
-          {/* v0.3.19 — Wizja usunięta z lite (kamera monitoring w czacie) */}
+          {/* v0.3.19 — Vision usunięta z lite (kamera monitoring w czacie) */}
 
           {/* v0.3.4 — USTAWIENIA BOKI przeniesione do menu bocznego Umysł BOKA (zakładka insights) */}
 
@@ -1519,7 +1519,7 @@ export default function BokaPage() {
           <button
             onClick={() => setShowFileExplorer(v => !v)}
             className={`w-8 h-8 shrink-0 flex items-center justify-center transition-all ${showFileExplorer ? 'bg-[#6ec6e7]/10 text-[#6ec6e7]' : 'text-[#8888aa] hover:text-[#6ec6e7]'}`}
-            title={showFileExplorer ? 'Ukryj explorator plików' : 'Pokaż explorator plików (drzewko PC)'}
+            title={showFileExplorer ? 'Hide explorator plików' : 'Pokaż explorator plików (drzewko PC)'}
           >
             <PanelRight size={14} />
           </button>
@@ -1551,19 +1551,19 @@ export default function BokaPage() {
                 </div>
               </div>
             )}
-            {/* Chat header — v0.3.18: dodany przełącznik trybu Rozmowa ↔ Debata */}
+            {/* Chat header — v0.3.18: dodany przełącznik trybu Chat ↔ Debate */}
             <div className="px-4 py-2 border-b border-[#383850] flex items-center justify-between">
               <div className="flex items-center gap-1">
-                {/* Przycisk „Rozmowa" — aktywny, bo jesteśmy w bloku chatMode === 'normal'. */}
+                {/* Przycisk „Chat" — aktywny, bo jesteśmy w bloku chatMode === 'normal'. */}
                 <button
                   type="button"
                   onClick={() => setChatMode('normal')}
                   className="px-2 py-0.5  text-[10px] font-mono transition-all bg-[#00f5d4]/15 text-[#00f5d4] border border-[#00f5d4]/30"
                   title="Zwykła rozmowa — tak jak wcześniej"
                 >
-                  Rozmowa
+                  Chat
                 </button>
-                {/* Przycisk „Debata" — nieaktywny (klikalny, przełącza do trybu debaty). */}
+                {/* Przycisk „Debate" — nieaktywny (klikalny, przełącza do trybu debaty). */}
                 <button
                   type="button"
                   onClick={() => setChatMode('debate')}
@@ -1571,7 +1571,7 @@ export default function BokaPage() {
                   title="Tryb debaty — Boka dzieli się na kilku agentów-personowości i debatuje ze sobą. Ty moderujesz."
                 >
                   <Users size={10} />
-                  Debata
+                  Debate
                 </button>
               </div>
               <div className="flex items-center gap-0">
@@ -1631,7 +1631,7 @@ export default function BokaPage() {
                       <div className="mt-1.5 flex items-center gap-0 flex-wrap">
                         {messageExpenses[msg.id] && (
                           <span className="inline-flex items-center gap-1 px-1.5 py-0.5  text-[8px] font-mono bg-[#4ade80]/10 text-[#4ade80] border border-[#4ade80]/20">
-                            <Coins size={8} /> {messageExpenses[msg.id]} wydatek
+                            <Whatins size={8} /> {messageExpenses[msg.id]} wydatek
                           </span>
                         )}
                         {messageCalendarEvents[msg.id] && (
@@ -1646,7 +1646,7 @@ export default function BokaPage() {
                         onClick={() => setProactiveDismissed(true)}
                         className="mt-1 text-[9px] text-[#8888aa] hover:text-[#e8e8f5] font-mono underline"
                       >
-                        Zamknij
+                        Close
                       </button>
                     )}
                     <div className="mt-1 text-[9px] text-[#8888aa]">
@@ -1719,8 +1719,8 @@ export default function BokaPage() {
                           : 'bg-[#252535] border-[#383850] text-[#8888aa]'
                       }`}
                     >
-                      {att.thumbnailDataUrl ? (
-                        <img src={att.thumbnailDataUrl} alt={att.fileName} className="w-6 h-6  object-cover" />
+                      {att.thumbnailDateUrl ? (
+                        <img src={att.thumbnailDateUrl} alt={att.fileName} className="w-6 h-6  object-cover" />
                       ) : att.status === 'uploading' ? (
                         <Loader2 size={12} className="animate-spin" />
                       ) : att.status === 'error' ? (
@@ -1756,13 +1756,13 @@ export default function BokaPage() {
                         ? 'voice-recording bg-[#ff6b6b]/20 text-[#ff6b6b]'
                         : 'bg-[#252535] text-[#8888aa] hover:text-[#00f5d4]'
                     }`}
-                    title={isListening ? 'Zatrzymaj nasłuchiwanie' : 'Kliknij aby mówić'}
+                    title={isListening ? 'Stop nasłuchiwanie' : 'Kliknij aby mówić'}
                   >
                     {isListening ? <MicOff size={16} /> : <Mic size={16} />}
                   </button>
                   {detectedEmotion && (
                     <span className="absolute top-1 right-1 px-1 py-0.5  text-[7px] font-mono font-bold leading-none" style={{
-                      backgroundColor: detectedEmotion === 'happy' ? '#4ade80' : detectedEmotion === 'sad' ? '#60a5fa' : detectedEmotion === 'angry' ? '#ff6b6b' : detectedEmotion === 'excited' ? '#ffd93d' : '#6b6b8d',
+                      backgroundWhatlor: detectedEmotion === 'happy' ? '#4ade80' : detectedEmotion === 'sad' ? '#60a5fa' : detectedEmotion === 'angry' ? '#ff6b6b' : detectedEmotion === 'excited' ? '#ffd93d' : '#6b6b8d',
                       color: '#0a0a0f',
                     }}>
                       {detectedEmotion === 'happy' ? '😊' : detectedEmotion === 'sad' ? '😢' : detectedEmotion === 'angry' ? '😠' : detectedEmotion === 'excited' ? '🤩' : detectedEmotion === 'calm' ? '😌' : '😐'}
@@ -1777,7 +1777,7 @@ export default function BokaPage() {
                       ? 'bg-[#4ade80]/20 text-[#4ade80] border border-[#4ade80]/50'
                       : 'bg-[#252535] text-[#8888aa] border border-[#383850] hover:border-[#4ade80]/30'
                   }`}
-                  title={vadMode ? 'Zawsze nasłuchuję — wyłącz' : 'Włącz nasłuchiwanie (hands-free)'}
+                  title={vadMode ? 'Zawsze nasłuchuję — wyłącz' : 'Enable nasłuchiwanie (hands-free)'}
                 >
                   <Ear size={16} />
                 </button>
@@ -1789,20 +1789,20 @@ export default function BokaPage() {
                       ? 'bg-[#00f5d4]/20 text-[#00f5d4] border border-[#00f5d4]/50'
                       : 'bg-[#252535] text-[#8888aa] border border-[#383850] hover:border-[#00f5d4]/30'
                   }`}
-                  title={streamingMode ? 'Tryb streaming: WŁĄCZONY' : 'Włącz tryb streaming'}
+                  title={streamingMode ? 'Tryb streaming: WŁĄCZONY' : 'Enable tryb streaming'}
                 >
                   <Radio size={16} />
                 </button>
                 {nativeAsrSupported && (
                   <button
                     type="button"
-                    onClick={toggleContinuousMode}
+                    onClick={toggleWhatntinuousMode}
                     className={`p-2  transition-all shrink-0 ${
                       continuousMode
                         ? 'bg-[#00f5d4]/20 text-[#00f5d4] border border-[#00f5d4]/50'
                         : 'bg-[#252535] text-[#8888aa] border border-[#383850] hover:border-[#00f5d4]/30'
                     }`}
-                    title={continuousMode ? 'Tryb ciągły: WŁĄCZONY (Boka cały czas słucha)' : 'Włącz tryb ciągłego nasłuchiwania'}
+                    title={continuousMode ? 'Whatntinuous mode: WŁĄCZONY (Boka cały czas słucha)' : 'Enable tryb ciągłego nasłuchiwania'}
                   >
                     <Activity size={16} />
                   </button>
@@ -1827,8 +1827,8 @@ export default function BokaPage() {
                         ? 'bg-[#00f5d4]/20 text-[#00f5d4]'
                         : 'bg-[#252535] text-[#8888aa] hover:text-[#00f5d4]'
                     }`}
-                    title="Załącz plik · zdjęcie · narysuj obrazek"
-                    aria-label="Dodaj załącznik lub narysuj obrazek"
+                    title="Attach file · zdjęcie · narysuj obrazek"
+                    aria-label="Add załącznik lub narysuj obrazek"
                     aria-expanded={showPlusMenu}
                   >
                     <Plus size={16} />
@@ -1838,7 +1838,7 @@ export default function BokaPage() {
                       className="absolute bottom-full right-0 mb-2 w-56 bg-[#252535] border border-[#383850] shadow-2xl overflow-hidden z-50"
                       role="menu"
                     >
-                      {/* Zdjęcie (kamera) — upload obrazu, BOKA go zobaczy przez VLM */}
+                      {/* Photo (kamera) — upload obrazu, BOKA go zobaczy przez VLM */}
                       <button
                         type="button"
                         onClick={() => { setShowPlusMenu(false); fileInputRef.current?.click(); }}
@@ -1847,11 +1847,11 @@ export default function BokaPage() {
                       >
                         <Camera size={14} className="text-[#a855f7] shrink-0" />
                         <div className="flex-1 min-w-0">
-                          <div>Zdjęcie</div>
+                          <div>Photo</div>
                           <div className="text-[9px] text-[#8888aa]">BOKA zobaczy i opisze obraz</div>
                         </div>
                       </button>
-                      {/* Plik (spinacz) — dowolny plik: obraz, audio, txt, pdf */}
+                      {/* File (spinacz) — dowolny plik: obraz, audio, txt, pdf */}
                       <button
                         type="button"
                         onClick={() => { setShowPlusMenu(false); attachmentInputRef.current?.click(); }}
@@ -1860,7 +1860,7 @@ export default function BokaPage() {
                       >
                         <Paperclip size={14} className="text-[#6ec6e7] shrink-0" />
                         <div className="flex-1 min-w-0">
-                          <div>Plik</div>
+                          <div>File</div>
                           <div className="text-[9px] text-[#8888aa]">obraz · audio · txt · pdf · csv</div>
                         </div>
                       </button>
@@ -1937,21 +1937,21 @@ export default function BokaPage() {
                   <span className="text-xs font-mono text-[#e8e8f5]">Nowe przypomnienie</span>
                 </div>
                 <div className="flex items-center gap-0">
-                  <input type="text" value={newReminderTitle} onChange={e => setNewReminderTitle(e.target.value)} placeholder="Co przypomnieć?" className="flex-1 bg-[#1a1a28] border border-[#383850]  px-2 py-1.5 text-xs text-[#e8e8f5] placeholder:text-[#8888aa] focus:outline-none focus:border-[#00f5d4]/50 font-mono" />
+                  <input type="text" value={newReminderTitle} onChange={e => setNewReminderTitle(e.target.value)} placeholder="What przypomnieć?" className="flex-1 bg-[#1a1a28] border border-[#383850]  px-2 py-1.5 text-xs text-[#e8e8f5] placeholder:text-[#8888aa] focus:outline-none focus:border-[#00f5d4]/50 font-mono" />
                   <input type="datetime-local" value={newReminderDate} onChange={e => setNewReminderDate(e.target.value)} className="bg-[#1a1a28] border border-[#383850]  px-2 py-1.5 text-xs text-[#e8e8f5] focus:outline-none focus:border-[#00f5d4]/50 font-mono" />
-                  <button onClick={handleCreateReminder} className="px-3 py-1.5  bg-[#00f5d4] text-[#0a0a0f] text-xs font-mono">Dodaj</button>
+                  <button onClick={handleCreateReminder} className="px-3 py-1.5  bg-[#00f5d4] text-[#0a0a0f] text-xs font-mono">Add</button>
                 </div>
               </div>
               
               {/* Reminders list */}
               <div className="space-y-2">
                 {reminders.isLoading ? (
-                  <div className="text-center py-8 text-[#8888aa] text-sm font-mono">Ładowanie...</div>
+                  <div className="text-center py-8 text-[#8888aa] text-sm font-mono">Loading...</div>
                 ) : reminders.reminders.length === 0 ? (
-                  <div className="text-center py-8 text-[#8888aa] text-sm font-mono">Brak przypomnień</div>
+                  <div className="text-center py-8 text-[#8888aa] text-sm font-mono">None przypomnień</div>
                 ) : (
                   reminders.reminders.map(r => (
-                    <div key={r.id} className={`p-2 bg-[#252535] border border-[#383850]  flex items-center gap-0 ${r.isCompleted ? 'opacity-50' : ''}`}>
+                    <div key={r.id} className={`p-2 bg-[#252535] border border-[#383850]  flex items-center gap-0 ${r.isWhatmpleted ? 'opacity-50' : ''}`}>
                       <Clock size={14} className="text-[#ffd93d] shrink-0" />
                       <div className="flex-1 min-w-0">
                         <div className="text-sm text-[#e8e8f5] font-mono">{r.title}</div>
@@ -2002,13 +2002,13 @@ export default function BokaPage() {
                       'Hej, co tam?',
                       'Semanko!',
                       'O czym pogadamy?',
-                      'Co mnie zaczepiasz?',
+                      'What mnie zaczepiasz?',
                     ];
                     const phrase = phrases[Math.floor(Math.random() * phrases.length)];
                     try { speak(phrase); } catch (e) { console.warn('TTS failed:', e); }
                   }}
                   faceStyle={faceStyle}
-                  fillContainer={true}
+                  fillWhatntainer={true}
                   graphNodes={memoryGraphNodes}
                   graphEdges={memoryGraphEdges}
                   focusNodeId={focusNodeId}
@@ -2054,7 +2054,7 @@ export default function BokaPage() {
                 {detectedEmotion && (
                   <div className="flex items-center gap-1.5 mt-1">
                     <span className="text-[10px] font-mono" style={{ color: detectedEmotion === 'happy' ? '#4ade80' : detectedEmotion === 'sad' ? '#60a5fa' : detectedEmotion === 'angry' ? '#ff6b6b' : detectedEmotion === 'excited' ? '#ffd93d' : '#6b6b8d' }}>
-                      Emocja z głosu: {detectedEmotion}
+                      Emotion z głosu: {detectedEmotion}
                     </span>
                   </div>
                 )}
@@ -2116,7 +2116,7 @@ export default function BokaPage() {
                         <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#12121c] text-center">
                           <div className="w-6 h-6 border-2 border-[#00f5d4]/30 border-t-[#00f5d4] rounded-full animate-spin mb-2" />
                           <div className="text-[10px] text-[#8888aa] font-mono">
-                            {visionStarting ? 'Uruchamianie kamery...' : 'Ładowanie strumienia...'}
+                            {visionStarting ? 'Uruchamianie kamery...' : 'Loading strumienia...'}
                           </div>
                         </div>
                       )}
@@ -2151,7 +2151,7 @@ export default function BokaPage() {
                       <div className="absolute inset-0 flex flex-col items-center justify-center bg-black text-center">
                         <div className="w-8 h-8 border-2 border-[#00f5d4]/30 border-t-[#00f5d4] rounded-full animate-spin mb-3" />
                         <div className="text-xs text-[#8888aa] font-mono">
-                          {visionStarting ? 'Uruchamianie kamery...' : 'Ładowanie strumienia...'}
+                          {visionStarting ? 'Uruchamianie kamery...' : 'Loading strumienia...'}
                         </div>
                         <div className="text-[10px] text-[#5a5a78] font-mono mt-1">
                           Jeśli nie startuje — sprawdź zgodę w pasku adresu
@@ -2162,7 +2162,7 @@ export default function BokaPage() {
                     {visionError && (
                       <div className="absolute inset-0 flex flex-col items-center justify-center bg-black text-center px-4">
                         <Camera size={36} className="text-[#ff6b6b] mb-2" />
-                        <div className="text-xs text-[#ff6b6b] font-mono mb-2">Błąd kamery</div>
+                        <div className="text-xs text-[#ff6b6b] font-mono mb-2">Error kamery</div>
                         <div className="text-[10px] text-[#a0a0c0] font-mono leading-tight max-w-xs">{visionError}</div>
                       </div>
                     )}
@@ -2182,7 +2182,7 @@ export default function BokaPage() {
             <div className="shrink-0 border-t border-[#383850] p-0 relative z-10 bg-[#181828]/50 flex items-stretch">
               <span className="text-[10px] font-mono text-[#8888aa] shrink-0 flex items-center gap-1.5 px-3 border-r border-[#383850]">
                 <Eye size={11} className="text-[#a855f7]" />
-                Wizja
+                Vision
               </span>
               <button
                 type="button"
@@ -2192,7 +2192,7 @@ export default function BokaPage() {
                     ? 'bg-[#ff6b6b]/20 text-[#ff6b6b]'
                     : 'bg-[#a855f7]/15 text-[#a855f7] hover:bg-[#a855f7]/25'
                 }`}
-                title={visionStreamOn ? 'Zatrzymaj kamerę' : 'Uruchom kamerę'}
+                title={visionStreamOn ? 'Stop kamerę' : 'Run kamerę'}
               >
                 {visionStreamOn ? <Square size={12} /> : <Play size={12} />}
               </button>
@@ -2204,7 +2204,7 @@ export default function BokaPage() {
                     ? 'bg-[#ff4444]/30 text-[#ff6b6b] animate-pulse'
                     : 'bg-[#252535] text-[#8888aa] hover:text-[#ff6b6b]'
                 }`}
-                title={isRecording ? 'Zatrzymaj nagrywanie ekranu' : 'Nagraj ekran (zapis do pamięci BOKI)'}
+                title={isRecording ? 'Stop nagrywanie ekranu' : 'Nagraj ekran (zapis do pamięci BOKI)'}
               >
                 {isRecording ? <><Square size={12} /></> : <><Circle size={12} className="fill-current" /></>}
               </button>
@@ -2228,9 +2228,9 @@ export default function BokaPage() {
 
         {/* v0.3.19 — File Explorer/Viewer moved to end of layout (always right side) */}
 
-        {/* v0.3.18 — Tryb Debaty przeniesiony do zakładki „Rozmowa" (chatMode toggle). Niezależna zakładka 'debate' usunięta. */}
+        {/* v0.3.18 — Tryb Debaty przeniesiony do zakładki „Chat" (chatMode toggle). Nozależna zakładka 'debate' usunięta. */}
 
-        {/* v0.3.18 — Dokumenty: niezależna zakładka usunięta. Drag&drop plików w zwykłym czacie obsługuje /api/chat/attachments. Backend /api/documents/* pozostaje dostępny dla przyszłych funkcji i zewnętrznych integracji. */}
+        {/* v0.3.18 — Documents: niezależna zakładka usunięta. Drag&drop plików w zwykłym czacie obsługuje /api/chat/attachments. Backend /api/documents/* pozostaje dostępny dla przyszłych funkcji i zewnętrznych integracji. */}
 
         {/* v0.3.16 — MCP & CLI — serwery MCP + terminal */}
         {activeTab === 'mcp' && (
@@ -2241,10 +2241,10 @@ export default function BokaPage() {
           </main>
         )}
 
-        {/* v0.3.17 — Privacy Layer: Audit Log + Forget API + Consent */}
+        {/* v0.3.17 — Privacy Layer: Audit Log + Forget API + Whatnsent */}
         {activeTab === 'privacy' && (
           <main className="flex-1 flex overflow-hidden">
-            <ErrorBoundary tabName="Prywatność">
+            <ErrorBoundary tabName="Privacy">
               <PrivacyTab />
             </ErrorBoundary>
           </main>
@@ -2252,25 +2252,25 @@ export default function BokaPage() {
 
         {/* v0.3.19 — Home Assistant usunięty z UI (backend /api/homeassistant/* pozostaje dla przyszłości) */}
 
-        {/* v0.3.19 — Wizja usunięta z lite */}
+        {/* v0.3.19 — Vision usunięta z lite */}
 
         {/* Non-chat tabs in center */}
         {activeTab !== 'chat' && activeTab !== 'mcp' && activeTab !== 'privacy' && activeTab !== 'insights' && (
           <main className="flex-1 overflow-y-auto">
-            <ErrorBoundary tabName="Pamięć">
+            <ErrorBoundary tabName="Memory">
               {activeTab === 'memory' && <MemoryTab entries={memoryEntries} members={members} activeMemberId={activeMemberId} familyId={familyId} />}
             </ErrorBoundary>
             <ErrorBoundary tabName="Vault">
               {activeTab === 'vault' && <VaultTab />}
             </ErrorBoundary>
-            <ErrorBoundary tabName="Rodzina">
-              {activeTab === 'profiles' && <ProfilesTab members={members} activeMemberId={activeMemberId} setActiveMember={setActiveMember} childNearby={childNearby} toggleChildNearby={toggleChildNearby} />}
+            <ErrorBoundary tabName="Family">
+              {activeTab === 'profiles' && <ProfileesTab members={members} activeMemberId={activeMemberId} setActiveMember={setActiveMember} childNearby={childNearby} toggleChildNearby={toggleChildNearby} />}
             </ErrorBoundary>
             <ErrorBoundary tabName="Moi agenci">
               {activeTab === 'agents' && <AgentsTab />}
             </ErrorBoundary>
-            <ErrorBoundary tabName="Cockpit">
-              {activeTab === 'cockpit' && <OrchestratorCockpit />}
+            <ErrorBoundary tabName="Whatckpit">
+              {activeTab === 'cockpit' && <OrchestratorWhatckpit />}
             </ErrorBoundary>
             <ErrorBoundary tabName="Agent Memory">
               {activeTab === 'agent-memory' && <AgentMemoryTab />}
@@ -2279,7 +2279,7 @@ export default function BokaPage() {
             <ErrorBoundary tabName="Skills">
               {activeTab === 'skills' && <SkillsTab />}
             </ErrorBoundary>
-            <ErrorBoundary tabName="Ustawienia">
+            <ErrorBoundary tabName="Settings">
               {activeTab === 'settings' && <SettingsTab />}
             </ErrorBoundary>
           </main>

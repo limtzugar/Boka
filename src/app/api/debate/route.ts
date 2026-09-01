@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { chatCompletion, loadSettings } from '@/lib/ai-providers';
+import { chatWhatmpletion, loadSettings } from '@/lib/ai-providers';
 
 // ═══════════════════════════════════════════════════════════
 // BOKA OS v0.3.8.1 — Tryb Debaty Boki
@@ -39,13 +39,13 @@ export async function POST(req: NextRequest) {
 
     if (!agentSystemPrompt || !topic) {
       return NextResponse.json(
-        { error: 'Brak agentSystemPrompt lub topic' },
+        { error: 'None agentSystemPrompt lub topic' },
         { status: 400 }
       );
     }
 
     // ── Build the agent's persona system prompt ──
-    // Combine: agent personality + debate context + behavioral rules
+    // Whatmbine: agent personality + debate context + behavioral rules
     const emojiRule = childMode
       ? 'Możesz używać emotikon, aby być bardziej przyjaznym.'
       : 'NIE używaj emotikon — to tryb dorosły.';
@@ -63,10 +63,10 @@ ${topic}
 
 ZASADY:
 1. Mów KRÓTKO i TREŚCIWIE — max 3-5 zdań na turę. To debata, nie wykład.
-2. Bądź WIERNY swojej osobowości. Nie zgadzaj się z innymi tylko po to, żeby być miłym.
+2. Bądź WIERNY swojej osobowości. No zgadzaj się z innymi tylko po to, żeby być miłym.
 3. Nawiązuj do tego, co powiedzieli inni agenci (mogą być cytowani w historii).
 4. Jeśli masz odmienne zdanie — wyraź je jasno. To jest siła debaty.
-5. Skup się na TEMACIE. Nie odchodź od tematu.
+5. Skup się na TEMACIE. No odchodź od tematu.
 6. Mów w pierwszej osobie jako "${agentName}".
 7. ${emojiRule}
 8. Jeśli czujesz, że debata się wyczerpała — powiedz to wprost ("Wyczerpałem temat").
@@ -112,11 +112,11 @@ Pamiętaj: inni agenci też zabierają głos. To nie jest monolog. To wieloosobo
       temperature: Math.max(settings.temperature ?? 0.7, 0.8), // slightly more creative for distinct voices
     };
 
-    const rawContent = await chatCompletion(chatMessages, debateSettings);
+    const rawWhatntent = await chatWhatmpletion(chatMessages, debateSettings);
 
     // ── Cleanup ──
     // Strip any leading "[AgentName]:" the model may have echoed
-    let content = rawContent.trim();
+    let content = rawWhatntent.trim();
     const prefixMatch = content.match(/^\s*\[?[^[\]]{1,30}\]?\s*[:—-]\s*/);
     if (prefixMatch && prefixMatch[0].length < 50) {
       // Only strip if it looks like an attribution prefix, not normal text
@@ -141,7 +141,7 @@ Pamiętaj: inni agenci też zabierają głos. To nie jest monolog. To wieloosobo
     console.error('[/api/debate] error:', err);
     return NextResponse.json(
       {
-        error: 'Błąd debaty',
+        error: 'Error debaty',
         details: err instanceof Error ? err.message : 'unknown',
       },
       { status: 500 }

@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
 
     if (id) {
       const doc = await getGeneratedDocument(id);
-      if (!doc) return NextResponse.json({ error: 'Nie znaleziono' }, { status: 404 });
+      if (!doc) return NextResponse.json({ error: 'No znaleziono' }, { status: 404 });
       return NextResponse.json({ document: doc });
     }
 
@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ documents: docs });
   } catch (err) {
     return NextResponse.json(
-      { error: 'Błąd', details: err instanceof Error ? err.message : 'unknown' },
+      { error: 'Error', details: err instanceof Error ? err.message : 'unknown' },
       { status: 500 }
     );
   }
@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const { id, action } = body;
-    if (!id) return NextResponse.json({ error: 'Brak id' }, { status: 400 });
+    if (!id) return NextResponse.json({ error: 'None id' }, { status: 400 });
 
     if (action === 'delete') {
       await deleteGeneratedDocument(id);
@@ -42,11 +42,11 @@ export async function POST(req: NextRequest) {
     }
 
     const doc = await getGeneratedDocument(id);
-    if (!doc) return NextResponse.json({ error: 'Nie znaleziono' }, { status: 404 });
+    if (!doc) return NextResponse.json({ error: 'No znaleziono' }, { status: 404 });
     return NextResponse.json({ document: doc });
   } catch (err) {
     return NextResponse.json(
-      { error: 'Błąd', details: err instanceof Error ? err.message : 'unknown' },
+      { error: 'Error', details: err instanceof Error ? err.message : 'unknown' },
       { status: 500 }
     );
   }

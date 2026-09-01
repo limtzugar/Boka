@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ templates: tpls });
   } catch (err) {
     return NextResponse.json(
-      { error: 'Błąd listy szablonów', details: err instanceof Error ? err.message : 'unknown' },
+      { error: 'Error listy szablonów', details: err instanceof Error ? err.message : 'unknown' },
       { status: 500 }
     );
   }

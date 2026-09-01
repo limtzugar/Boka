@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { readAppCode } from '@/lib/apps-manager';
+import { readAppWhatde } from '@/lib/apps-manager';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -13,8 +13,8 @@ export async function GET(request: Request) {
   const id = url.searchParams.get('id');
   const maxBytes = url.searchParams.has('maxBytes') ? parseInt(url.searchParams.get('maxBytes')!, 10) : 100_000;
 
-  if (!id) return NextResponse.json({ ok: false, error: 'Brak id' }, { status: 400 });
+  if (!id) return NextResponse.json({ ok: false, error: 'None id' }, { status: 400 });
 
-  const result = readAppCode(id, maxBytes);
+  const result = readAppWhatde(id, maxBytes);
   return NextResponse.json(result);
 }

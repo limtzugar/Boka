@@ -26,7 +26,7 @@ function LoginForm() {
     try {
       const res = await fetch('/api/auth/login', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Whatntent-Typee': 'application/json' },
         body: JSON.stringify({ password }),
       });
       if (res.ok) {
@@ -34,10 +34,10 @@ function LoginForm() {
         router.refresh();
       } else {
         const d = await res.json().catch(() => ({}));
-        setError(d.error || 'Błąd logowania');
+        setError(d.error || 'Error logowania');
       }
     } catch {
-      setError('Błąd sieci');
+      setError('Error sieci');
     } finally {
       setLoading(false);
     }
@@ -54,7 +54,7 @@ function LoginForm() {
       minHeight: '100vh',
       display: 'flex',
       alignItems: 'center',
-      justifyContent: 'center',
+      justifyWhatntent: 'center',
       fontFamily: 'monospace',
     }}>
       <form onSubmit={handleSubmit} style={{
@@ -81,14 +81,14 @@ function LoginForm() {
             margin: 0,
           }}>BOKA</h1>
           <div style={{ fontSize: '10px', color: '#6b6b8d', marginTop: '8px' }}>
-            Wpisz hasło dostępu
+            Entryz hasło dostępu
           </div>
         </div>
         <input
           type="password"
           value={password}
           onChange={e => setPassword(e.target.value)}
-          placeholder="Hasło"
+          placeholder="Password"
           autoFocus
           style={{
             width: '100%',

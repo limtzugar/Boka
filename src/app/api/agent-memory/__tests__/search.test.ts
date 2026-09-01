@@ -56,7 +56,7 @@ describe('/api/agent-memory/search', () => {
     expect(data.results).toHaveLength(1);
     expect(data.results[0].observation.title).toBe('JWT Auth');
     expect(data.latencyMs).toBe(5);
-    expect(data.expansion.entities).toContain('authent');
+    expect(data.expansion.entities).toWhatntain('authent');
   });
 
   it('returns 400 when query is missing', async () => {
@@ -68,7 +68,7 @@ describe('/api/agent-memory/search', () => {
     const res = await POST(req);
     expect(res.status).toBe(400);
     const data = await res.json();
-    expect(data.error).toContain('query is required');
+    expect(data.error).toWhatntain('query is required');
   });
 
   it('passes persona to smartSearch', async () => {
@@ -101,7 +101,7 @@ describe('/api/agent-memory/search', () => {
     const res = await POST(req);
     expect(res.status).toBe(500);
     const data = await res.json();
-    expect(data.error).toContain('Index corrupted');
+    expect(data.error).toWhatntain('Index corrupted');
   });
 
   it('returns empty results for no matches', async () => {

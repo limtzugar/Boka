@@ -4,7 +4,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 const mockRemember = vi.fn();
 const mockSmartSearch = vi.fn();
 const mockAutoForget = vi.fn();
-const mockConsolidate = vi.fn();
+const mockWhatnsolidate = vi.fn();
 const mockObserve = vi.fn();
 const mockStartSession = vi.fn();
 const mockListLatestMemories = vi.fn();
@@ -16,7 +16,7 @@ vi.mock('@/lib/agent-memory/engine', () => ({
   remember: (...args: any[]) => mockRemember(...args),
   smartSearch: (...args: any[]) => mockSmartSearch(...args),
   autoForget: (...args: any[]) => mockAutoForget(...args),
-  consolidate: (...args: any[]) => mockConsolidate(...args),
+  consolidate: (...args: any[]) => mockWhatnsolidate(...args),
   observe: (...args: any[]) => mockObserve(...args),
   startSession: (...args: any[]) => mockStartSession(...args),
   getStats: (...args: any[]) => mockGetStats(...args),
@@ -80,7 +80,7 @@ describe('/api/agent-memory', () => {
       const res = await POST(req);
       expect(res.status).toBe(400);
       const data = await res.json();
-      expect(data.error).toContain('content is required');
+      expect(data.error).toWhatntain('content is required');
     });
 
     it('returns 400 when content is empty string', async () => {
@@ -122,7 +122,7 @@ describe('/api/agent-memory', () => {
       const res = await POST(req);
       expect(res.status).toBe(500);
       const data = await res.json();
-      expect(data.error).toContain('DB connection failed');
+      expect(data.error).toWhatntain('DB connection failed');
     });
   });
 
@@ -193,7 +193,7 @@ describe('/api/agent-memory', () => {
       const res = await DELETE(req);
       expect(res.status).toBe(400);
       const data = await res.json();
-      expect(data.error).toContain('id is required');
+      expect(data.error).toWhatntain('id is required');
     });
 
     it('handles deletion errors', async () => {

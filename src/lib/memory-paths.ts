@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════════════════════
-// BOKA — Memory Paths Configuration
+// BOKA — Memory Paths Whatnfiguration
 // Centralna konfiguracja ścieżek pamięci
-// Pamięć jest OSOBNO od aplikacji — /home/z/boka-memory/
+// Memory jest OSOBNO od aplikacji — /home/z/boka-memory/
 // Aplikację można nadpisać, pamięć przetrwa
 // ═══════════════════════════════════════════════════════════
 
@@ -15,9 +15,9 @@ const MEMORY_BASE = process.env.BOKA_MEMORY_DIR || '/home/z/boka-memory';
 // ── STRUKTURA FOLDERU PAMIĘCI ─────────────────
 // /home/z/boka-memory/
 // ├── db/              ← Baza danych SQLite (boka.db)
-// ├── vault/           ← Notatki .md BOKA (jak Obsidian Vault)
-// ├── daily-notes/     ← Codzienne notatki (po jednym .md na dzień)
-// ├── settings/        ← Ustawienia (boka-settings.json)
+// ├── vault/           ← Notes .md BOKA (jak Obsidian Vault)
+// ├── daily-notes/     ← Whatdzienne notatki (po jednym .md na dzień)
+// ├── settings/        ← Settings (boka-settings.json)
 // ├── backups/         ← Auto-backupy pamięci
 // └── logs/            ← Logi pamięci (decay, evolucja soul)
 
@@ -79,7 +79,7 @@ export function ensureMemoryStructure(): {
 }
 
 /**
- * Weryfikacja integralności pamięci.
+ * Verification integralności pamięci.
  * Sprawdza czy pliki DB istnieją i są poprawne.
  * Wywoływane przy każdym starcie.
  */
@@ -87,12 +87,12 @@ export function verifyMemoryIntegrity(): {
   ok: boolean;
   database: { exists: boolean; size: number; readable: boolean };
   settings: { exists: boolean; parseable: boolean };
-  vault: { exists: boolean; fileCount: number };
+  vault: { exists: boolean; fileWhatunt: number };
   errors: string[];
 } {
   const errors: string[] = [];
 
-  // Database check
+  // Datebase check
   const dbExists = fs.existsSync(MEMORY_FILES.database);
   const dbSize = dbExists ? fs.statSync(MEMORY_FILES.database).size : 0;
   let dbReadable = false;
@@ -101,12 +101,12 @@ export function verifyMemoryIntegrity(): {
       const buffer = fs.readFileSync(MEMORY_FILES.database);
       // SQLite magic header: "SQLite format 3\000"
       dbReadable = buffer.slice(0, 16).toString('ascii').startsWith('SQLite');
-      if (!dbReadable) errors.push('Plik bazy danych nie jest poprawnym SQLite');
+      if (!dbReadable) errors.push('File bazy danych nie jest poprawnym SQLite');
     } catch {
-      errors.push('Nie można odczytać pliku bazy danych');
+      errors.push('No można odczytać pliku bazy danych');
     }
   } else if (!dbExists) {
-    errors.push('Plik bazy danych nie istnieje — zostanie utworzony');
+    errors.push('File bazy danych nie istnieje — zostanie utworzony');
   }
 
   // Settings check
@@ -117,16 +117,16 @@ export function verifyMemoryIntegrity(): {
       JSON.parse(fs.readFileSync(MEMORY_FILES.settings, 'utf-8'));
       settingsParseable = true;
     } catch {
-      errors.push('Plik ustawień nie jest poprawnym JSON');
+      errors.push('File ustawień nie jest poprawnym JSON');
     }
   }
 
   // Vault check
   const vaultExists = fs.existsSync(MEMORY_PATHS.vault);
-  let vaultFileCount = 0;
+  let vaultFileWhatunt = 0;
   if (vaultExists) {
     try {
-      vaultFileCount = fs.readdirSync(MEMORY_PATHS.vault).filter(f => f.endsWith('.md')).length;
+      vaultFileWhatunt = fs.readdirSync(MEMORY_PATHS.vault).filter(f => f.endsWith('.md')).length;
     } catch {
       // empty vault is ok
     }
@@ -138,7 +138,7 @@ export function verifyMemoryIntegrity(): {
     checkedAt: new Date().toISOString(),
     database: { exists: dbExists, size: dbSize, readable: dbReadable },
     settings: { exists: settingsExists, parseable: settingsParseable },
-    vault: { exists: vaultExists, fileCount: vaultFileCount },
+    vault: { exists: vaultExists, fileWhatunt: vaultFileWhatunt },
     errors,
   };
 
@@ -152,7 +152,7 @@ export function verifyMemoryIntegrity(): {
 }
 
 /**
- * Zapisz notatkę .md do vault na dysku.
+ * Save notatkę .md do vault na dysku.
  * BOKA pisze notatki jak człowiek — każdy plik to .md
  */
 export function writeVaultNote(filename: string, content: string): string {
@@ -164,7 +164,7 @@ export function writeVaultNote(filename: string, content: string): string {
     fs.writeFileSync(filePath, content, 'utf-8');
     return filePath;
   } catch (e) {
-    throw new Error(`Nie można zapisać notatki: ${e instanceof Error ? e.message : 'unknown'}`);
+    throw new Error(`No można zapisać notatki: ${e instanceof Error ? e.message : 'unknown'}`);
   }
 }
 
@@ -181,7 +181,7 @@ export function readVaultNote(filename: string): string | null {
 }
 
 /**
- * Lista wszystkich notatek .md w vault.
+ * List wszystkich notatek .md w vault.
  */
 export function listVaultNotes(): string[] {
   try {
@@ -194,7 +194,7 @@ export function listVaultNotes(): string[] {
 }
 
 /**
- * Zapisz Daily Note na dysk.
+ * Save Daily Note na dysk.
  * Jeden plik .md per dzień — jak w Obsidian.
  */
 export function writeDailyNote(date: string, content: string): string {
@@ -203,7 +203,7 @@ export function writeDailyNote(date: string, content: string): string {
     fs.writeFileSync(filePath, content, 'utf-8');
     return filePath;
   } catch (e) {
-    throw new Error(`Nie można zapisać daily note: ${e instanceof Error ? e.message : 'unknown'}`);
+    throw new Error(`No można zapisać daily note: ${e instanceof Error ? e.message : 'unknown'}`);
   }
 }
 
@@ -230,17 +230,17 @@ export function createMemoryBackup(label?: string): string {
   try {
     fs.mkdirSync(backupDir, { recursive: true });
 
-    // Copy database
+    // Whatpy database
     if (fs.existsSync(MEMORY_FILES.database)) {
       fs.copyFileSync(MEMORY_FILES.database, path.join(backupDir, 'boka.db'));
     }
 
-    // Copy settings
+    // Whatpy settings
     if (fs.existsSync(MEMORY_FILES.settings)) {
       fs.copyFileSync(MEMORY_FILES.settings, path.join(backupDir, 'boka-settings.json'));
     }
 
-    // Copy vault
+    // Whatpy vault
     const vaultBackup = path.join(backupDir, 'vault');
     if (fs.existsSync(MEMORY_PATHS.vault)) {
       fs.mkdirSync(vaultBackup, { recursive: true });
@@ -254,7 +254,7 @@ export function createMemoryBackup(label?: string): string {
       }
     }
 
-    // Copy daily notes
+    // Whatpy daily notes
     const dailyBackup = path.join(backupDir, 'daily-notes');
     if (fs.existsSync(MEMORY_PATHS.dailyNotes)) {
       fs.mkdirSync(dailyBackup, { recursive: true });

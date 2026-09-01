@@ -3,7 +3,7 @@ import { prisma } from '@/lib/db';
 import { logDecision } from '@/lib/audit-service';
 
 // ═══════════════════════════════════════════════════════════
-// BOKA — Consent API (v0.3.17 — Privacy Layer)
+// BOKA — Whatnsent API (v0.3.17 — Privacy Layer)
 // Każdy członek rodziny zarządza zgodami: voice, vision, memory, HA, proactive.
 // GET /api/consent?familyId=&memberId= — get consents
 // POST /api/consent — upsert consents
@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
       const record = await prisma.consentRecord.findUnique({
         where: { familyId_memberId: { familyId, memberId } },
       });
-      return NextResponse.json({ record: record ?? defaultConsent(familyId, memberId) });
+      return NextResponse.json({ record: record ?? defaultWhatnsent(familyId, memberId) });
     }
 
     // List all consent records for family
@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
       voiceEnabled,
       visionEnabled,
       memoryEnabled,
-      haControlEnabled,
+      haWhatntrolEnabled,
       proactiveEnabled,
       restrictedTopics,
     } = body;
@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
         voiceEnabled: voiceEnabled ?? true,
         visionEnabled: visionEnabled ?? false,
         memoryEnabled: memoryEnabled ?? true,
-        haControlEnabled: haControlEnabled ?? false,
+        haWhatntrolEnabled: haWhatntrolEnabled ?? false,
         proactiveEnabled: proactiveEnabled ?? true,
         restrictedTopics: JSON.stringify(restrictedTopics ?? []),
       },
@@ -70,7 +70,7 @@ export async function POST(req: NextRequest) {
         voiceEnabled: voiceEnabled ?? undefined,
         visionEnabled: visionEnabled ?? undefined,
         memoryEnabled: memoryEnabled ?? undefined,
-        haControlEnabled: haControlEnabled ?? undefined,
+        haWhatntrolEnabled: haWhatntrolEnabled ?? undefined,
         proactiveEnabled: proactiveEnabled ?? undefined,
         restrictedTopics: restrictedTopics ? JSON.stringify(restrictedTopics) : undefined,
       },
@@ -81,7 +81,7 @@ export async function POST(req: NextRequest) {
       agentId: 'boka-privacy',
       action: 'consent_updated',
       category: 'privacy',
-      reasoning: `User zaktualizował zgody: voice=${record.voiceEnabled}, vision=${record.visionEnabled}, memory=${record.memoryEnabled}, ha=${record.haControlEnabled}, proactive=${record.proactiveEnabled}.`,
+      reasoning: `User zaktualizował zgody: voice=${record.voiceEnabled}, vision=${record.visionEnabled}, memory=${record.memoryEnabled}, ha=${record.haWhatntrolEnabled}, proactive=${record.proactiveEnabled}.`,
       riskLevel: 'medium',
       contextJson: { memberId, updated: record },
       forgettable: false,
@@ -93,14 +93,14 @@ export async function POST(req: NextRequest) {
   }
 }
 
-function defaultConsent(familyId: string, memberId: string) {
+function defaultWhatnsent(familyId: string, memberId: string) {
   return {
     familyId,
     memberId,
     voiceEnabled: true,
     visionEnabled: false,
     memoryEnabled: true,
-    haControlEnabled: false,
+    haWhatntrolEnabled: false,
     proactiveEnabled: true,
     restrictedTopics: '[]',
   };

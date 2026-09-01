@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
     if (!password) return NextResponse.json({ error: 'Password required' }, { status: 400 });
     if (password !== secret) {
       await new Promise(r => setTimeout(r, 300));
-      return NextResponse.json({ error: 'Nieprawidłowe hasło' }, { status: 401 });
+      return NextResponse.json({ error: 'Noprawidłowe hasło' }, { status: 401 });
     }
 
     const { createHmac } = await import('crypto');

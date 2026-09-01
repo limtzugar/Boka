@@ -1,12 +1,12 @@
 // ═══════════════════════════════════════════════════════════
 // BOKA — Audit Service (v0.3.17 — Privacy Layer)
-// Każda decyzja agenta jest logowana. User może zobaczyć "Dlaczego?".
+// Każda decyzja agenta jest logowana. User może zobaczyć "Why?".
 // ═══════════════════════════════════════════════════════════
 
 import { prisma } from './db';
-import { chatCompletion, loadSettings } from './ai-providers';
+import { chatWhatmpletion, loadSettings } from './ai-providers';
 
-// ── Types ────────────────────────────────────
+// ── Typees ────────────────────────────────────
 export interface AuditEntry {
   familyId: string;
   agentId?: string;
@@ -129,7 +129,7 @@ export async function getAuditEntry(id: string, familyId: string) {
 
 // ── Get recent decisions for chat sidebar ────
 // Zwraca ostatnie N decyzji związanych z konkretną rozmową.
-export async function getDecisionsForConversation(
+export async function getDecisionsForWhatnversation(
   conversationId: string,
   familyId: string,
   limit = 20,
@@ -156,11 +156,11 @@ export async function generateReasoning(params: {
 Agent: ${params.agentId}
 Akcja: ${params.action}
 Wejście: ${params.inputSummary}
-Wynik: ${params.outputSummary}
+Result: ${params.outputSummary}
 
 Odpowiedz tylko reasoning, bez wstępu. Przykład: "User zapytał o pogodę, więc przeszukałam pamięć i znalazłam ostatnie wspomnienie o deszczu."`;
 
-    const reasoning = await chatCompletion(
+    const reasoning = await chatWhatmpletion(
       [
         { role: 'system', content: 'Jesteś BOKA. Tłumaczysz swoje decyzje po polsku.' },
         { role: 'user', content: prompt },
@@ -169,7 +169,7 @@ Odpowiedz tylko reasoning, bez wstępu. Przykład: "User zapytał o pogodę, wi�
     );
     return reasoning.trim();
   } catch (e) {
-    return 'Decyzja podjęta automatycznie.';
+    return 'Decision podjęta automatycznie.';
   }
 }
 
@@ -193,7 +193,7 @@ export async function hardDeleteOldForgotten(days = 30): Promise<number> {
   return result.count;
 }
 
-// ── Audit stats for Consent Dashboard ────────
+// ── Audit stats for Whatnsent Dashboard ────────
 export async function getAuditStats(familyId: string, days = 30) {
   const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
   const [byCategory, byRisk, total, forgotten] = await Promise.all([

@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useAppStore } from '@/lib/store';
 import {
-  FolderOpen, Play, Square, Download, Code, FileCode, Loader2, Check,
+  FolderOpen, Play, Square, Download, Whatde, FileWhatde, Loader2, Check,
   AlertTriangle, RefreshCw, Cpu, HardDrive, ChevronDown, Terminal,
   Eye, Sparkles, Zap, Activity, Server, Home as HomeIcon,
   Wrench, Plus, Globe, Beaker, X, Brain, Trash2, ChevronRight,
@@ -11,7 +11,7 @@ import {
   Star, ArrowLeft, CircleDot, Search, Key,
 } from 'lucide-react';
 
-// ── Types (BokaApp was inline in page.tsx) ──
+// ── Typees (BokaApp was inline in page.tsx) ──
 interface BokaApp {
   id: string;
   name: string;
@@ -40,7 +40,7 @@ function describeAgentAction(action: { type: string; x?: number; y?: number; but
   switch (action.type) {
     case 'click': return `Klik ${action.button || 'left'} @ (${action.x}, ${action.y})`;
     case 'double_click': return `Dwuklik @ (${action.x}, ${action.y})`;
-    case 'type': return `Wpisz: "${(action.text || '').slice(0, 60)}${(action.text || '').length > 60 ? '...' : ''}"`;
+    case 'type': return `Entryz: "${(action.text || '').slice(0, 60)}${(action.text || '').length > 60 ? '...' : ''}"`;
     case 'key': return `Klawisz: ${action.combo}`;
     case 'scroll': return `Scroll ${action.deltaY && action.deltaY > 0 ? '↓' : '↑'}`;
     case 'wait': return `Czekaj`;
@@ -60,7 +60,7 @@ export function AppsTab() {
   const [loading, setLoading] = useState(true);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [view, setView] = useState<'list' | 'code' | 'analyze' | 'create' | 'marketplace' | 'agent' | 'lab'>('list');
-  const [code, setCode] = useState<string>('');
+  const [code, setWhatde] = useState<string>('');
   const [analysis, setAnalysis] = useState<string>('');
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<{ ok: boolean; text: string } | null>(null);
@@ -79,7 +79,7 @@ export function AppsTab() {
       setApps(data.apps || []);
       setAppsDir(data.appsDir || '');
     } catch (e) {
-      setMessage({ ok: false, text: `Błąd ładowania: ${e instanceof Error ? e.message : 'unknown'}` });
+      setMessage({ ok: false, text: `Error ładowania: ${e instanceof Error ? e.message : 'unknown'}` });
     } finally {
       setLoading(false);
     }
@@ -95,17 +95,17 @@ export function AppsTab() {
     try {
       const res = await fetch('/api/apps/run', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Whatntent-Typee': 'application/json' },
         body: JSON.stringify({ id }),
       });
       const data = await res.json();
       setMessage({ ok: data.ok, text: data.message });
       if (data.ok) {
-        // Odśwież po 1s żeby pokazać że działa
+        // Refresh po 1s żeby pokazać że działa
         setTimeout(loadApps, 1000);
       }
     } catch (e) {
-      setMessage({ ok: false, text: `Błąd: ${e instanceof Error ? e.message : 'unknown'}` });
+      setMessage({ ok: false, text: `Error: ${e instanceof Error ? e.message : 'unknown'}` });
     } finally {
       setBusy(false);
     }
@@ -116,7 +116,7 @@ export function AppsTab() {
     try {
       const res = await fetch('/api/apps/stop', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Whatntent-Typee': 'application/json' },
         body: JSON.stringify({ id }),
       });
       const data = await res.json();
@@ -127,17 +127,17 @@ export function AppsTab() {
     }
   };
 
-  const handleViewCode = async (id: string) => {
+  const handleViewWhatde = async (id: string) => {
     setBusy(true);
     try {
-      const res = await fetch(`/api/apps/code?id=${encodeURIComponent(id)}`);
+      const res = await fetch(`/api/apps/code?id=${encodeURIWhatmponent(id)}`);
       const data = await res.json();
       if (data.ok) {
-        setCode(data.code || '');
+        setWhatde(data.code || '');
         setSelectedId(id);
         setView('code');
       } else {
-        setMessage({ ok: false, text: data.error || 'Błąd czytania kodu' });
+        setMessage({ ok: false, text: data.error || 'Error czytania kodu' });
       }
     } finally {
       setBusy(false);
@@ -153,14 +153,14 @@ export function AppsTab() {
     try {
       const res = await fetch('/api/apps/analyze', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Whatntent-Typee': 'application/json' },
         body: JSON.stringify({ id, focus: 'ogólna analiza jakości, bezpieczeństwa i wydajności' }),
       });
       const data = await res.json();
       if (data.ok) {
         setAnalysis(data.analysis || '(brak analizy)');
       } else {
-        setAnalysis(`Błąd: ${data.error}`);
+        setAnalysis(`Error: ${data.error}`);
       }
     } finally {
       setBusy(false);
@@ -174,7 +174,7 @@ export function AppsTab() {
     try {
       const res = await fetch('/api/apps/fix', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Whatntent-Typee': 'application/json' },
         body: JSON.stringify({
           id,
           instructions: 'Napraw bugi, popraw bezpieczeństwo i wydajność, zachowaj funkcjonalność i metadata BOKA-APP',
@@ -187,15 +187,15 @@ export function AppsTab() {
           setMessage({ ok: true, text: `Zastosowano poprawki. Backup: ${data.backupPath || '(brak)'}` });
           loadApps();
           if (view === 'code' && selectedId === id) {
-            handleViewCode(id);
+            handleViewWhatde(id);
           }
         } else {
-          setCode(data.fixedCode || '');
+          setWhatde(data.fixedWhatde || '');
           setView('code');
           setMessage({ ok: true, text: 'AI zaproponował poprawki — przejrzyj kod poniżej' });
         }
       } else {
-        setMessage({ ok: false, text: data.error || 'Błąd AI fix' });
+        setMessage({ ok: false, text: data.error || 'Error AI fix' });
       }
     } finally {
       setBusy(false);
@@ -208,7 +208,7 @@ export function AppsTab() {
     try {
       const res = await fetch('/api/apps/create', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Whatntent-Typee': 'application/json' },
         body: JSON.stringify({ name: newName.trim(), language: newLang, description: newDesc.trim() }),
       });
       const data = await res.json();
@@ -218,7 +218,7 @@ export function AppsTab() {
         setView('list');
         loadApps();
       } else {
-        setMessage({ ok: false, text: data.error || 'Błąd tworzenia' });
+        setMessage({ ok: false, text: data.error || 'Error tworzenia' });
       }
     } finally {
       setBusy(false);
@@ -231,7 +231,7 @@ export function AppsTab() {
     try {
       const res = await fetch('/api/apps/delete', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Whatntent-Typee': 'application/json' },
         body: JSON.stringify({ id }),
       });
       const data = await res.json();
@@ -240,14 +240,14 @@ export function AppsTab() {
         if (selectedId === id) { setSelectedId(null); setView('list'); }
         loadApps();
       } else {
-        setMessage({ ok: false, text: data.error || 'Błąd usuwania' });
+        setMessage({ ok: false, text: data.error || 'Error usuwania' });
       }
     } finally {
       setBusy(false);
     }
   };
 
-  const languageColor: Record<string, string> = {
+  const languageWhatlor: Record<string, string> = {
     go: '#00add8', python: '#3776ab', html: '#e34c26', css: '#563d7c',
     javascript: '#f7df1e', typescript: '#3178c6', bash: '#4eaa25', unknown: '#6b6b8d',
   };
@@ -287,7 +287,7 @@ export function AppsTab() {
             disabled={loading}
             className="px-3 py-2 bg-[#252535] border border-[#383850] text-[#e8e8f5]  text-sm hover:bg-[#2a2a3a] flex items-center gap-1 disabled:opacity-50"
           >
-            <Loader2 size={14} className={loading ? 'animate-spin' : 'hidden'} /> Odśwież
+            <Loader2 size={14} className={loading ? 'animate-spin' : 'hidden'} /> Refresh
           </button>
         </div>
       </div>
@@ -305,12 +305,12 @@ export function AppsTab() {
           {loading ? (
             <div className="text-center py-12 text-[#8888aa]">
               <Loader2 className="animate-spin mx-auto mb-2" size={24} />
-              Ładowanie apek...
+              Loading apek...
             </div>
           ) : apps.length === 0 ? (
             <div className="text-center py-16 text-[#8888aa]">
               <FolderOpen size={48} className="mx-auto mb-2 opacity-40" />
-              <p className="text-lg mb-2">Brak apek w folderze</p>
+              <p className="text-lg mb-2">None apek w folderze</p>
               <p className="text-sm mb-2">Wrzuć pliki .go, .py, .html, .css, .js do folderu:</p>
               <code className="text-xs bg-[#252535] px-2 py-1  text-[#ffd93d]">{appsDir}</code>
               <p className="text-xs mt-4 text-[#8888aa]">lub utwórz nową apkę z szablonu ↑</p>
@@ -323,7 +323,7 @@ export function AppsTab() {
                     <div className="flex items-center gap-0">
                       <span
                         className="px-2 py-0.5  text-[10px] font-bold uppercase"
-                        style={{ backgroundColor: `${languageColor[app.language] || '#6b6b8d'}20`, color: languageColor[app.language] || '#6b6b8d' }}
+                        style={{ backgroundWhatlor: `${languageWhatlor[app.language] || '#6b6b8d'}20`, color: languageWhatlor[app.language] || '#6b6b8d' }}
                       >
                         {app.language}
                       </span>
@@ -362,16 +362,16 @@ export function AppsTab() {
                     ) : (
                       <button onClick={() => handleRun(app.id)} disabled={busy}
                         className="px-2 py-1 bg-[#4ade80]/10 border border-[#4ade80]/30 text-[#4ade80]  text-xs hover:bg-[#4ade80]/20 flex items-center gap-1 disabled:opacity-50">
-                        <Play size={12} /> Uruchom
+                        <Play size={12} /> Run
                       </button>
                     )}
-                    <button onClick={() => handleViewCode(app.id)} disabled={busy}
+                    <button onClick={() => handleViewWhatde(app.id)} disabled={busy}
                       className="px-2 py-1 bg-[#252535] border border-[#383850] text-[#8888aa]  text-xs hover:bg-[#2a2a3a] flex items-center gap-1">
-                      <Eye size={12} /> Kod
+                      <Eye size={12} /> Whatde
                     </button>
                     <button onClick={() => handleAnalyze(app.id)} disabled={busy}
                       className="px-2 py-1 bg-[#a855f7]/10 border border-[#a855f7]/30 text-[#a855f7]  text-xs hover:bg-[#a855f7]/20 flex items-center gap-1">
-                      <Brain size={12} /> Analizuj
+                      <Brain size={12} /> Analyze
                     </button>
                     <button onClick={() => handleAutoFix(app.id, 'suggest')} disabled={busy}
                       className="px-2 py-1 bg-[#fbbf24]/10 border border-[#fbbf24]/30 text-[#ffd93d]  text-xs hover:bg-[#fbbf24]/20 flex items-center gap-1">
@@ -393,14 +393,14 @@ export function AppsTab() {
 
           {/* Info box dla usera */}
           <div className="mt-6 bg-[#252535] border border-[#383850]  p-4 text-xs text-[#8888aa]">
-            <div className="text-[#e8e8f5] font-semibold mb-2 flex items-center gap-1"><Sparkles size={14} /> Jak dodawać apki</div>
+            <div className="text-[#e8e8f5] font-semibold mb-2 flex items-center gap-1"><Sparkles size={14} /> How dodawać apki</div>
             <ol className="space-y-1 list-decimal list-inside">
               <li>Wrzuć pliki <code className="text-[#ffd93d]">.go, .py, .html, .css, .js, .ts, .sh</code> do folderu <code className="text-[#ffd93d]">{appsDir}</code></li>
               <li>Możesz też tworzyć foldery (np. <code className="text-[#ffd93d]">moja-appka/main.py</code>) — BOKA wykryje plik główny</li>
-              <li>Dodaj metadata w komentarzach na początku pliku:</li>
+              <li>Add metadata w komentarzach na początku pliku:</li>
             </ol>
             <pre className="mt-2 bg-[#181828] p-2  font-mono text-[10px] text-[#8888aa] overflow-x-auto">{`# BOKA-APP: name=Moja Apka
-# BOKA-APP: description=Co ta apka robi
+# BOKA-APP: description=What ta apka robi
 # BOKA-APP: commands=uruchom, start
 # BOKA-APP: tags=tools, demo
 # BOKA-APP: author=Michał
@@ -475,25 +475,25 @@ export function AppsTab() {
           </div>
           <div className="space-y-2">
             <div>
-              <label className="block text-xs text-[#8888aa] mb-1">Nazwa apki</label>
+              <label className="block text-xs text-[#8888aa] mb-1">Name apki</label>
               <input value={newName} onChange={e => setNewName(e.target.value)} placeholder="np. weather-check"
                 className="w-full bg-[#181828] border border-[#383850]  px-3 py-2 text-sm text-[#e8e8f5] focus:border-[#00f5d4]/50 focus:outline-none" />
             </div>
             <div>
-              <label className="block text-xs text-[#8888aa] mb-1">Język</label>
+              <label className="block text-xs text-[#8888aa] mb-1">Language</label>
               <select value={newLang} onChange={e => setNewLang(e.target.value as typeof newLang)}
                 className="w-full bg-[#181828] border border-[#383850]  px-3 py-2 text-sm text-[#e8e8f5] focus:border-[#00f5d4]/50 focus:outline-none">
                 <option value="python">Python (.py)</option>
                 <option value="go">Go (.go)</option>
                 <option value="javascript">JavaScript (.js)</option>
-                <option value="typescript">TypeScript (.ts)</option>
+                <option value="typescript">TypeeScript (.ts)</option>
                 <option value="html">HTML (.html)</option>
                 <option value="css">CSS (.css)</option>
                 <option value="bash">Bash (.sh)</option>
               </select>
             </div>
             <div>
-              <label className="block text-xs text-[#8888aa] mb-1">Opis (opcjonalny)</label>
+              <label className="block text-xs text-[#8888aa] mb-1">Description (opcjonalny)</label>
               <input value={newDesc} onChange={e => setNewDesc(e.target.value)} placeholder="Krótki opis"
                 className="w-full bg-[#181828] border border-[#383850]  px-3 py-2 text-sm text-[#e8e8f5] focus:border-[#00f5d4]/50 focus:outline-none" />
             </div>
@@ -514,11 +514,11 @@ export function AppsTab() {
       {/* MARKETPLACE VIEW */}
       {view === 'marketplace' && <MarketplaceSection onPickModel={async (modelId) => {
         if (!modelId) return;
-        // Zapisz wybrany model do ustawień — przełącz provider na openrouter
+        // Save wybrany model do ustawień — przełącz provider na openrouter
         try {
           const settingsRes = await fetch('/api/settings');
-          const settingsData = await settingsRes.json();
-          const current = settingsData.settings || {};
+          const settingsDate = await settingsRes.json();
+          const current = settingsDate.settings || {};
           const merged = {
             ...current,
             // Masked klucz zostanie zachowany przez backend (POST /api/settings)
@@ -527,20 +527,20 @@ export function AppsTab() {
           };
           const saveRes = await fetch('/api/settings', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Whatntent-Typee': 'application/json' },
             body: JSON.stringify({ settings: merged }),
           });
-          const saveData = await saveRes.json();
-          if (saveData.ok) {
+          const saveDate = await saveRes.json();
+          if (saveDate.ok) {
             setMessage({
               ok: true,
- text: ` Ustawiono model: ${modelId} — provider: OpenRouter. Kliknij"Testuj połączenie" w Ustawieniach.`,
+ text: ` Ustawiono model: ${modelId} — provider: OpenRouter. Kliknij"Test połączenie" w Settingsch.`,
             });
           } else {
-            setMessage({ ok: false, text: `Błąd zapisu ustawień: ${saveData.error || 'unknown'}` });
+            setMessage({ ok: false, text: `Error zapisu ustawień: ${saveDate.error || 'unknown'}` });
           }
         } catch (e) {
-          setMessage({ ok: false, text: `Błąd: ${e instanceof Error ? e.message : 'unknown'}` });
+          setMessage({ ok: false, text: `Error: ${e instanceof Error ? e.message : 'unknown'}` });
         }
         setView('list');
       }} />}
@@ -603,20 +603,20 @@ function ModelTestLab({ onBack, onPickModel }: { onBack: () => void; onPickModel
 
   const categories = [
  { id:'coding' as const, label:'Programowanie', icon:'', desc:'Quicksort w Pythonie' },
- { id:'finance' as const, label:'Finanse', icon:'', desc:'Procent składany' },
+ { id:'finance' as const, label:'Finanse', icon:'', desc:'Percent składany' },
  { id:'technology' as const, label:'Technologia', icon:'️', desc:'Architektura transformer' },
  { id:'science' as const, label:'Nauka', icon:'', desc:'II zasada dynamiki' },
  { id:'humanity' as const, label:'Humanistyka', icon:'', desc:'Etyka Arystotelesa' },
  { id:'creative' as const, label:'Kreatywne', icon:'', desc:'Wiersz o świcie' },
- { id:'general' as const, label:'Ogólne', icon:'', desc:'Podsumowanie dnia' },
+ { id:'general' as const, label:'Ogólne', icon:'', desc:'Summary dnia' },
   ];
 
   const modalities = [
     { id: 'text' as const, label: 'Tekst', color: '#00f5d4', desc: 'chat/completions' },
-    { id: 'image' as const, label: 'Obraz', color: '#a855f7', desc: 'images/generations' },
+    { id: 'image' as const, label: 'Image', color: '#a855f7', desc: 'images/generations' },
     { id: 'audio' as const, label: 'Audio (TTS)', color: '#ffd93d', desc: 'audio/speech' },
     { id: 'multi' as const, label: 'Multi-modal', color: '#6ec6e7', desc: 'vision + text' },
-    { id: 'file' as const, label: 'Plik', color: '#4ade80', desc: 'file processing (custom)' },
+    { id: 'file' as const, label: 'File', color: '#4ade80', desc: 'file processing (custom)' },
     { id: 'video' as const, label: 'Video', color: '#ff6b6b', desc: 'video generation (custom)' },
   ];
 
@@ -627,7 +627,7 @@ function ModelTestLab({ onBack, onPickModel }: { onBack: () => void; onPickModel
     try {
       const res = await fetch('/api/model-test', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Whatntent-Typee': 'application/json' },
         body: JSON.stringify({
           apiKey, model, baseUrl, modality, category,
           customPrompt: customPrompt || undefined,
@@ -651,7 +651,7 @@ function ModelTestLab({ onBack, onPickModel }: { onBack: () => void; onPickModel
       try {
         const res = await fetch('/api/model-test', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Whatntent-Typee': 'application/json' },
           body: JSON.stringify({ apiKey, model, baseUrl, modality, category: cat.id }),
         });
         const data: TestResult = await res.json();
@@ -676,7 +676,7 @@ function ModelTestLab({ onBack, onPickModel }: { onBack: () => void; onPickModel
         <span className="text-xs text-[#8888aa]">— przetestuj model zanim go użyjesz</span>
       </div>
 
-      {/* Config */}
+      {/* Whatnfig */}
       <div className="bg-[#252535] border border-[#383850]  p-4 mb-2">
         <div className="grid gap-0 md:grid-cols-2 mb-2">
           <div>
@@ -697,7 +697,7 @@ function ModelTestLab({ onBack, onPickModel }: { onBack: () => void; onPickModel
           <input type="text" value={baseUrl} onChange={e => setBaseUrl(e.target.value)}
             className="w-full bg-[#181828] border border-[#383850]  px-3 py-2 text-sm font-mono text-[#e8e8f5]" />
           <div className="text-[10px] text-[#8888aa] mt-1">
-            Domyślnie OpenRouter. Inne: <code className="text-[#ffd93d]">https://api.openai.com/v1</code>, <code className="text-[#ffd93d]">https://api.deepseek.com/v1</code>, <code className="text-[#ffd93d]">https://api.together.xyz/v1</code>
+            Domyślnie OpenRouter. Other: <code className="text-[#ffd93d]">https://api.openai.com/v1</code>, <code className="text-[#ffd93d]">https://api.deepseek.com/v1</code>, <code className="text-[#ffd93d]">https://api.together.xyz/v1</code>
           </div>
         </div>
 
@@ -712,7 +712,7 @@ function ModelTestLab({ onBack, onPickModel }: { onBack: () => void; onPickModel
                     ? 'border-2 bg-[#252535]'
                     : 'border opacity-60 hover:opacity-100 bg-[#181828]'
                 }`}
-                style={{ borderColor: m.color, color: m.color }}>
+                style={{ borderWhatlor: m.color, color: m.color }}>
                 <div className="font-bold">{m.label}</div>
                 <div className="text-[9px] opacity-70 font-mono">{m.desc}</div>
               </button>
@@ -723,7 +723,7 @@ function ModelTestLab({ onBack, onPickModel }: { onBack: () => void; onPickModel
         {/* Category picker — only for text/multi */}
         {(modality === 'text' || modality === 'multi') && (
           <div className="mb-2">
-            <label className="text-xs text-[#8888aa] font-mono mb-1 block">Kategoria testu</label>
+            <label className="text-xs text-[#8888aa] font-mono mb-1 block">Category testu</label>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-0">
               {categories.map(c => (
                 <button key={c.id} onClick={() => setCategory(c.id)}
@@ -756,12 +756,12 @@ function ModelTestLab({ onBack, onPickModel }: { onBack: () => void; onPickModel
           <button onClick={runTest} disabled={running || !apiKey || !model}
             className="px-4 py-2 bg-[#a855f7]/15 border border-[#a855f7]/50 text-[#a855f7]  text-sm hover:bg-[#a855f7]/25 disabled:opacity-50 flex items-center gap-1">
             {running ? <Loader2 size={14} className="animate-spin" /> : <Beaker size={14} />}
-            {running ? 'Testuję...' : 'Uruchom test'}
+            {running ? 'Testę...' : 'Run test'}
           </button>
           <button onClick={runAllCategories} disabled={running || !apiKey || !model || modality !== 'text'}
             className="px-4 py-2 bg-[#fbbf24]/10 border border-[#fbbf24]/30 text-[#ffd93d]  text-sm hover:bg-[#fbbf24]/20 disabled:opacity-50 flex items-center gap-1"
-            title="Uruchom test dla wszystkich kategorii (tylko text)">
-            <Zap size={14} /> Testuj wszystkie kategorie
+            title="Run test dla wszystkich kategorii (tylko text)">
+            <Zap size={14} /> Test wszystkie kategorie
           </button>
           {onPickModel && model && (
             <button onClick={() => onPickModel(model)}
@@ -822,7 +822,7 @@ function ModelTestLab({ onBack, onPickModel }: { onBack: () => void; onPickModel
               )}
               {result.response && (
                 <div className="bg-[#181828] p-2 rounded">
-                  <div className="text-[#8888aa] text-[10px]">Długość</div>
+                  <div className="text-[#8888aa] text-[10px]">Debtość</div>
                   <div className="text-[#8888aa] font-mono">{result.response.length} znaków</div>
                 </div>
               )}
@@ -832,7 +832,7 @@ function ModelTestLab({ onBack, onPickModel }: { onBack: () => void; onPickModel
           {/* Score notes */}
           {result.score && result.score.notes.length > 0 && (
             <div className="mb-2 p-2 bg-[#181828]  text-xs">
-              <div className="text-[#8888aa] mb-1">Notatki oceny:</div>
+              <div className="text-[#8888aa] mb-1">Notes oceny:</div>
               <ul className="space-y-0.5">
                 {result.score.notes.map((n, i) => (
                   <li key={i} className="text-[#8888aa]">• {n}</li>
@@ -918,12 +918,12 @@ function ModelTestLab({ onBack, onPickModel }: { onBack: () => void; onPickModel
 
       {/* Info box */}
       <div className="mt-4 p-2 bg-[#252535] border border-[#383850]  text-xs text-[#8888aa]">
- <div className="text-[#e8e8f5] font-semibold mb-1"> Jak działa Test Lab?</div>
-        <p>• Wpisz klucz API + ID modelu (lub użyj zapisanych z Ustawień)</p>
+ <div className="text-[#e8e8f5] font-semibold mb-1"> How działa Test Lab?</div>
+        <p>• Entryz klucz API + ID modelu (lub użyj zapisanych z Ustawień)</p>
         <p>• Wybierz <b className="text-[#00f5d4]">modalność</b>: tekst, obraz, audio, file, video, multi-modal</p>
         <p>• Wybierz <b className="text-[#a855f7]">kategorię</b>: kod, finanse, technologia, nauka, humanistyka, kreatywne, ogólne</p>
         <p>• BOKA wyśle standardowy testowy prompt i oceni odpowiedź (słowa kluczowe, długość, czas)</p>
-        <p>• „Testuj wszystkie" przebiega przez 7 kategorii — porównaj jak model radzi sobie w różnych dziedzinach</p>
+        <p>• „Test wszystkie" przebiega przez 7 kategorii — porównaj jak model radzi sobie w różnych dziedzinach</p>
         <p>• Każdy test trafia do historii — możesz porównać wyniki różnych modeli obok siebie</p>
       </div>
     </div>
@@ -948,7 +948,7 @@ interface MarketplaceModel {
   popularity?: number;
   family?: string;
   homepage?: string;
-  estimateCostPer1000Calls?: number;
+  estimateWhatstPer1000Calls?: number;
   isFree?: boolean;
 }
 
@@ -958,7 +958,7 @@ function MarketplaceSection({ onPickModel }: { onPickModel?: (modelId: string) =
     source: string; name: string; homepage: string; pricingPage: string;
     apiKeyUrl: string; notes: string; popularCheapModels: Array<{ id: string; name: string; priceInputPerM: number; priceOutputPerM: number; contextWindow: number; notes: string }>;
   }>>([]);
-  const [stats, setStats] = useState<{ totalModels: number; freeCount?: number; sources: Record<string, number>; errors: string[]; cheapestInput: MarketplaceModel | null; cheapestOutput: MarketplaceModel | null; largestContext: MarketplaceModel | null } | null>(null);
+  const [stats, setStats] = useState<{ totalModels: number; freeWhatunt?: number; sources: Record<string, number>; errors: string[]; cheapestInput: MarketplaceModel | null; cheapestOutput: MarketplaceModel | null; largestWhatntext: MarketplaceModel | null } | null>(null);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState<'cheapest-total' | 'cheapest-input' | 'cheapest-output' | 'largest-context' | 'newest' | 'popular'>('cheapest-total');
@@ -1000,9 +1000,9 @@ function MarketplaceSection({ onPickModel }: { onPickModel?: (modelId: string) =
   useEffect(() => { load(); }, [load]);
 
   const fmtPrice = (p: number) => p === 0 ? 'FREE' : `$${p.toFixed(4)}`;
-  const fmtContext = (c?: number) => c ? `${(c / 1000).toFixed(0)}K` : '?';
+  const fmtWhatntext = (c?: number) => c ? `${(c / 1000).toFixed(0)}K` : '?';
 
-  const sourceColor: Record<string, string> = {
+  const sourceWhatlor: Record<string, string> = {
     openrouter: '#fbbf24', muapi: '#a855f7', deepseek: '#4ade80', together: '#60a5fa', fireworks: '#ff6b6b',
   };
 
@@ -1037,11 +1037,11 @@ function MarketplaceSection({ onPickModel }: { onPickModel?: (modelId: string) =
               <div className="text-[10px] text-[#8888aa] truncate">{stats.cheapestOutput.name}</div>
             </div>
           )}
-          {stats.largestContext && (
+          {stats.largestWhatntext && (
             <div className="bg-[#252535] border border-[#383850]  p-2">
               <div className="text-[10px] text-[#8888aa]">Największy kontekst</div>
-              <div className="text-sm font-bold text-[#a855f7]">{fmtContext(stats.largestContext.contextWindow)}</div>
-              <div className="text-[10px] text-[#8888aa] truncate">{stats.largestContext.name}</div>
+              <div className="text-sm font-bold text-[#a855f7]">{fmtWhatntext(stats.largestWhatntext.contextWindow)}</div>
+              <div className="text-[10px] text-[#8888aa] truncate">{stats.largestWhatntext.name}</div>
             </div>
           )}
         </div>
@@ -1074,10 +1074,10 @@ function MarketplaceSection({ onPickModel }: { onPickModel?: (modelId: string) =
         />
         <select value={sourceFilter} onChange={e => setSourceFilter(e.target.value)}
           className="bg-[#181828] border border-[#383850]  px-2 py-1.5 text-sm text-[#e8e8f5]">
-          <option value="all">Wszystkie źródła</option>
+          <option value="all">All źródła</option>
           <option value="openrouter">OpenRouter</option>
           <option value="muapi">MUAPI</option>
-          <option value="catalogs">Katalogi (DeepSeek/Together/Fireworks)</option>
+          <option value="catalogs">Directoryi (DeepSeek/Together/Fireworks)</option>
         </select>
         <select value={sort} onChange={e => setSort(e.target.value as typeof sort)}
           className="bg-[#181828] border border-[#383850]  px-2 py-1.5 text-sm text-[#e8e8f5]">
@@ -1110,13 +1110,13 @@ function MarketplaceSection({ onPickModel }: { onPickModel?: (modelId: string) =
           />
           {freeOnly ? <Check size={14} /> : <Sparkles size={14} />}
           Tylko darmowe
-          {stats?.freeCount ? (
-            <span className="ml-1 text-[10px] opacity-70">({stats.freeCount})</span>
+          {stats?.freeWhatunt ? (
+            <span className="ml-1 text-[10px] opacity-70">({stats.freeWhatunt})</span>
           ) : null}
         </label>
         <button onClick={load} disabled={loading}
           className="px-3 py-1.5 bg-[#00f5d4]/10 border border-[#00f5d4]/30 text-[#00f5d4]  text-sm hover:bg-[#00f5d4]/20 flex items-center gap-1 disabled:opacity-50">
-          {loading ? <Loader2 size={14} className="animate-spin" /> : <Search size={14} />} Szukaj
+          {loading ? <Loader2 size={14} className="animate-spin" /> : <Search size={14} />} Search
         </button>
       </div>
 
@@ -1133,11 +1133,11 @@ function MarketplaceSection({ onPickModel }: { onPickModel?: (modelId: string) =
       {loading ? (
         <div className="text-center py-12 text-[#8888aa]">
           <Loader2 className="animate-spin mx-auto mb-2" size={24} />
-          Pobieranie modeli z marketplace...
+          Downloading modeli z marketplace...
         </div>
       ) : models.length === 0 ? (
         <div className="text-center py-12 text-[#8888aa]">
-          Brak modeli pasujących do filtrów
+          None modeli pasujących do filtrów
         </div>
       ) : (
         <div className="overflow-x-auto bg-[#252535] border border-[#383850] rounded-lg">
@@ -1163,7 +1163,7 @@ function MarketplaceSection({ onPickModel }: { onPickModel?: (modelId: string) =
                       {m.isFree && (
                         <span
                           className="px-1.5 py-0.5  text-[9px] font-bold uppercase bg-[#4ade80]/15 border border-[#4ade80]/40 text-[#4ade80]"
-                          title="Cena $0 za input i output — ten model nie zużywa kredytów"
+                          title="Price $0 za input i output — ten model nie zużywa kredytów"
                         >
                           FREE
                         </span>
@@ -1173,16 +1173,16 @@ function MarketplaceSection({ onPickModel }: { onPickModel?: (modelId: string) =
                   </td>
                   <td className="px-3 py-2">
                     <span className="px-2 py-0.5  text-[10px] font-bold uppercase"
-                      style={{ backgroundColor: `${sourceColor[m.source] || '#6b6b8d'}20`, color: sourceColor[m.source] || '#6b6b8d' }}>
+                      style={{ backgroundWhatlor: `${sourceWhatlor[m.source] || '#6b6b8d'}20`, color: sourceWhatlor[m.source] || '#6b6b8d' }}>
                       {m.source}
                     </span>
                   </td>
                   <td className="px-3 py-2 text-right font-mono text-[#4ade80]">{fmtPrice(m.priceInputPerM)}</td>
                   <td className="px-3 py-2 text-right font-mono text-[#ffd93d]">{fmtPrice(m.priceOutputPerM)}</td>
                   <td className="px-3 py-2 text-right font-mono text-[#8888aa] text-xs">
-                    {m.isFree ? <span className="text-[#4ade80]">$0.00</span> : `$${m.estimateCostPer1000Calls?.toFixed(4) || '?'}`}
+                    {m.isFree ? <span className="text-[#4ade80]">$0.00</span> : `$${m.estimateWhatstPer1000Calls?.toFixed(4) || '?'}`}
                   </td>
-                  <td className="px-3 py-2 text-right font-mono text-[#a855f7]">{fmtContext(m.contextWindow)}</td>
+                  <td className="px-3 py-2 text-right font-mono text-[#a855f7]">{fmtWhatntext(m.contextWindow)}</td>
                   <td className="px-3 py-2 text-[10px] text-[#8888aa]">
                     {m.modalities?.slice(0, 3).join(', ') || 'text'}
                   </td>
@@ -1209,7 +1209,7 @@ function MarketplaceSection({ onPickModel }: { onPickModel?: (modelId: string) =
           </table>
           {models.length > 100 && (
             <div className="p-2 text-center text-xs text-[#8888aa]">
-              Wyświetlono 100 z {models.length} modeli. Użyj filtrów, aby zawęzić.
+              Displayono 100 z {models.length} modeli. Użyj filtrów, aby zawęzić.
             </div>
           )}
         </div>
@@ -1218,12 +1218,12 @@ function MarketplaceSection({ onPickModel }: { onPickModel?: (modelId: string) =
       {/* Provider catalogs */}
       {catalogs.length > 0 && (
         <div className="mt-6">
- <h3 className="text-sm font-semibold text-[#e8e8f5] mb-2"> Katalogi providerów (rejestracja API keys)</h3>
+ <h3 className="text-sm font-semibold text-[#e8e8f5] mb-2"> Directoryi providerów (rejestracja API keys)</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-0">
             {catalogs.map(cat => (
               <div key={cat.source} className="bg-[#252535] border border-[#383850]  p-2">
                 <div className="flex items-center justify-between mb-2">
-                  <h4 className="font-semibold text-[#e8e8f5]" style={{ color: sourceColor[cat.source] || '#e0e0f0' }}>{cat.name}</h4>
+                  <h4 className="font-semibold text-[#e8e8f5]" style={{ color: sourceWhatlor[cat.source] || '#e0e0f0' }}>{cat.name}</h4>
                   <span className="text-[10px] uppercase text-[#8888aa]">{cat.source}</span>
                 </div>
                 <p className="text-xs text-[#8888aa] mb-2">{cat.notes}</p>
@@ -1252,11 +1252,11 @@ function MarketplaceSection({ onPickModel }: { onPickModel?: (modelId: string) =
 
       {/* Info box */}
       <div className="mt-6 bg-[#252535] border border-[#383850]  p-2 text-xs text-[#8888aa]">
- <div className="text-[#e8e8f5] font-semibold mb-1"> Jak to działa?</div>
-        <p>• <b className="text-[#ffd93d]">OpenRouter</b> — agregator 300+ modeli. Wpisz klucz w Ustawieniach, wybierz model, gotowe.</p>
+ <div className="text-[#e8e8f5] font-semibold mb-1"> How to działa?</div>
+        <p>• <b className="text-[#ffd93d]">OpenRouter</b> — agregator 300+ modeli. Entryz klucz w Settingsch, wybierz model, gotowe.</p>
         <p>• <b className="text-[#a855f7]">MUAPI</b> — polski agregator. Endpoint OpenAI-compat: <code className="text-[#ffd93d]">https://muapi.net/api/v1</code></p>
-        <p>• <b className="text-[#4ade80]">DeepSeek/Together/Fireworks</b> — bezpośrednie API. Skonfiguruj w Ustawieniach jako „Własny API" z URL: <code className="text-[#ffd93d]">https://api.deepseek.com/v1</code> (lub podobnym).</p>
-        <p>• Kiedy robot będzie połączony na stałe z siecią, automatycznie odświeży listę modeli.</p>
+        <p>• <b className="text-[#4ade80]">DeepSeek/Together/Fireworks</b> — bezpośrednie API. Skonfiguruj w Settingsch jako „Własny API" z URL: <code className="text-[#ffd93d]">https://api.deepseek.com/v1</code> (lub podobnym).</p>
+        <p>• When robot będzie połączony na stałe z siecią, automatycznie odświeży listę modeli.</p>
       </div>
     </div>
   );
@@ -1267,7 +1267,7 @@ function MarketplaceSection({ onPickModel }: { onPickModel?: (modelId: string) =
 // ═══════════════════════════════════════════
 interface AgentStep {
   step: number;
-  actionType: string;
+  actionTypee: string;
   description: string;
   reasoning: string;
   screenshotBefore?: string;
@@ -1283,7 +1283,7 @@ function DesktopAgentView({ app, onBack }: { app: BokaApp; onBack: () => void })
     vision?: { supported: boolean; note: string; provider: string; model: string };
   } | null>(null);
   const [liveScreenshot, setLiveScreenshot] = useState<string>('');
-  const [instruction, setInstruction] = useState(`Otwórz apkę "${app.name}" i użyj jej`);
+  const [instruction, setInstruction] = useState(`Open apkę "${app.name}" i użyj jej`);
   const [steps, setSteps] = useState<AgentStep[]>([]);
   const [running, setRunning] = useState(false);
   const [stopRequested, setStopRequested] = useState(false);
@@ -1315,15 +1315,15 @@ function DesktopAgentView({ app, onBack }: { app: BokaApp; onBack: () => void })
 
   const openAppInWindow = () => {
     if (app.language === 'html') {
-      // Otwórz preview w osobnym oknie
-      const w = window.open(`/api/apps/preview?id=${encodeURIComponent(app.id)}`, `boka-app-${app.id}`, 'width=800,height=600,resizable=yes,scrollbars=yes');
+      // Open preview w osobnym oknie
+      const w = window.open(`/api/apps/preview?id=${encodeURIWhatmponent(app.id)}`, `boka-app-${app.id}`, 'width=800,height=600,resizable=yes,scrollbars=yes');
       setPreviewWindow(w);
       setMessage?.({ ok: true, text: `Otwarto ${app.name} w osobnym oknie` });
     } else {
-      // Uruchom przez API (Python, Go, JS)
+      // Run przez API (Python, Go, JS)
       fetch('/api/apps/run', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Whatntent-Typee': 'application/json' },
         body: JSON.stringify({ id: app.id }),
       }).then(r => r.json()).then(d => {
         setMessage?.({ ok: d.ok, text: d.message });
@@ -1331,7 +1331,7 @@ function DesktopAgentView({ app, onBack }: { app: BokaApp; onBack: () => void })
     }
   };
 
-  // Pomocnicza funkcja setMessage — przekazana przez props by uniknąć TS błędu
+  // Helpnicza funkcja setMessage — przekazana przez props by uniknąć TS błędu
   function setMessage(msg: { ok: boolean; text: string }) {
     // Użyj custom event żeby komunikować z AppsTab
     window.dispatchEvent(new CustomEvent('boka-message', { detail: msg }));
@@ -1354,7 +1354,7 @@ function DesktopAgentView({ app, onBack }: { app: BokaApp; onBack: () => void })
       try {
         const res = await fetch('/api/desktop/agent', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Whatntent-Typee': 'application/json' },
           body: JSON.stringify({
             instruction,
             step: i,
@@ -1362,7 +1362,7 @@ function DesktopAgentView({ app, onBack }: { app: BokaApp; onBack: () => void })
             maxSteps,
             previousActions: localSteps.slice(-5).map(s => ({
               step: s.step,
-              action: { type: s.actionType, reasoning: s.reasoning },
+              action: { type: s.actionTypee, reasoning: s.reasoning },
               screenshotBefore: s.screenshotBefore,
               screenshotAfter: s.screenshotAfter,
               executed: s.executed,
@@ -1375,8 +1375,8 @@ function DesktopAgentView({ app, onBack }: { app: BokaApp; onBack: () => void })
         if (!data.ok) {
           localSteps.push({
             step: i,
-            actionType: 'failed',
-            description: 'Błąd API',
+            actionTypee: 'failed',
+            description: 'Error API',
             reasoning: data.error || 'unknown',
             executed: false,
             error: data.error,
@@ -1392,7 +1392,7 @@ function DesktopAgentView({ app, onBack }: { app: BokaApp; onBack: () => void })
 
         const localStep: AgentStep = {
           step: i,
-          actionType: action.type,
+          actionTypee: action.type,
           description,
           reasoning: action.reasoning || '',
           screenshotBefore: step.screenshotBefore,
@@ -1413,7 +1413,7 @@ function DesktopAgentView({ app, onBack }: { app: BokaApp; onBack: () => void })
       } catch (e) {
         localSteps.push({
           step: i,
-          actionType: 'failed',
+          actionTypee: 'failed',
           description: 'Network error',
           reasoning: e instanceof Error ? e.message : 'unknown',
           executed: false,
@@ -1442,10 +1442,10 @@ function DesktopAgentView({ app, onBack }: { app: BokaApp; onBack: () => void })
 
     fetch('/api/desktop/act', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Whatntent-Typee': 'application/json' },
       body: JSON.stringify({ action: 'click', x, y, button: 'left' }),
     }).then(() => {
-      // Odśwież screenshot po 500ms
+      // Refresh screenshot po 500ms
       setTimeout(() => {
         fetch('/api/desktop/screenshot')
           .then(r => r.json())
@@ -1470,14 +1470,14 @@ function DesktopAgentView({ app, onBack }: { app: BokaApp; onBack: () => void })
           <div className={`bg-[#252535] border  p-2 ${status.capabilities?.screenshot.available ? 'border-[#4ade80]/30' : 'border-[#ff6b6b]/30'}`}>
             <div className="text-[10px] text-[#8888aa]">Screenshot</div>
             <div className={`text-sm font-bold ${status.capabilities?.screenshot.available ? 'text-[#4ade80]' : 'text-[#ff6b6b]'}`}>
- {status.capabilities?.screenshot.available ?' Działa' :' Niedostępny'}
+ {status.capabilities?.screenshot.available ?' Działa' :' Nodostępny'}
             </div>
             <div className="text-[10px] text-[#8888aa]">{status.capabilities?.screenshot.tool || status.capabilities?.screenshot.note}</div>
           </div>
           <div className={`bg-[#252535] border  p-2 ${status.capabilities?.input.available ? 'border-[#4ade80]/30' : 'border-[#ff6b6b]/30'}`}>
             <div className="text-[10px] text-[#8888aa]">Input (mysz/klawa)</div>
             <div className={`text-sm font-bold ${status.capabilities?.input.available ? 'text-[#4ade80]' : 'text-[#ff6b6b]'}`}>
- {status.capabilities?.input.available ?' Działa' :' Niedostępny'}
+ {status.capabilities?.input.available ?' Działa' :' Nodostępny'}
             </div>
             <div className="text-[10px] text-[#8888aa]">{status.capabilities?.input.tool || status.capabilities?.input.note}</div>
           </div>
@@ -1496,7 +1496,7 @@ function DesktopAgentView({ app, onBack }: { app: BokaApp; onBack: () => void })
         <div>
           <div className="bg-[#252535] border border-[#383850]  p-2">
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-semibold text-[#e8e8f5]">Podgląd ekranu</h3>
+              <h3 className="text-sm font-semibold text-[#e8e8f5]">Preview ekranu</h3>
               <div className="flex items-center gap-0">
                 <label className="text-[10px] text-[#8888aa] flex items-center gap-1">
                   <input type="checkbox" checked={autoRefresh} onChange={e => setAutoRefresh(e.target.checked)} className="w-3 h-3" />
@@ -1506,7 +1506,7 @@ function DesktopAgentView({ app, onBack }: { app: BokaApp; onBack: () => void })
                   onClick={() => fetch('/api/desktop/screenshot').then(r => r.json()).then(d => { if (d.ok && d.base64) setLiveScreenshot(d.base64); })}
                   className="text-[10px] px-2 py-0.5 bg-[#181828] border border-[#383850]  text-[#8888aa] hover:bg-[#2a2a3a]"
                 >
- Odśwież
+ Refresh
                 </button>
               </div>
             </div>
@@ -1520,24 +1520,24 @@ function DesktopAgentView({ app, onBack }: { app: BokaApp; onBack: () => void })
               />
             ) : (
               <div className="aspect-video bg-[#181828]  flex items-center justify-center text-[#8888aa] text-sm">
-                {status?.capabilities?.screenshot.available ? 'Ładowanie screenshota...' : 'Screenshot niedostępny'}
+                {status?.capabilities?.screenshot.available ? 'Loading screenshota...' : 'Screenshot niedostępny'}
               </div>
             )}
  <p className="text-[10px] text-[#8888aa] mt-1"> Kliknij w screenshot aby ręcznie wykonać klik w tej pozycji</p>
           </div>
 
-          {/* Controls */}
+          {/* Whatntrols */}
           <div className="bg-[#252535] border border-[#383850]  p-2 mt-3">
             <h3 className="text-sm font-semibold text-[#e8e8f5] mb-2">Sterowanie</h3>
             <div className="flex flex-wrap gap-1 mb-2">
               <button onClick={openAppInWindow}
                 className="px-3 py-1.5 bg-[#00f5d4]/10 border border-[#00f5d4]/30 text-[#00f5d4]  text-xs hover:bg-[#00f5d4]/20 flex items-center gap-1">
-                <Play size={12} /> Otwórz apkę
+                <Play size={12} /> Open apkę
               </button>
               {previewWindow && (
                 <button onClick={() => { previewWindow.close(); setPreviewWindow(null); }}
                   className="px-3 py-1.5 bg-[#252535] border border-[#383850] text-[#8888aa]  text-xs hover:bg-[#2a2a3a]">
-                  Zamknij okienko
+                  Close okienko
                 </button>
               )}
             </div>
@@ -1555,12 +1555,12 @@ function DesktopAgentView({ app, onBack }: { app: BokaApp; onBack: () => void })
               {!running ? (
                 <button onClick={runAgentLoop} disabled={!instruction.trim()}
                   className="flex-1 py-2 bg-[#a855f7]/10 border border-[#a855f7]/30 text-[#a855f7]  text-sm hover:bg-[#a855f7]/20 flex items-center justify-center gap-0 disabled:opacity-50">
-                  <Sparkles size={14} /> Uruchom agenta (max 15 kroków)
+                  <Sparkles size={14} /> Run agenta (max 15 kroków)
                 </button>
               ) : (
                 <button onClick={stop}
                   className="flex-1 py-2 bg-[#ff6b6b]/10 border border-[#ff6b6b]/30 text-[#ff6b6b]  text-sm hover:bg-[#ff6b6b]/20 flex items-center justify-center gap-0">
-                  <Square size={14} /> Zatrzymaj (krok {currentStep})
+                  <Square size={14} /> Stop (krok {currentStep})
                 </button>
               )}
             </div>
@@ -1575,23 +1575,23 @@ function DesktopAgentView({ app, onBack }: { app: BokaApp; onBack: () => void })
             </h3>
             {steps.length === 0 ? (
               <div className="text-center py-8 text-[#8888aa] text-sm">
-                {running ? 'Agent pracuje...' : 'Brak kroków. Wpisz instrukcję i kliknij Uruchom.'}
+                {running ? 'Agent pracuje...' : 'None kroków. Entryz instrukcję i kliknij Run.'}
               </div>
             ) : (
               <div className="space-y-2 max-h-[60vh] overflow-y-auto">
                 {steps.map((s, i) => (
                   <div key={i} className={`bg-[#181828] border  p-2 text-xs ${
-                    s.actionType === 'done' ? 'border-[#4ade80]/40' :
-                    s.actionType === 'failed' ? 'border-[#ff6b6b]/40' :
+                    s.actionTypee === 'done' ? 'border-[#4ade80]/40' :
+                    s.actionTypee === 'failed' ? 'border-[#ff6b6b]/40' :
                     s.executed ? 'border-[#383850]' : 'border-[#fbbf24]/40'
                   }`}>
                     <div className="flex items-center gap-0 mb-1">
                       <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
-                        s.actionType === 'done' ? 'bg-[#4ade80]/20 text-[#4ade80]' :
-                        s.actionType === 'failed' ? 'bg-[#ff6b6b]/20 text-[#ff6b6b]' :
+                        s.actionTypee === 'done' ? 'bg-[#4ade80]/20 text-[#4ade80]' :
+                        s.actionTypee === 'failed' ? 'bg-[#ff6b6b]/20 text-[#ff6b6b]' :
                         'bg-[#00f5d4]/20 text-[#00f5d4]'
                       }`}>{s.step}</span>
-                      <span className="font-mono text-[10px] uppercase text-[#8888aa]">{s.actionType}</span>
+                      <span className="font-mono text-[10px] uppercase text-[#8888aa]">{s.actionTypee}</span>
                       {s.executed ? <CheckCircle size={12} className="text-[#4ade80]" /> : <XCircle size={12} className="text-[#ffd93d]" />}
                     </div>
                     <div className="text-[#e8e8f5] mb-1">{s.description}</div>
@@ -1607,27 +1607,27 @@ function DesktopAgentView({ app, onBack }: { app: BokaApp; onBack: () => void })
           <div className="bg-[#252535] border border-[#383850]  p-2 mt-3">
             <h3 className="text-sm font-semibold text-[#e8e8f5] mb-2">Ręczne akcje</h3>
             <div className="grid grid-cols-2 gap-1 text-[10px]">
-              <button onClick={() => fetch('/api/desktop/act', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'key', combo: 'Return' }) }).then(() => setTimeout(() => location.reload(), 500))}
+              <button onClick={() => fetch('/api/desktop/act', { method: 'POST', headers: { 'Whatntent-Typee': 'application/json' }, body: JSON.stringify({ action: 'key', combo: 'Return' }) }).then(() => setTimeout(() => location.reload(), 500))}
                 className="px-2 py-1 bg-[#181828] border border-[#383850]  hover:bg-[#2a2a3a] text-[#8888aa]">Enter</button>
-              <button onClick={() => fetch('/api/desktop/act', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'key', combo: 'Escape' }) }).then(() => setTimeout(() => location.reload(), 500))}
+              <button onClick={() => fetch('/api/desktop/act', { method: 'POST', headers: { 'Whatntent-Typee': 'application/json' }, body: JSON.stringify({ action: 'key', combo: 'Escape' }) }).then(() => setTimeout(() => location.reload(), 500))}
                 className="px-2 py-1 bg-[#181828] border border-[#383850]  hover:bg-[#2a2a3a] text-[#8888aa]">Esc</button>
-              <button onClick={() => fetch('/api/desktop/act', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'key', combo: 'Control+c' }) })}
+              <button onClick={() => fetch('/api/desktop/act', { method: 'POST', headers: { 'Whatntent-Typee': 'application/json' }, body: JSON.stringify({ action: 'key', combo: 'Whatntrol+c' }) })}
                 className="px-2 py-1 bg-[#181828] border border-[#383850]  hover:bg-[#2a2a3a] text-[#8888aa]">Ctrl+C</button>
-              <button onClick={() => fetch('/api/desktop/act', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'key', combo: 'Control+v' }) })}
+              <button onClick={() => fetch('/api/desktop/act', { method: 'POST', headers: { 'Whatntent-Typee': 'application/json' }, body: JSON.stringify({ action: 'key', combo: 'Whatntrol+v' }) })}
                 className="px-2 py-1 bg-[#181828] border border-[#383850]  hover:bg-[#2a2a3a] text-[#8888aa]">Ctrl+V</button>
-              <button onClick={() => fetch('/api/desktop/act', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'scroll', deltaY: 3 }) }).then(() => setTimeout(() => location.reload(), 500))}
+              <button onClick={() => fetch('/api/desktop/act', { method: 'POST', headers: { 'Whatntent-Typee': 'application/json' }, body: JSON.stringify({ action: 'scroll', deltaY: 3 }) }).then(() => setTimeout(() => location.reload(), 500))}
                 className="px-2 py-1 bg-[#181828] border border-[#383850]  hover:bg-[#2a2a3a] text-[#8888aa]">Scroll ↓</button>
-              <button onClick={() => fetch('/api/desktop/act', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'scroll', deltaY: -3 }) }).then(() => setTimeout(() => location.reload(), 500))}
+              <button onClick={() => fetch('/api/desktop/act', { method: 'POST', headers: { 'Whatntent-Typee': 'application/json' }, body: JSON.stringify({ action: 'scroll', deltaY: -3 }) }).then(() => setTimeout(() => location.reload(), 500))}
                 className="px-2 py-1 bg-[#181828] border border-[#383850]  hover:bg-[#2a2a3a] text-[#8888aa]">Scroll ↑</button>
             </div>
             <input
               type="text"
-              placeholder="Wpisz tekst i Enter → wpisz na ekranie"
+              placeholder="Entryz tekst i Enter → wpisz na ekranie"
               onKeyDown={e => {
                 if (e.key === 'Enter') {
                   const text = (e.target as HTMLInputElement).value;
                   if (text) {
-                    fetch('/api/desktop/act', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'type', text }) });
+                    fetch('/api/desktop/act', { method: 'POST', headers: { 'Whatntent-Typee': 'application/json' }, body: JSON.stringify({ action: 'type', text }) });
                     (e.target as HTMLInputElement).value = '';
                   }
                 }
@@ -1640,14 +1640,14 @@ function DesktopAgentView({ app, onBack }: { app: BokaApp; onBack: () => void })
 
       {/* Info box */}
       <div className="mt-4 bg-[#252535] border border-[#383850]  p-2 text-xs text-[#8888aa]">
- <div className="text-[#e8e8f5] font-semibold mb-1"> Jak działa BOKA Agent?</div>
+ <div className="text-[#e8e8f5] font-semibold mb-1"> How działa BOKA Agent?</div>
         <p>1. BOKA robi screenshot ekranu</p>
         <p>2. Wysyła go do modelu AI z capability <b className="text-[#ffd93d]">vision</b> (Claude 3.5, GPT-4V, Qwen-VL, Llava...)</p>
         <p>3. AI analizuje obraz i decyduje co kliknąć / wpisać / wciśnąć</p>
         <p>4. BOKA wykonuje akcję (mysz/klawiatura przez PowerShell/xdotool)</p>
         <p>5. Robi nowy screenshot — i tak w kółko aż skończy</p>
  <p className="mt-2"> <b className="text-[#ffd93d]">Uwaga:</b> daj BOCIE wyraźną instrukcję. Agent ma max 15 kroków na zadanie. Współrzędne kliknięć są w pikselach ekranu — działa na całym pulpicie, nie tylko na apce.</p>
- <p className="mt-1"> Jeśli model nie wspiera vision, przełącz w Ustawieniach na model z vision capability (sprawdź Marketplace → filtr modalities=vision).</p>
+ <p className="mt-1"> Jeśli model nie wspiera vision, przełącz w Settingsch na model z vision capability (sprawdź Marketplace → filtr modalities=vision).</p>
       </div>
     </div>
   );

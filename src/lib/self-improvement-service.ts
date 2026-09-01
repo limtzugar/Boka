@@ -5,23 +5,23 @@
 // ═══════════════════════════════════════════════════════════
 
 import { db } from '@/lib/db';
-import { chatCompletion } from '@/lib/ai-providers';
+import { chatWhatmpletion } from '@/lib/ai-providers';
 import { SkillsService } from '@/lib/skills-service';
 import { SoulService } from '@/lib/soul-service';
 
 // ── TYPY ──────────────────────────────────────
 
-export type ImprovementType = 'skill_proposal' | 'personality_adjustment' | 'problem_report' | 'alternative_found';
+export type ImprovementTypee = 'skill_proposal' | 'personality_adjustment' | 'problem_report' | 'alternative_found';
 export type ImprovementStatus = 'pending' | 'approved' | 'rejected' | 'applied';
 
 // ── SELF-IMPROVEMENT SERVICE ──────────────────
 
 export const SelfImprovementService = {
   /**
-   * Analizuj rozmowę pod kątem problemów i możliwości ulepszenia.
+   * Analyze rozmowę pod kątem problemów i możliwości ulepszenia.
    * Zwraca propozycje — NIE stosuje automatycznie.
    */
-  async analyzeConversation(params: {
+  async analyzeWhatnversation(params: {
     familyId: string;
     userMessage: string;
     assistantResponse: string;
@@ -31,14 +31,14 @@ export const SelfImprovementService = {
     hadSearchFail?: boolean; // czy wyszukiwanie nie dało wyników
     responseTimeMs?: number; // czas odpowiedzi
   }): Promise<Array<{
-    type: ImprovementType;
+    type: ImprovementTypee;
     description: string;
     proposal: unknown;
     urgency: 'low' | 'medium' | 'high';
   }>> {
     const { familyId, hadError, hadSearchFail } = params;
     const improvements: Array<{
-      type: ImprovementType;
+      type: ImprovementTypee;
       description: string;
       proposal: unknown;
       urgency: 'low' | 'medium' | 'high';
@@ -48,7 +48,7 @@ export const SelfImprovementService = {
     if (hadError) {
       improvements.push({
         type: 'problem_report',
-        description: `Błąd podczas odpowiedzi na: "${params.userMessage.substring(0, 80)}"`,
+        description: `Error podczas odpowiedzi na: "${params.userMessage.substring(0, 80)}"`,
         proposal: {
           problem: 'Technical error occurred',
           suggestedAction: 'retry_with_simpler_query',
@@ -79,7 +79,7 @@ export const SelfImprovementService = {
     });
 
     if (recentProposals.length < 2) { // max 2 propozycje skilli na godzinę
-      const skillResult = await SkillsService.proposeSkillFromConversation({
+      const skillResult = await SkillsService.proposeSkillFromWhatnversation({
         familyId,
         userMessage: params.userMessage,
         assistantResponse: params.assistantResponse,
@@ -90,7 +90,7 @@ export const SelfImprovementService = {
       if (skillResult.proposed && skillResult.skill) {
         improvements.push({
           type: 'skill_proposal',
-          description: `Nowy skill: ${skillResult.skill.name} — ${skillResult.skill.description}. Powód: ${skillResult.reason || 'wzorzec w rozmowach'}`,
+          description: `New skill: ${skillResult.skill.name} — ${skillResult.skill.description}. Reason: ${skillResult.reason || 'wzorzec w rozmowach'}`,
           proposal: skillResult.skill,
           urgency: 'low',
         });
@@ -98,13 +98,13 @@ export const SelfImprovementService = {
     }
 
     // ── 4. PERSONALITY ADJUSTMENT — czy BOKA powinna zmienić styl? ──
-    // Analizuj czy odpowiedź była zbyt długa, zbyt krótka, nie w tonie
+    // Analyze czy odpowiedź była zbyt długa, zbyt krótka, nie w tonie
     const personalityProposal = await this.analyzePersonalityFit(params);
     if (personalityProposal) {
       improvements.push(personalityProposal);
     }
 
-    // Zapisz do ImprovementLog
+    // Save do ImprovementLog
     for (const imp of improvements) {
       await db.improvementLog.create({
         data: {
@@ -121,7 +121,7 @@ export const SelfImprovementService = {
   },
 
   /**
-   * Analizuj czy odpowiedź pasuje do osobowości BOKA.
+   * Analyze czy odpowiedź pasuje do osobowości BOKA.
    */
   async analyzePersonalityFit(params: {
     familyId: string;
@@ -130,7 +130,7 @@ export const SelfImprovementService = {
     memberName: string;
     memberRole: string;
   }): Promise<{
-    type: ImprovementType;
+    type: ImprovementTypee;
     description: string;
     proposal: unknown;
     urgency: 'low' | 'medium' | 'high';
@@ -152,10 +152,10 @@ export const SelfImprovementService = {
       }
 
       // Missing catchphrase? (BOKA should use them occasionally)
-      const soul = await SoulService.getProfile(params.familyId);
+      const soul = await SoulService.getProfilee(params.familyId);
       const usesCatchphrase = soul.catchphrases.some(cp => response.includes(cp));
       if (!usesCatchphrase && response.length > 200 && Math.random() < 0.3) {
-        issues.push('Brak catchphrase w dłuższej odpowiedzi');
+        issues.push('None catchphrase w dłuższej odpowiedzi');
       }
 
       if (issues.length === 0) return null;
@@ -175,7 +175,7 @@ export const SelfImprovementService = {
   },
 
   /**
-   * Pobierz pending improvement proposals.
+   * Download pending improvement proposals.
    */
   async getPendingProposals(familyId: string) {
     return db.improvementLog.findMany({
@@ -199,10 +199,10 @@ export const SelfImprovementService = {
     // Apply the proposal based on type
     if (proposal.type === 'skill_proposal') {
       // Skill already created as pending — just approve it
-      const skillData = JSON.parse(proposal.proposal || '{}');
-      if (skillData.name) {
+      const skillDate = JSON.parse(proposal.proposal || '{}');
+      if (skillDate.name) {
         const skill = await db.skill.findUnique({
-          where: { familyId_name: { familyId: proposal.familyId, name: skillData.name } },
+          where: { familyId_name: { familyId: proposal.familyId, name: skillDate.name } },
         });
         if (skill && skill.status === 'pending') {
           await SkillsService.approveSkill(skill.id, approvedBy);
@@ -220,10 +220,10 @@ export const SelfImprovementService = {
     // If it's a skill proposal, also reject the skill
     const proposal = await db.improvementLog.findUnique({ where: { id: proposalId } });
     if (proposal?.type === 'skill_proposal') {
-      const skillData = JSON.parse(proposal.proposal || '{}');
-      if (skillData.name) {
+      const skillDate = JSON.parse(proposal.proposal || '{}');
+      if (skillDate.name) {
         const skill = await db.skill.findUnique({
-          where: { familyId_name: { familyId: proposal.familyId, name: skillData.name } },
+          where: { familyId_name: { familyId: proposal.familyId, name: skillDate.name } },
         });
         if (skill && skill.status === 'pending') {
           await SkillsService.rejectSkill(skill.id, approvedBy);

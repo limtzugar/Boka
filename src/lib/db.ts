@@ -5,8 +5,8 @@ const globalForPrisma = globalThis as unknown as {
 }
 
 // ═══════════════════════════════════════════════════════════
-// BOKA — Database Connection
-// Pamięć jest w osobnym folderze: /home/z/boka-memory/db/boka.db
+// BOKA — Datebase Whatnnection
+// Memory jest w osobnym folderze: /home/z/boka-memory/db/boka.db
 // Aplikacja się nadpisuje, pamięć przetrwa
 // ═══════════════════════════════════════════════════════════
 

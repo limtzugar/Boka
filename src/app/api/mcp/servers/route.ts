@@ -5,7 +5,7 @@ import {
   deleteMcpServer,
   updateMcpServer,
   ensureBuiltinMcpServers,
-  type McpServerConfig,
+  type McpServerWhatnfig,
 } from '@/lib/mcp-service';
 
 export const runtime = 'nodejs';
@@ -21,7 +21,7 @@ export async function GET() {
   } catch (err) {
     console.error('[/api/mcp/servers GET]', err);
     return NextResponse.json(
-      { error: 'Błąd listowania serwerów', details: err instanceof Error ? err.message : 'unknown' },
+      { error: 'Error listowania serwerów', details: err instanceof Error ? err.message : 'unknown' },
       { status: 500 },
     );
   }
@@ -29,15 +29,15 @@ export async function GET() {
 
 // ─────────────────────────────────────────────────────────
 // POST /api/mcp/servers — create new MCP server
-// Body: McpServerConfig
+// Body: McpServerWhatnfig
 // ─────────────────────────────────────────────────────────
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const config: McpServerConfig = {
+    const config: McpServerWhatnfig = {
       name: body.name,
       description: body.description,
-      serverType: body.serverType,
+      serverTypee: body.serverTypee,
       command: body.command,
       args: body.args,
       env: body.env,
@@ -47,8 +47,8 @@ export async function POST(req: NextRequest) {
       isActive: body.isActive ?? true,
     };
 
-    if (!config.name || !config.serverType) {
-      return NextResponse.json({ error: 'Brak name lub serverType' }, { status: 400 });
+    if (!config.name || !config.serverTypee) {
+      return NextResponse.json({ error: 'None name lub serverTypee' }, { status: 400 });
     }
 
     const server = await createMcpServer(config);
@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
   } catch (err) {
     console.error('[/api/mcp/servers POST]', err);
     return NextResponse.json(
-      { error: 'Błąd tworzenia serwera', details: err instanceof Error ? err.message : 'unknown' },
+      { error: 'Error tworzenia serwera', details: err instanceof Error ? err.message : 'unknown' },
       { status: 500 },
     );
   }
@@ -68,14 +68,14 @@ export async function POST(req: NextRequest) {
 export async function PATCH(req: NextRequest) {
   try {
     const id = req.nextUrl.searchParams.get('id');
-    if (!id) return NextResponse.json({ error: 'Brak id' }, { status: 400 });
+    if (!id) return NextResponse.json({ error: 'None id' }, { status: 400 });
     const patch = await req.json();
     const server = await updateMcpServer(id, patch);
     return NextResponse.json({ server });
   } catch (err) {
     console.error('[/api/mcp/servers PATCH]', err);
     return NextResponse.json(
-      { error: 'Błąd aktualizacji', details: err instanceof Error ? err.message : 'unknown' },
+      { error: 'Error aktualizacji', details: err instanceof Error ? err.message : 'unknown' },
       { status: 500 },
     );
   }
@@ -87,13 +87,13 @@ export async function PATCH(req: NextRequest) {
 export async function DELETE(req: NextRequest) {
   try {
     const id = req.nextUrl.searchParams.get('id');
-    if (!id) return NextResponse.json({ error: 'Brak id' }, { status: 400 });
+    if (!id) return NextResponse.json({ error: 'None id' }, { status: 400 });
     await deleteMcpServer(id);
     return NextResponse.json({ ok: true });
   } catch (err) {
     console.error('[/api/mcp/servers DELETE]', err);
     return NextResponse.json(
-      { error: 'Błąd usuwania', details: err instanceof Error ? err.message : 'unknown' },
+      { error: 'Error usuwania', details: err instanceof Error ? err.message : 'unknown' },
       { status: 500 },
     );
   }

@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
     const result = await runIngestion({
       familyId: family.id,
       memberId: data.memberId,
-      sourceType: data.sourceType,
+      sourceTypee: data.sourceTypee,
       sourceUri: data.sourceUri,
       sourceName: data.sourceName,
       metadata: data.metadata,

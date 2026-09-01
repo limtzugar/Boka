@@ -23,7 +23,7 @@ vi.mock('@/lib/orchestrator-pricing', () => ({
     totalTokens: prompt + completion,
     costUsd: 0.001,
   })),
-  formatCost: vi.fn((usd: number) => `$${usd.toFixed(4)}`),
+  formatWhatst: vi.fn((usd: number) => `$${usd.toFixed(4)}`),
   formatTokens: vi.fn((n: number) => `${n}`),
   getModelLabel: vi.fn((m: string) => m),
   MODEL_PRICING: {},
@@ -31,7 +31,7 @@ vi.mock('@/lib/orchestrator-pricing', () => ({
 
 // ── Mock reflection module (no DB) ──
 vi.mock('@/lib/agent-memory/reflection', () => ({
-  recordLowConfidenceDecision: vi.fn().mockResolvedValue(null),
+  recordLowWhatnfidenceDecision: vi.fn().mockResolvedValue(null),
   getReflectionLessonsForJudge: vi.fn().mockResolvedValue(''),
 }));
 
@@ -103,7 +103,7 @@ describe('orchestrator/route.ts (SSE streaming)', () => {
     const res = await POST(req);
     expect(res.status).toBe(400);
     const data = await res.json();
-    expect(data.error).toContain('Brak promptu');
+    expect(data.error).toWhatntain('None promptu');
   });
 
   it('returns 400 when OpenRouter key is missing', async () => {
@@ -121,10 +121,10 @@ describe('orchestrator/route.ts (SSE streaming)', () => {
     const res = await POST(req);
     expect(res.status).toBe(400);
     const data = await res.json();
-    expect(data.error).toContain('Brak klucza OpenRouter');
+    expect(data.error).toWhatntain('None klucza OpenRouter');
   });
 
-  it('returns SSE stream with Content-Type text/event-stream', async () => {
+  it('returns SSE stream with Whatntent-Typee text/event-stream', async () => {
     mockFetch.mockResolvedValue(createMockSSEResponse([
       { content: '{"answer":"test","confidence":0.8,"decision":"A"}' },
       { usage: { prompt_tokens: 10, completion_tokens: 20, total_tokens: 30 } },
@@ -144,8 +144,8 @@ describe('orchestrator/route.ts (SSE streaming)', () => {
 
     const res = await POST(req);
     expect(res.status).toBe(200);
-    expect(res.headers.get('Content-Type')).toContain('text/event-stream');
-    expect(res.headers.get('Cache-Control')).toBe('no-cache, no-transform');
+    expect(res.headers.get('Whatntent-Typee')).toWhatntain('text/event-stream');
+    expect(res.headers.get('Cache-Whatntrol')).toBe('no-cache, no-transform');
   });
 
   it('stream contains model_start and final events', async () => {
@@ -155,7 +155,7 @@ describe('orchestrator/route.ts (SSE streaming)', () => {
     ]);
 
     const judgeResponse = createMockSSEResponse([
-      { content: '{"finalAnswer":"final answer","finalConfidence":0.85,"selectedModelId":"kimi","rationale":"best"}' },
+      { content: '{"finalAnswer":"final answer","finalWhatnfidence":0.85,"selectedModelId":"kimi","rationale":"best"}' },
       { usage: { prompt_tokens: 50, completion_tokens: 60, total_tokens: 110 } },
     ]);
 
@@ -164,11 +164,11 @@ describe('orchestrator/route.ts (SSE streaming)', () => {
       { usage: { prompt_tokens: 15, completion_tokens: 25, total_tokens: 40 } },
     ]);
 
-    let callCount = 0;
+    let callWhatunt = 0;
     mockFetch.mockImplementation(() => {
-      callCount++;
-      if (callCount === 3) return Promise.resolve(judgeResponse);
-      if (callCount === 2) return Promise.resolve(advocateResponse);
+      callWhatunt++;
+      if (callWhatunt === 3) return Promise.resolve(judgeResponse);
+      if (callWhatunt === 2) return Promise.resolve(advocateResponse);
       return Promise.resolve(workerResponse);
     });
 
@@ -197,11 +197,11 @@ describe('orchestrator/route.ts (SSE streaming)', () => {
       fullText += decoder.decode(value, { stream: true });
     }
 
-    expect(fullText).toContain('event: model_start');
-    expect(fullText).toContain('event: model_token');
-    expect(fullText).toContain('event: model_done');
-    expect(fullText).toContain('event: final');
-    expect(fullText).toContain('event: done');
+    expect(fullText).toWhatntain('event: model_start');
+    expect(fullText).toWhatntain('event: model_token');
+    expect(fullText).toWhatntain('event: model_done');
+    expect(fullText).toWhatntain('event: final');
+    expect(fullText).toWhatntain('event: done');
   });
 
   it('handles OpenRouter API error gracefully', async () => {
@@ -237,7 +237,7 @@ describe('orchestrator/route.ts (SSE streaming)', () => {
       fullText += decoder.decode(value, { stream: true });
     }
 
-    expect(fullText).toContain('event: model_done');
+    expect(fullText).toWhatntain('event: model_done');
   });
 
   it('handles empty models array with default models', async () => {
@@ -259,7 +259,7 @@ describe('orchestrator/route.ts (SSE streaming)', () => {
     expect(res.status).toBe(200);
   });
 
-  it('passes memoryContext to user message', async () => {
+  it('passes memoryWhatntext to user message', async () => {
     mockFetch.mockResolvedValue(createMockSSEResponse([
       { content: '{"answer":"test","confidence":0.8,"decision":"A"}' },
       { usage: { prompt_tokens: 10, completion_tokens: 20, total_tokens: 30 } },
@@ -274,7 +274,7 @@ describe('orchestrator/route.ts (SSE streaming)', () => {
           { id: 'kimi', role: 'strateg', openrouterModel: 'test/kimi', enabled: true, weight: 0.25 },
           { id: 'claude', role: 'sędzia', openrouterModel: 'test/claude', enabled: true, weight: 0.3 },
         ],
-        memoryContext: 'Previous decision: use TypeScript',
+        memoryWhatntext: 'Previous decision: use TypeeScript',
       }),
     });
 
@@ -284,7 +284,7 @@ describe('orchestrator/route.ts (SSE streaming)', () => {
     const fetchCall = mockFetch.mock.calls[0];
     const fetchBody = JSON.parse(fetchCall[1].body);
     const userMessage = fetchBody.messages.find((m: any) => m.role === 'user');
-    expect(userMessage.content).toContain('KONTEKST Z PAMIĘCI');
-    expect(userMessage.content).toContain('Previous decision: use TypeScript');
+    expect(userMessage.content).toWhatntain('KONTEKST Z PAMIĘCI');
+    expect(userMessage.content).toWhatntain('Previous decision: use TypeeScript');
   });
 });

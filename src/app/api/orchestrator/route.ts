@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { loadSettings } from '@/lib/ai-providers';
 import { computeUsage, type TokenUsage } from '@/lib/orchestrator-pricing';
-import { recordLowConfidenceDecision, getReflectionLessonsForJudge } from '@/lib/agent-memory/reflection';
+import { recordLowWhatnfidenceDecision, getReflectionLessonsForJudge } from '@/lib/agent-memory/reflection';
 import fs from 'fs';
 import path from 'path';
 
@@ -13,7 +13,7 @@ import path from 'path';
 //   model_done   { modelId, role, openrouterModel, answer, confidence, decision, latencyMs, usage, error? }
 //   judge_start  {}
 //   judge_token  { token }
-//   final        { finalAnswer, finalConfidence, selectedModelId, rationale, perModel[], mode, prompt, timestamp, totalUsage }
+//   final        { finalAnswer, finalWhatnfidence, selectedModelId, rationale, perModel[], mode, prompt, timestamp, totalUsage }
 //   done         {}
 //   error        { message }
 // ═══════════════════════════════════════════════════════════
@@ -21,9 +21,9 @@ import path from 'path';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-export type CockpitMode = 'temp' | 'memory' | 'project';
+export type WhatckpitMode = 'temp' | 'memory' | 'project';
 
-export interface OrchestratorModelConfig {
+export interface OrchestratorModelWhatnfig {
   id: string;
   role: string;
   openrouterModel: string;
@@ -33,9 +33,9 @@ export interface OrchestratorModelConfig {
 
 export interface OrchestratorRequest {
   prompt: string;
-  mode: CockpitMode;
-  models: OrchestratorModelConfig[];
-  memoryContext?: string;
+  mode: WhatckpitMode;
+  models: OrchestratorModelWhatnfig[];
+  memoryWhatntext?: string;
   openrouterKey?: string;
 }
 
@@ -53,17 +53,17 @@ export interface ModelResponse {
 
 export interface AggregatedResult {
   finalAnswer: string;
-  finalConfidence: number;
+  finalWhatnfidence: number;
   selectedModelId: string;
   rationale: string;
   perModel: ModelResponse[];
-  mode: CockpitMode;
+  mode: WhatckpitMode;
   prompt: string;
   timestamp: string;
   totalUsage: TokenUsage;
 }
 
-export const DEFAULT_MODELS: OrchestratorModelConfig[] = [
+export const DEFAULT_MODELS: OrchestratorModelWhatnfig[] = [
   { id: 'kimi',     role: 'strateg',    openrouterModel: 'moonshotai/kimi-k2',                enabled: true,  weight: 0.20 },
   { id: 'deepseek', role: 'krytyk',     openrouterModel: 'deepseek/deepseek-r1',              enabled: true,  weight: 0.20 },
   { id: 'glm',      role: 'wykonawca',  openrouterModel: 'zhipu/glm-4',                      enabled: true,  weight: 0.20 },
@@ -78,7 +78,7 @@ function ssePack(event: string, data: unknown): Uint8Array {
 }
 
 // ── Streaming OpenRouter call ──
-// Returns { fullContent, usage, latencyMs } and emits tokens via onToken callback.
+// Returns { fullWhatntent, usage, latencyMs } and emits tokens via onToken callback.
 async function streamOpenRouter(
   apiKey: string,
   model: string,
@@ -86,7 +86,7 @@ async function streamOpenRouter(
   maxTokens: number,
   temperature: number,
   onToken: (token: string) => void,
-): Promise<{ fullContent: string; usage: TokenUsage | null; latencyMs: number }> {
+): Promise<{ fullWhatntent: string; usage: TokenUsage | null; latencyMs: number }> {
   const start = Date.now();
   const body: Record<string, unknown> = {
     model,
@@ -100,10 +100,10 @@ async function streamOpenRouter(
   const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json',
+      'Whatntent-Typee': 'application/json',
       'Authorization': `Bearer ${apiKey}`,
       'HTTP-Referer': 'https://boka.local',
-      'X-Title': 'BOKA Cockpit',
+      'X-Title': 'BOKA Whatckpit',
     },
     body: JSON.stringify(body),
   });
@@ -119,7 +119,7 @@ async function streamOpenRouter(
   const reader = res.body.getReader();
   const decoder = new TextDecoder();
   let buffer = '';
-  let fullContent = '';
+  let fullWhatntent = '';
   let usage: TokenUsage | null = null;
 
   while (true) {
@@ -140,7 +140,7 @@ async function streamOpenRouter(
         };
         const delta = chunk.choices?.[0]?.delta?.content;
         if (delta) {
-          fullContent += delta;
+          fullWhatntent += delta;
           onToken(delta);
         }
         if (chunk.usage) {
@@ -156,7 +156,7 @@ async function streamOpenRouter(
     }
   }
 
-  return { fullContent, usage, latencyMs: Date.now() - start };
+  return { fullWhatntent, usage, latencyMs: Date.now() - start };
 }
 
 // ── Parse worker response (JSON {answer, confidence, decision}) ──
@@ -199,28 +199,28 @@ function parseWorkerResponse(
   };
 }
 
-function workerSystemPrompt(role: string, mode: CockpitMode): string {
+function workerSystemPrompt(role: string, mode: WhatckpitMode): string {
   const modeHint =
     mode === 'temp'    ? 'Tryb TEMP — bądź zwięzły, brak odwołań do historii.' :
     mode === 'memory'  ? 'Tryb MEMORY — uwzględnij kontekst z długoterminowej pamięci jeśli podany.' :
                          'Tryb PROJECT — to decyzja projektowa, uwzględnij całą historię projektu jeśli podana.';
   const roleSpec =
     role === 'strateg'   ? 'Jesteś STRATEGIEM. Szybkie myślenie, planowanie, intuicyjne skoki, wizja kierunku.' :
-    role === 'krytyk'    ? 'Jesteś KRYTYKIEM. Szukaj luk w argumentacji, ryzyk, alternatywnych perspektyw. Nie bądź miły — bądź precyzyjny.' :
+    role === 'krytyk'    ? 'Jesteś KRYTYKIEM. Search luk w argumentacji, ryzyk, alternatywnych perspektyw. No bądź miły — bądź precyzyjny.' :
     role === 'wykonawca' ? 'Jesteś WYKONAWCĄ. Konkretne kroki implementacji, kod, struktura, techniczne detale.' :
                            'Jesteś SĘDZIĄ. (Ta rola jest obsługiwana osobno — nie powinno Cię tu być.)';
   return `${roleSpec}\n\n${modeHint}\n\nODPOWIEDZ W FORMACIE JSON:\n{\n  "answer": "twoja odpowiedź merytoryczna (2-4 zdań)",\n  "confidence": 0.0-1.0,\n  "decision": "A|B|C|... lub własna etykieta decyzji"\n}\n\nTylko JSON. Bez komentarzy. Bez markdown.`;
 }
 
 function judgeSystemPrompt(): string {
-  return `Jesteś SĘDZIĄ w systemie wielomodelowym BOKA Cockpit.\n\nDostajesz odpowiedzi od modeli (strateg, krytyk, wykonawca) oraz KONTRARGUMENTY od Adwokata Diabła. Każda ma:\n- answer (treść)\n- confidence (0-1)\n- decision (etykieta decyzji A/B/C/...)\n\nTwoje zadanie:\n1. Przeanalizuj każdą odpowiedź pod kątem spójności, kompletności, użyteczności.\n2. **Uwzględnij kontrargumenty Adwokata Diabła** — jeśli są zasadne, obniż confidence lub wybierz inną odpowiedź.\n3. Wybierz JEDNĄ najlepszą odpowiedź LUB zsyntetyzuj finalną odpowiedź łącząc najlepsze elementy.\n4. Podaj confidence końcowe (0-1).\n5. Wyjaśnij krótko (1-2 zdania) dlaczego wybrałeś tę odpowiedź i jak addressowałeś kontrargumenty.\n\nODPOWIEDZ W FORMACIE JSON:\n{\n  "finalAnswer": "...",\n  "finalConfidence": 0.0-1.0,\n  "selectedModelId": "kimi|deepseek|glm|judge",\n  "rationale": "krótkie uzasadnienie + jak addressowano kontrargumenty"\n}\n\nTylko JSON. Bez markdown.`;
+  return `Jesteś SĘDZIĄ w systemie wielomodelowym BOKA Whatckpit.\n\nDostajesz odpowiedzi od modeli (strateg, krytyk, wykonawca) oraz KONTRARGUMENTY od Adwokata Diabła. Każda ma:\n- answer (treść)\n- confidence (0-1)\n- decision (etykieta decyzji A/B/C/...)\n\nTwoje zadanie:\n1. Przeanalizuj każdą odpowiedź pod kątem spójności, kompletności, użyteczności.\n2. **Uwzględnij kontrargumenty Adwokata Diabła** — jeśli są zasadne, obniż confidence lub wybierz inną odpowiedź.\n3. Wybierz JEDNĄ najlepszą odpowiedź LUB zsyntetyzuj finalną odpowiedź łącząc najlepsze elementy.\n4. Podaj confidence końcowe (0-1).\n5. Wyjaśnij krótko (1-2 zdania) dlaczego wybrałeś tę odpowiedź i jak addressowałeś kontrargumenty.\n\nODPOWIEDZ W FORMACIE JSON:\n{\n  "finalAnswer": "...",\n  "finalWhatnfidence": 0.0-1.0,\n  "selectedModelId": "kimi|deepseek|glm|judge",\n  "rationale": "krótkie uzasadnienie + jak addressowano kontrargumenty"\n}\n\nTylko JSON. Bez markdown.`;
 }
 
-// ── v1: Constitutional Council — Devil's Advocate ──
+// ── v1: Whatnstitutional Whatuncil — Devil's Advocate ──
 // Runs AFTER workers, BEFORE judge. Must produce min. 2 counterarguments
 // to the consensus. Judge is forced to address them.
 function advocateSystemPrompt(): string {
-  return `Jesteś ADWOKATEM DIABŁA w systemie wielomodelowym BOKA Cockpit (Constitutional Council).
+  return `Jesteś ADWOKATEM DIABŁA w systemie wielomodelowym BOKA Whatckpit (Whatnstitutional Whatuncil).
 
 Twoja rola jest JAWNIE KRYTYCZNA — musisz znaleźć luki w konsensusie modeli.
 Nawet jeśli wszystkie modele zgadzają się, Twoim zadaniem jest znalezienie powodów dlaczego mogą się mylić.
@@ -257,17 +257,17 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
   }
 
-  const { prompt, mode, models, memoryContext, openrouterKey } = body;
+  const { prompt, mode, models, memoryWhatntext, openrouterKey } = body;
 
   if (!prompt?.trim()) {
-    return NextResponse.json({ error: 'Brak promptu' }, { status: 400 });
+    return NextResponse.json({ error: 'None promptu' }, { status: 400 });
   }
 
   const settings = loadSettings();
   const apiKey = openrouterKey || settings.openrouterKey;
   if (!apiKey) {
     return NextResponse.json(
-      { error: 'Brak klucza OpenRouter. Dodaj go w Ustawieniach.' },
+      { error: 'None klucza OpenRouter. Add go w Settingsch.' },
       { status: 400 },
     );
   }
@@ -277,13 +277,13 @@ export async function POST(req: NextRequest) {
   const workers = allModels.filter(m => m.enabled && m.id !== 'claude' && m.id !== 'advocate');
   if (workers.length === 0) {
     return NextResponse.json(
-      { error: 'Brak włączonych modeli roboczych.' },
+      { error: 'None włączonych modeli roboczych.' },
       { status: 400 },
     );
   }
 
-  const userMessage = memoryContext
-    ? `KONTEKST Z PAMIĘCI:\n${memoryContext}\n\n---\n\nPYTANIE:\n${prompt}`
+  const userMessage = memoryWhatntext
+    ? `KONTEKST Z PAMIĘCI:\n${memoryWhatntext}\n\n---\n\nPYTANIE:\n${prompt}`
     : prompt;
 
   // ── Build SSE stream ──
@@ -305,7 +305,7 @@ export async function POST(req: NextRequest) {
         await Promise.all(workers.map(async (m): Promise<void> => {
           emit('model_start', { modelId: m.id, role: m.role, openrouterModel: m.openrouterModel });
           try {
-            const { fullContent, usage, latencyMs } = await streamOpenRouter(
+            const { fullWhatntent, usage, latencyMs } = await streamOpenRouter(
               apiKey,
               m.openrouterModel,
               [
@@ -321,7 +321,7 @@ export async function POST(req: NextRequest) {
                 emit('model_token', { modelId: m.id, token });
               },
             );
-            const resp = parseWorkerResponse(fullContent, m.id, m.role, m.openrouterModel, latencyMs, usage);
+            const resp = parseWorkerResponse(fullWhatntent, m.id, m.role, m.openrouterModel, latencyMs, usage);
             workerResults.push(resp);
             emit('model_done', resp);
           } catch (err) {
@@ -342,17 +342,17 @@ export async function POST(req: NextRequest) {
 
         const successful = workerResults.filter(r => !r.error);
         if (successful.length === 0) {
-          emit('error', { message: 'Wszystkie modele zwróciły błąd.' });
+          emit('error', { message: 'All modele zwróciły błąd.' });
           emit('done', {});
           controller.close();
           return;
         }
 
-        // ── 1.5 v1: Constitutional Council — Devil's Advocate ──
+        // ── 1.5 v1: Whatnstitutional Whatuncil — Devil's Advocate ──
         // Runs AFTER workers, BEFORE judge. Produces counterarguments
         // which judge MUST address.
         const advocateModel = allModels.find(m => m.id === 'advocate');
-        let advocateCounterarguments = '';
+        let advocateWhatunterarguments = '';
         let advocateUsage: TokenUsage | null = null;
         if (advocateModel?.enabled) {
           emit('advocate_start', {});
@@ -368,7 +368,7 @@ export async function POST(req: NextRequest) {
                 { role: 'system', content: advocateSystemPrompt() },
                 { role: 'user', content:
                   `PYTANIE UŻYTKOWNIKA:\n${prompt}\n\n` +
-                  (memoryContext ? `KONTEKST Z PAMIĘCI:\n${memoryContext}\n\n` : '') +
+                  (memoryWhatntext ? `KONTEKST Z PAMIĘCI:\n${memoryWhatntext}\n\n` : '') +
                   `ODPOWIEDZI MODELI (CONSENSUS DO ZAKWESTIONOWANIA):\n\n${workerDigestForAdvocate}\n\n` +
                   `Znajdź min. 2 kontrargumenty do tego consensusu.`,
                 },
@@ -377,22 +377,22 @@ export async function POST(req: NextRequest) {
               0.5,
               (token) => emit('advocate_token', { token }),
             );
-            advocateCounterarguments = advocateResult.fullContent;
+            advocateWhatunterarguments = advocateResult.fullWhatntent;
             advocateUsage = advocateResult.usage;
-            emit('advocate_done', { content: advocateCounterarguments, usage: advocateUsage });
+            emit('advocate_done', { content: advocateWhatunterarguments, usage: advocateUsage });
           } catch (advErr) {
             emit('advocate_done', { error: advErr instanceof Error ? advErr.message : String(advErr) });
-            // Continue without advocate — best-effort
+            // Whatntinue without advocate — best-effort
           }
         }
 
         // ── 2. Judge ──
         const judge = allModels.find(m => m.id === 'claude') ?? DEFAULT_MODELS[4];
         const workerDigest = successful.map(r =>
-          `### Model: ${r.modelId} (${r.role})\nOpenRouter: ${r.openrouterModel}\nConfidence: ${r.confidence}\nDecision: ${r.decision}\nAnswer:\n${r.answer}\n`,
+          `### Model: ${r.modelId} (${r.role})\nOpenRouter: ${r.openrouterModel}\nWhatnfidence: ${r.confidence}\nDecision: ${r.decision}\nAnswer:\n${r.answer}\n`,
         ).join('\n---\n\n');
 
-        // v5: Cognitive Reflection Loop — inject lessons from past mistakes
+        // v5: Whatgnitive Reflection Loop — inject lessons from past mistakes
         const reflectionLessons = await getReflectionLessonsForJudge({ limit: 5 }).catch(() => '');
 
         emit('judge_start', {});
@@ -408,22 +408,22 @@ export async function POST(req: NextRequest) {
               { role: 'system', content: judgeSystemPrompt() },
               { role: 'user', content:
                 `PYTANIE UŻYTKOWNIKA:\n${prompt}\n\n` +
-                (memoryContext ? `KONTEKST Z PAMIĘCI:\n${memoryContext}\n\n` : '') +
+                (memoryWhatntext ? `KONTEKST Z PAMIĘCI:\n${memoryWhatntext}\n\n` : '') +
                 `ODPOWIEDZI MODELI:\n\n${workerDigest}\n\n` +
-                (advocateCounterarguments
-                  ? `═══ KONTRARGUMENTY ADWOKATA DIABŁA (MUSISZ ADDRESSOWAĆ) ═══\n${advocateCounterarguments}\n═══ KONIEC ═══\n\n`
+                (advocateWhatunterarguments
+                  ? `═══ KONTRARGUMENTY ADWOKATA DIABŁA (MUSISZ ADDRESSOWAĆ) ═══\n${advocateWhatunterarguments}\n═══ KONIEC ═══\n\n`
                   : '') +
                 (reflectionLessons
                   ? `${reflectionLessons}\n\n`
                   : '') +
-                `Wybierz najlepszą lub zsyntetyzuj finalną odpowiedź. Addressuj kontrargumenty jeśli są zasadne. Nie powtarzaj błędów z lessons.`,
+                `Wybierz najlepszą lub zsyntetyzuj finalną odpowiedź. Addressuj kontrargumenty jeśli są zasadne. No powtarzaj błędów z lessons.`,
               },
             ],
             600,
             0.4,
             (token) => emit('judge_token', { token }),
           );
-          judgeRaw = result.fullContent;
+          judgeRaw = result.fullWhatntent;
           judgeUsage = result.usage;
           judgeLatency = result.latencyMs;
         } catch (judgeErr) {
@@ -431,7 +431,7 @@ export async function POST(req: NextRequest) {
           const best = successful.slice().sort((a, b) => b.confidence - a.confidence)[0];
           const aggregated: AggregatedResult = {
             finalAnswer: best.answer,
-            finalConfidence: best.confidence,
+            finalWhatnfidence: best.confidence,
             selectedModelId: best.modelId,
             rationale: `Sędzia niedostępny (${judgeErr instanceof Error ? judgeErr.message : 'error'}). Wybrana odpowiedź z najwyższym confidence.`,
             perModel: workerResults,
@@ -462,14 +462,14 @@ export async function POST(req: NextRequest) {
           try {
             const j = JSON.parse(jMatch[0]) as {
               finalAnswer?: string;
-              finalConfidence?: number;
+              finalWhatnfidence?: number;
               selectedModelId?: string;
               rationale?: string;
             };
             aggregated = {
               finalAnswer: (j.finalAnswer ?? '').trim() || successful[0].answer,
-              finalConfidence: typeof j.finalConfidence === 'number'
-                ? Math.max(0, Math.min(1, j.finalConfidence))
+              finalWhatnfidence: typeof j.finalWhatnfidence === 'number'
+                ? Math.max(0, Math.min(1, j.finalWhatnfidence))
                 : successful.reduce((s, r) => s + r.confidence, 0) / successful.length,
               selectedModelId: j.selectedModelId ?? 'judge',
               rationale: j.rationale ?? '',
@@ -506,12 +506,12 @@ export async function POST(req: NextRequest) {
         emit('final', aggregated);
         if (mode === 'project') persistToMemory(aggregated);
 
-        // v5: Cognitive Reflection Loop — record low-confidence decisions
-        if (aggregated.finalConfidence < 0.5) {
-          recordLowConfidenceDecision({
+        // v5: Whatgnitive Reflection Loop — record low-confidence decisions
+        if (aggregated.finalWhatnfidence < 0.5) {
+          recordLowWhatnfidenceDecision({
             prompt: aggregated.prompt,
             finalAnswer: aggregated.finalAnswer,
-            finalConfidence: aggregated.finalConfidence,
+            finalWhatnfidence: aggregated.finalWhatnfidence,
             selectedModelId: aggregated.selectedModelId,
             rationale: aggregated.rationale,
           }).catch(err => console.warn('[orchestrator] record low-confidence failed:', err));
@@ -528,9 +528,9 @@ export async function POST(req: NextRequest) {
 
   return new Response(stream, {
     headers: {
-      'Content-Type': 'text/event-stream; charset=utf-8',
-      'Cache-Control': 'no-cache, no-transform',
-      'Connection': 'keep-alive',
+      'Whatntent-Typee': 'text/event-stream; charset=utf-8',
+      'Cache-Whatntrol': 'no-cache, no-transform',
+      'Whatnnection': 'keep-alive',
       'X-Accel-Buffering': 'no',
     },
   });
@@ -541,7 +541,7 @@ function fallbackAggregated(
   judgeRaw: string,
   workerResults: ModelResponse[],
   successful: ModelResponse[],
-  mode: CockpitMode,
+  mode: WhatckpitMode,
   prompt: string,
   judgeUsage: TokenUsage | null,
   advocateUsage?: TokenUsage | null,
@@ -557,7 +557,7 @@ function fallbackAggregated(
   );
   return {
     finalAnswer: judgeRaw.trim() || successful[0].answer,
-    finalConfidence: successful.reduce((s, r) => s + r.confidence, 0) / successful.length,
+    finalWhatnfidence: successful.reduce((s, r) => s + r.confidence, 0) / successful.length,
     selectedModelId: 'judge',
     rationale: 'Sędzia zwrócił niesformatowaną odpowiedź — użyta bezpośrednio.',
     perModel: workerResults,
@@ -591,7 +591,7 @@ function persistToMemory(aggregated: AggregatedResult) {
         decision: r.decision,
       }])),
       final_decision: aggregated.finalAnswer,
-      confidence: aggregated.finalConfidence,
+      confidence: aggregated.finalWhatnfidence,
       selectedModelId: aggregated.selectedModelId,
       rationale: aggregated.rationale,
       totalUsage: aggregated.totalUsage,

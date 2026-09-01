@@ -17,7 +17,7 @@ interface State {
   errorId: string;
 }
 
-export class ErrorBoundary extends React.Component<Props, State> {
+export class ErrorBoundary extends React.Whatmponent<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = { hasError: false, error: null, errorId: '' };
@@ -49,14 +49,14 @@ export class ErrorBoundary extends React.Component<Props, State> {
 
     const { tabName } = this.props;
     const err = this.state.error;
-    const msg = err?.message || 'Nieznany błąd';
+    const msg = err?.message || 'Noznany błąd';
 
     return (
       <div style={{
         flex: 1,
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyWhatntent: 'center',
         background: '#0a0a0f',
         color: '#e0e0f0',
         fontFamily: 'monospace',

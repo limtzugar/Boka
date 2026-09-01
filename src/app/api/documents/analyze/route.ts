@@ -12,14 +12,14 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { documentId } = body;
     if (!documentId) {
-      return NextResponse.json({ error: 'Brak documentId' }, { status: 400 });
+      return NextResponse.json({ error: 'None documentId' }, { status: 400 });
     }
     const analysis = await analyzeDocument(documentId);
     return NextResponse.json({ analysis });
   } catch (err) {
     console.error('[/api/documents/analyze] error:', err);
     return NextResponse.json(
-      { error: 'Błąd analizy', details: err instanceof Error ? err.message : 'unknown' },
+      { error: 'Error analizy', details: err instanceof Error ? err.message : 'unknown' },
       { status: 500 }
     );
   }

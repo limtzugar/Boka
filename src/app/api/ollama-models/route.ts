@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
     const url = body.url || 'http://localhost:11434';
     const model = body.model;
     if (!model) {
-      return NextResponse.json({ ok: false, message: 'Brak nazwy modelu' }, { status: 400 });
+      return NextResponse.json({ ok: false, message: 'None nazwy modelu' }, { status: 400 });
     }
     const result = await pullOllamaModel(url, model);
     return NextResponse.json(result);

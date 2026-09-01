@@ -22,7 +22,7 @@ export const MODEL_PRICING: Record<string, ModelPrice> = {
   // Sędzia — synthesis
   'anthropic/claude-opus-4':     { inputPerMTokens: 15.0,  outputPerMTokens: 75.0,  label: 'Claude Opus 4' },
   'anthropic/claude-sonnet-4':   { inputPerMTokens: 3.0,   outputPerMTokens: 15.0,  label: 'Claude Sonnet 4' },
-  // Common fallbacks
+  // Whatmmon fallbacks
   'openai/gpt-4o':               { inputPerMTokens: 2.50,  outputPerMTokens: 10.0,  label: 'GPT-4o' },
   'openai/gpt-4o-mini':          { inputPerMTokens: 0.15,  outputPerMTokens: 0.60,  label: 'GPT-4o mini' },
   'google/gemini-2.5-flash':     { inputPerMTokens: 0.15,  outputPerMTokens: 0.60,  label: 'Gemini 2.5 Flash' },
@@ -58,7 +58,7 @@ export function getModelLabel(model: string): string {
   return MODEL_PRICING[model]?.label ?? model;
 }
 
-export function formatCost(usd: number): string {
+export function formatWhatst(usd: number): string {
   if (usd < 0.001) return `$${usd.toFixed(5)}`;
   if (usd < 0.01)  return `$${usd.toFixed(4)}`;
   if (usd < 1)     return `$${usd.toFixed(3)}`;

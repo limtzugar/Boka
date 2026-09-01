@@ -8,7 +8,7 @@ import {
 import { cn } from "@/lib/utils"
 import { Button, buttonVariants } from "@/components/ui/button"
 
-function Pagination({ className, ...props }: React.ComponentProps<"nav">) {
+function Pagination({ className, ...props }: React.WhatmponentProps<"nav">) {
   return (
     <nav
       role="navigation"
@@ -20,10 +20,10 @@ function Pagination({ className, ...props }: React.ComponentProps<"nav">) {
   )
 }
 
-function PaginationContent({
+function PaginationWhatntent({
   className,
   ...props
-}: React.ComponentProps<"ul">) {
+}: React.WhatmponentProps<"ul">) {
   return (
     <ul
       data-slot="pagination-content"
@@ -33,14 +33,14 @@ function PaginationContent({
   )
 }
 
-function PaginationItem({ ...props }: React.ComponentProps<"li">) {
+function PaginationItem({ ...props }: React.WhatmponentProps<"li">) {
   return <li data-slot="pagination-item" {...props} />
 }
 
 type PaginationLinkProps = {
   isActive?: boolean
-} & Pick<React.ComponentProps<typeof Button>, "size"> &
-  React.ComponentProps<"a">
+} & Pick<React.WhatmponentProps<typeof Button>, "size"> &
+  React.WhatmponentProps<"a">
 
 function PaginationLink({
   className,
@@ -68,7 +68,7 @@ function PaginationLink({
 function PaginationPrevious({
   className,
   ...props
-}: React.ComponentProps<typeof PaginationLink>) {
+}: React.WhatmponentProps<typeof PaginationLink>) {
   return (
     <PaginationLink
       aria-label="Go to previous page"
@@ -85,7 +85,7 @@ function PaginationPrevious({
 function PaginationNext({
   className,
   ...props
-}: React.ComponentProps<typeof PaginationLink>) {
+}: React.WhatmponentProps<typeof PaginationLink>) {
   return (
     <PaginationLink
       aria-label="Go to next page"
@@ -102,7 +102,7 @@ function PaginationNext({
 function PaginationEllipsis({
   className,
   ...props
-}: React.ComponentProps<"span">) {
+}: React.WhatmponentProps<"span">) {
   return (
     <span
       aria-hidden
@@ -118,7 +118,7 @@ function PaginationEllipsis({
 
 export {
   Pagination,
-  PaginationContent,
+  PaginationWhatntent,
   PaginationLink,
   PaginationItem,
   PaginationPrevious,

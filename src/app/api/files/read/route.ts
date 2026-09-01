@@ -49,14 +49,14 @@ export async function GET(req: Request) {
     const ext = getExt(absPath);
     if (!TEXT_EXTENSIONS.has(ext)) {
       return NextResponse.json({
-        error: `Plik .${ext} nie jest wspierany jako tekst. Wspierane: txt, md, html, js, ts, json, css, py, itp.`,
+        error: `File .${ext} nie jest wspierany jako tekst. Wspierane: txt, md, html, js, ts, json, css, py, itp.`,
         path: absPath,
       }, { status: 415 });
     }
 
     if (stat.size > MAX_BYTES * 4) {
       return NextResponse.json({
-        error: `Plik za duży (${(stat.size / 1024 / 1024).toFixed(1)} MB). Limit: 2 MB.`,
+        error: `File za duży (${(stat.size / 1024 / 1024).toFixed(1)} MB). Limit: 2 MB.`,
         path: absPath,
       }, { status: 413 });
     }

@@ -173,7 +173,7 @@ export async function getBacklinks(params: {
 }): Promise<Array<{
   memoryId: string;
   content: string;
-  linkContext: string;  // fragment around the [[link]]
+  linkWhatntext: string;  // fragment around the [[link]]
 }>> {
   const { familyId, target } = params;
 
@@ -192,12 +192,12 @@ export async function getBacklinks(params: {
     const idx = m.content.indexOf(`[[${target}]]`);
     const start = Math.max(0, idx - 50);
     const end = Math.min(m.content.length, idx + target.length + 52);
-    const linkContext = m.content.substring(start, end);
+    const linkWhatntext = m.content.substring(start, end);
 
     return {
       memoryId: m.id,
       content: m.content,
-      linkContext,
+      linkWhatntext,
     };
   });
 }

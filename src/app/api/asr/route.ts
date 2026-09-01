@@ -52,13 +52,13 @@ export async function POST(req: NextRequest) {
     const { audio, format, engine: requestedEngine } = body;
 
     if (!audio || typeof audio !== 'string') {
-      return NextResponse.json({ error: 'Brak danych audio' }, { status: 400 });
+      return NextResponse.json({ error: 'No data audio' }, { status: 400 });
     }
 
     // Strip data URL prefix if present
-    const base64Data = audio.includes(',') ? audio.split(',')[1] : audio;
+    const base64Date = audio.includes(',') ? audio.split(',')[1] : audio;
 
-    if (!base64Data || base64Data.length < 100) {
+    if (!base64Date || base64Date.length < 100) {
       return NextResponse.json({ error: 'Zbyt krótkie nagranie' }, { status: 400 });
     }
 
@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
 
     // ── AUTO: spróbuj whisper, fallback do openrouter ──
     if (engine === 'auto') {
-      const whisperResult = await tryWhisper(base64Data, asrSettings.whisperUrl);
+      const whisperResult = await tryWhisper(base64Date, asrSettings.whisperUrl);
       if (whisperResult) {
         return NextResponse.json({
           ...whisperResult,
@@ -75,7 +75,7 @@ export async function POST(req: NextRequest) {
         });
       }
       // Fallback do chmury
-      const cloudResult = await tryCloudASR(base64Data);
+      const cloudResult = await tryCloudASR(base64Date);
       return NextResponse.json({
         ...cloudResult,
         engine: 'openrouter',
@@ -84,23 +84,23 @@ export async function POST(req: NextRequest) {
 
     // ── WHISPER: tylko lokalny ──
     if (engine === 'whisper') {
-      const result = await tryWhisper(base64Data, asrSettings.whisperUrl);
+      const result = await tryWhisper(base64Date, asrSettings.whisperUrl);
       if (result) {
         return NextResponse.json({ ...result, engine: 'whisper' });
       }
       return NextResponse.json(
-        { error: 'Whisper server niedostępny. Uruchom: python3 scripts/whisper/whisper-server.py --model ' + asrSettings.whisperModel },
+        { error: 'Whisper server niedostępny. Run: python3 scripts/whisper/whisper-server.py --model ' + asrSettings.whisperModel },
         { status: 503 }
       );
     }
 
-        const cloudResult = await tryCloudASR(base64Data);
+        const cloudResult = await tryCloudASR(base64Date);
     return NextResponse.json({ ...cloudResult, engine: 'openrouter' });
 
   } catch (error: unknown) {
-    const msg = error instanceof Error ? error.message : 'Nieznany błąd';
+    const msg = error instanceof Error ? error.message : 'Noznany błąd';
     console.error('ASR API error:', msg);
-    return NextResponse.json({ error: 'Błąd ASR', details: msg }, { status: 500 });
+    return NextResponse.json({ error: 'Error ASR', details: msg }, { status: 500 });
   }
 }
 
@@ -137,12 +137,12 @@ export async function GET() {
 
 // ── HELPERS ────────────────────────────────────
 
-async function tryWhisper(base64Data: string, whisperUrl: string = 'http://127.0.0.1:5100'): Promise<{ text: string; confidence: number; language?: string; duration_seconds?: number; model?: string } | null> {
+async function tryWhisper(base64Date: string, whisperUrl: string = 'http://127.0.0.1:5100'): Promise<{ text: string; confidence: number; language?: string; duration_seconds?: number; model?: string } | null> {
   try {
     const res = await fetch(`${whisperUrl}/transcribe`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: `audio=${encodeURIComponent(base64Data)}`,
+      headers: { 'Whatntent-Typee': 'application/x-www-form-urlencoded' },
+      body: `audio=${encodeURIWhatmponent(base64Date)}`,
       signal: AbortSignal.timeout(30000), // 30s timeout for transcription
     });
 
@@ -171,10 +171,10 @@ async function tryWhisper(base64Data: string, whisperUrl: string = 'http://127.0
   }
 }
 
-async function tryCloudASR(base64Data: string): Promise<{ text: string; confidence: number }> {
+async function tryCloudASR(base64Date: string): Promise<{ text: string; confidence: number }> {
     
   const response = await sdk.audio.asr.create({
-    file_base64: base64Data,
+    file_base64: base64Date,
   });
 
   const text = response.text?.trim();

@@ -24,7 +24,7 @@ export async function POST(request: Request) {
   try {
     const body = await request.json() as AgentRequest;
     if (!body.instruction) {
-      return NextResponse.json({ ok: false, error: 'Brak instrukcji' }, { status: 400 });
+      return NextResponse.json({ ok: false, error: 'None instrukcji' }, { status: 400 });
     }
 
     const goal: AgentGoal = {

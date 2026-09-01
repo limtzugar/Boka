@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({
         agents: updated,
         matches,
-        selectedCount: updated.filter(a => a.enabled).length,
+        selectedWhatunt: updated.filter(a => a.enabled).length,
       });
     }
 

@@ -18,22 +18,7 @@
 
 ---
 
-## Screenshots
-
-### Main Dashboard
 ![BOKA OS Dashboard](boka_screenshot_1.png)
-
-### Family Profiles
-![Family Profiles](boka_screenshot_2.png)
-
-### Settings
-![Settings](boka_screenshot_3.png)
-
-### Skills
-![Skills](boka_screenshot_4.png)
-
-### Chat View
-![Chat View](boka_screenshot_5.png)
 
 ## Features
 
@@ -44,7 +29,6 @@
 | **Debate** | BOKA splits into 6 agent-personalities that debate before answering |
 | **Family** | Member profiles with photos, preferences, zodiac signs, expenses, budgets |
 | **Vision** | Camera monitoring (webcam + IP), scene analysis via VLM |
-| **Skills** | AI frameworks: Qdrant, Mem0, GraphRAG, DeepAgents, AutoGen, CrewAI, OpenHands |
 | **Orb BOKA** | 4 visual styles: Plasma, Water, Obsidian (memory graph), Formula (math patterns) |
 | **Privacy** | Audit log, Forget API, family consent management |
 | **MCP & CLI** | MCP servers, terminal, Higgsfield integration |
@@ -55,7 +39,6 @@
 
 | Provider | API Key | Notes |
 |----------|---------|-------|
-
 | OpenRouter | Yes | Any model via OpenRouter |
 | Ollama | No | Local models (localhost:11434) |
 | GGUF | No | .gguf file via llama.cpp |
@@ -105,7 +88,7 @@ Open `http://localhost:3000`
 BOKA OS/
 ├── src/
 │   ├── app/
-│   │   ├── api/           # 15+ API routes (agents, memory, TTS, vision, apps)
+│   │   ├── api/           # API routes (agents, memory, TTS, vision, apps)
 │   │   ├── widget/        # Standalone widget mode
 │   │   └── page.tsx       # Main dashboard
 │   ├── components/        # UI: debate, memory graph, MCP, file explorer, privacy
@@ -113,9 +96,6 @@ BOKA OS/
 │   │   ├── agent-system.ts       # 6-agent personality system
 │   │   ├── agent-memory/         # Multi-layered memory (entries, graph, vault)
 │   │   ├── ai-providers.ts       # LLM provider abstraction
-│   │   ├── autogen-service.ts    # AutoGen integration
-│   │   ├── crewai-service.ts     # CrewAI integration
-│   │   ├── deepagents-service.ts # DeepAgents integration
 │   │   ├── apps-manager.ts       # Mini-app launcher
 │   │   ├── audit-service.ts      # Privacy audit log
 │   │   └── desktop-agent.ts      # Desktop automation
@@ -133,9 +113,8 @@ BOKA OS/
 |-------|-----------|
 | GUI | Next.js 16, React 19, Tailwind CSS 4, shadcn/ui |
 | Database | Prisma 6, SQLite |
-| AI | OpenRouter, Ollama, AutoGen, CrewAI, DeepAgents |
+| AI | OpenRouter, Ollama |
 | Voice | Web Speech API, Edge TTS, Whisper |
-| Memory | Qdrant, Mem0, GraphRAG |
 | Privacy | Audit log, Forget API, consent management |
 
 ## Privacy First

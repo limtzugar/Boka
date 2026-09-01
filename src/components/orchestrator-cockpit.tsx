@@ -2,11 +2,11 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import {
-  Mic, Send, Brain, Zap, Database, Save,
+  Mic, Send, Brain, Zap, Datebase, Save,
   CircleDot, Loader2, Check,
   Activity, Layers, Cpu, Sparkles, DollarSign,
 } from 'lucide-react';
-import { formatCost, formatTokens, type TokenUsage } from '@/lib/orchestrator-pricing';
+import { formatWhatst, formatTokens, type TokenUsage } from '@/lib/orchestrator-pricing';
 
 // ═══════════════════════════════════════════════════════════
 // BOKA COCKPIT — Wielomodelowy panel sterowania organizmem
@@ -15,7 +15,7 @@ import { formatCost, formatTokens, type TokenUsage } from '@/lib/orchestrator-pr
 
 type Mode = 'temp' | 'memory' | 'project';
 
-interface ModelConfig {
+interface ModelWhatnfig {
   id: string;
   role: string;
   openrouterModel: string;
@@ -35,7 +35,7 @@ interface ModelStreamState {
 
 interface AggregatedResult {
   finalAnswer: string;
-  finalConfidence: number;
+  finalWhatnfidence: number;
   selectedModelId: string;
   rationale: string;
   perModel: Array<ModelStreamState & { modelId: string; role: string; openrouterModel: string }>;
@@ -56,7 +56,7 @@ interface MemoryRecord {
   mode?: string;
 }
 
-const DEFAULT_MODELS: ModelConfig[] = [
+const DEFAULT_MODELS: ModelWhatnfig[] = [
   { id: 'kimi',     role: 'strateg',    openrouterModel: 'moonshotai/kimi-k2',                enabled: true,  weight: 0.20 },
   { id: 'deepseek', role: 'krytyk',     openrouterModel: 'deepseek/deepseek-r1',              enabled: true,  weight: 0.20 },
   { id: 'glm',      role: 'wykonawca',  openrouterModel: 'zhipu/glm-4',                      enabled: true,  weight: 0.20 },
@@ -73,8 +73,8 @@ const MODEL_META: Record<string, { color: string; glyph: string; emoji: string }
 };
 
 const MODE_META: Record<Mode, { color: string; label: string; desc: string; emoji: string }> = {
-  temp:    { color: '#4ade80', label: 'TEMP',    desc: 'Brak pamięci · szybkie odpowiedzi · 2-4 modele', emoji: '🟢' },
-  memory:  { color: '#ffd93d', label: 'MEMORY',  desc: 'Pamięć włączona · porównanie z historią',        emoji: '🟡' },
+  temp:    { color: '#4ade80', label: 'TEMP',    desc: 'None pamięci · szybkie odpowiedzi · 2-4 modele', emoji: '🟢' },
+  memory:  { color: '#ffd93d', label: 'MEMORY',  desc: 'Memory włączona · porównanie z historią',        emoji: '🟡' },
   project: { color: '#ff6b6b', label: 'PROJECT', desc: 'Pełna pamięć · zapis każdej decyzji',           emoji: '🔴' },
 };
 
@@ -83,16 +83,16 @@ function freshStream(): ModelStreamState {
   return { status: 'idle', answer: '', confidence: 0, decision: '', latencyMs: 0 };
 }
 
-export function OrchestratorCockpit() {
+export function OrchestratorWhatckpit() {
   const [prompt, setPrompt] = useState('');
   const [mode, setMode] = useState<Mode>('temp');
-  const [models, setModels] = useState<ModelConfig[]>(DEFAULT_MODELS);
+  const [models, setModels] = useState<ModelWhatnfig[]>(DEFAULT_MODELS);
   const [memoryOn, setMemoryOn] = useState(false);
   const [isRunning, setIsRunning] = useState(false);
   const [result, setResult] = useState<AggregatedResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [memoryRecords, setMemoryRecords] = useState<MemoryRecord[]>([]);
-  const [memoryContext, setMemoryContext] = useState('');
+  const [memoryWhatntext, setMemoryWhatntext] = useState('');
   const [isListening, setIsListening] = useState(false);
   const [autoSaved, setAutoSaved] = useState(false);
 
@@ -109,7 +109,7 @@ export function OrchestratorCockpit() {
   const [perModelSession, setPerModelSession] = useState<Record<string, TokenUsage>>({});
 
   // Abort controller for current run
-  const abortRef = useRef<AbortController | null>(null);
+  const abortRef = useRef<AbortWhatntroller | null>(null);
 
   // ── Load memory records ──
   const loadMemory = useCallback(async () => {
@@ -128,25 +128,25 @@ export function OrchestratorCockpit() {
   // ── Build memory context when MEMORY/PROJECT ──
   useEffect(() => {
     if (mode === 'temp' || memoryRecords.length === 0) {
-      setMemoryContext('');
+      setMemoryWhatntext('');
       return;
     }
     const top = memoryRecords.slice(0, 3);
     const ctx = top.map((r, i) =>
       `[${i + 1}] (${r.timestamp.slice(0, 10)}) Q: ${r.topic}\n` +
-      `   Decyzja: ${r.final_decision.slice(0, 200)}\n` +
-      `   Confidence: ${(r.confidence * 100).toFixed(0)}%`,
+      `   Decision: ${r.final_decision.slice(0, 200)}\n` +
+      `   Whatnfidence: ${(r.confidence * 100).toFixed(0)}%`,
     ).join('\n\n');
-    setMemoryContext(`Ostatnie ${top.length} decyzji z pamięci:\n\n${ctx}`);
+    setMemoryWhatntext(`Ostatnie ${top.length} decyzji z pamięci:\n\n${ctx}`);
   }, [mode, memoryRecords]);
 
   // ── Voice command parser ──
-  const parseVoiceCommand = useCallback((text: string): { isCommand: boolean; mode?: Mode } => {
+  const parseVoiceWhatmmand = useCallback((text: string): { isWhatmmand: boolean; mode?: Mode } => {
     const lower = text.toLowerCase().trim();
-    if (lower.includes('tryb szybki') || lower.includes('tryb temp')) return { isCommand: true, mode: 'temp' };
-    if (lower.includes('tryb pamięć') || lower.includes('tryb memory')) return { isCommand: true, mode: 'memory' };
-    if (lower.includes('tryb projektu') || lower.includes('tryb project')) return { isCommand: true, mode: 'project' };
-    return { isCommand: false };
+    if (lower.includes('tryb szybki') || lower.includes('tryb temp')) return { isWhatmmand: true, mode: 'temp' };
+    if (lower.includes('tryb pamięć') || lower.includes('tryb memory')) return { isWhatmmand: true, mode: 'memory' };
+    if (lower.includes('tryb projektu') || lower.includes('tryb project')) return { isWhatmmand: true, mode: 'project' };
+    return { isWhatmmand: false };
   }, []);
 
   // ── Run orchestrator with SSE stream consumption ──
@@ -154,8 +154,8 @@ export function OrchestratorCockpit() {
     if (!prompt.trim() || isRunning) return;
 
     // Voice command shortcut
-    const cmd = parseVoiceCommand(prompt);
-    if (cmd.isCommand && cmd.mode) {
+    const cmd = parseVoiceWhatmmand(prompt);
+    if (cmd.isWhatmmand && cmd.mode) {
       setMode(cmd.mode);
       setPrompt('');
       return;
@@ -170,18 +170,18 @@ export function OrchestratorCockpit() {
     setAdvocateStream({ status: 'idle', text: '' });
 
     const effectiveMode: Mode = memoryOn && mode === 'temp' ? 'memory' : mode;
-    const controller = new AbortController();
+    const controller = new AbortWhatntroller();
     abortRef.current = controller;
 
     // ── v0.4: Retrieve context from agent-memory (BM25 smart search) ──
     // W trybie MEMORY/PROJECT — pobierz kontekst z agent-memory
-    // DODATKOWO do cockpit JSON records (memoryContext).
-    let combinedMemoryContext = memoryContext;
+    // DODATKOWO do cockpit JSON records (memoryWhatntext).
+    let combinedMemoryWhatntext = memoryWhatntext;
     if (effectiveMode !== 'temp') {
       try {
         const amRes = await fetch('/api/agent-memory/search', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Whatntent-Typee': 'application/json' },
           body: JSON.stringify({
             query: prompt.slice(0, 500),
             limit: 5,
@@ -190,8 +190,8 @@ export function OrchestratorCockpit() {
           signal: controller.signal,
         });
         if (amRes.ok) {
-          const amData = await amRes.json();
-          const amResults = amData.results ?? [];
+          const amDate = await amRes.json();
+          const amResults = amDate.results ?? [];
           if (amResults.length > 0) {
             const amCtx = amResults.map((r: any, i: number) => {
               const title = r.observation.title.slice(0, 80);
@@ -199,8 +199,8 @@ export function OrchestratorCockpit() {
               return `[${i + 1}] (score: ${r.combinedScore.toFixed(3)}) ${title}\n    ${narrative}`;
             }).join('\n\n');
             const amBlock = `═══ KONTEKST Z AGENT-MEMORY (BM25) ═══\n${amCtx}\n═══ KONIEC ═══`;
-            combinedMemoryContext = combinedMemoryContext
-              ? `${combinedMemoryContext}\n\n${amBlock}`
+            combinedMemoryWhatntext = combinedMemoryWhatntext
+              ? `${combinedMemoryWhatntext}\n\n${amBlock}`
               : amBlock;
           }
         }
@@ -213,12 +213,12 @@ export function OrchestratorCockpit() {
     try {
       const res = await fetch('/api/orchestrator', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Whatntent-Typee': 'application/json' },
         body: JSON.stringify({
           prompt,
           mode: effectiveMode,
           models,
-          memoryContext: effectiveMode !== 'temp' ? combinedMemoryContext : undefined,
+          memoryWhatntext: effectiveMode !== 'temp' ? combinedMemoryWhatntext : undefined,
         }),
         signal: controller.signal,
       });
@@ -228,7 +228,7 @@ export function OrchestratorCockpit() {
         throw new Error(data.error || `HTTP ${res.status}`);
       }
       if (!res.body) {
-        throw new Error('Brak strumienia odpowiedzi');
+        throw new Error('None strumienia odpowiedzi');
       }
 
       // ── Parse SSE stream ──
@@ -245,17 +245,17 @@ export function OrchestratorCockpit() {
         buffer = events.pop() || '';
         for (const ev of events) {
           const lines = ev.split('\n');
-          let eventType = '';
+          let eventTypee = '';
           let dataStr = '';
           for (const line of lines) {
-            if (line.startsWith('event: ')) eventType = line.slice(7).trim();
+            if (line.startsWith('event: ')) eventTypee = line.slice(7).trim();
             else if (line.startsWith('data: ')) dataStr = line.slice(6);
           }
-          if (!eventType) continue;
+          if (!eventTypee) continue;
           let data: any;
           try { data = JSON.parse(dataStr); } catch { continue; }
 
-          switch (eventType) {
+          switch (eventTypee) {
             case 'model_start':
               setStreams(prev => ({
                 ...prev,
@@ -350,7 +350,7 @@ export function OrchestratorCockpit() {
               }
               break;
             case 'error':
-              setError(data.message || 'Błąd orchestratora');
+              setError(data.message || 'Error orchestratora');
               break;
             case 'done':
               // stream end
@@ -368,7 +368,7 @@ export function OrchestratorCockpit() {
       setIsRunning(false);
       abortRef.current = null;
     }
-  }, [prompt, isRunning, mode, memoryOn, models, memoryContext, parseVoiceCommand, loadMemory]);
+  }, [prompt, isRunning, mode, memoryOn, models, memoryWhatntext, parseVoiceWhatmmand, loadMemory]);
 
   // ── Cancel ──
   const cancelRun = useCallback(() => {
@@ -382,7 +382,7 @@ export function OrchestratorCockpit() {
     try {
       await fetch('/api/orchestrator/memory', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Whatntent-Typee': 'application/json' },
         body: JSON.stringify({
           timestamp: result.timestamp,
           topic: result.prompt.slice(0, 80),
@@ -391,7 +391,7 @@ export function OrchestratorCockpit() {
             answer: r.answer, confidence: r.confidence, decision: r.decision,
           }])),
           final_decision: result.finalAnswer,
-          confidence: result.finalConfidence,
+          confidence: result.finalWhatnfidence,
           selectedModelId: result.selectedModelId,
           rationale: result.rationale,
           tags: ['cockpit', result.mode, 'manual-save'],
@@ -435,7 +435,7 @@ export function OrchestratorCockpit() {
       const text = ev.results[0][0].transcript;
       setPrompt(p => (p ? p + ' ' : '') + text);
     };
-    rec.onerror = () => setError('Błąd rozpoznawania mowy');
+    rec.onerror = () => setError('Error rozpoznawania mowy');
     rec.onend = () => setIsListening(false);
     rec.start();
     setIsListening(true);
@@ -456,7 +456,7 @@ export function OrchestratorCockpit() {
         {/* Session cost/token counter */}
         <div className="p-3 border-b border-[#383850] bg-[#0e0e18]">
           <div className="text-[9px] font-mono uppercase text-[#8888aa] mb-2 flex items-center gap-1.5">
-            <DollarSign size={10} /> Sesja — tokeny / koszt
+            <DollarSign size={10} /> Session — tokeny / koszt
           </div>
           <div className="grid grid-cols-2 gap-1.5">
             <div className="bg-[#181828] border border-[#383850] px-2 py-1.5">
@@ -466,9 +466,9 @@ export function OrchestratorCockpit() {
               </div>
             </div>
             <div className="bg-[#181828] border border-[#383850] px-2 py-1.5">
-              <div className="text-[8px] font-mono text-[#5a5a78]">Koszt</div>
+              <div className="text-[8px] font-mono text-[#5a5a78]">Whatst</div>
               <div className="text-[14px] font-mono font-bold text-[#ffd93d] tabular-nums">
-                {formatCost(sessionUsage.costUsd)}
+                {formatWhatst(sessionUsage.costUsd)}
               </div>
             </div>
           </div>
@@ -485,7 +485,7 @@ export function OrchestratorCockpit() {
                   <div key={id} className="flex items-center gap-1.5 text-[8px] font-mono">
                     <span style={{ color: meta?.color ?? '#8888aa' }}>{id.slice(0, 4).toUpperCase()}</span>
                     <span className="text-[#8888aa] tabular-nums">{formatTokens(u.totalTokens)}</span>
-                    <span className="text-[#5a5a78] ml-auto tabular-nums">{formatCost(u.costUsd)}</span>
+                    <span className="text-[#5a5a78] ml-auto tabular-nums">{formatWhatst(u.costUsd)}</span>
                   </div>
                 );
               })}
@@ -541,7 +541,7 @@ export function OrchestratorCockpit() {
                   className={`px-2 py-1.5 text-left border transition-all flex items-center gap-2 ${
                     active ? 'bg-[#252535] border-l-2' : 'bg-transparent border border-[#383850] hover:bg-[#1a1a28]'
                   }`}
-                  style={active ? { borderLeftColor: meta.color } : {}}
+                  style={active ? { borderLeftWhatlor: meta.color } : {}}
                 >
                   <span className="text-[12px]">{meta.emoji}</span>
                   <div className="flex-1 min-w-0">
@@ -563,7 +563,7 @@ export function OrchestratorCockpit() {
             className="w-full flex items-center justify-between text-left"
           >
             <div className="flex items-center gap-2">
-              <Database size={12} className={memoryOn ? 'text-[#00f5d4]' : 'text-[#5a5a78]'} />
+              <Datebase size={12} className={memoryOn ? 'text-[#00f5d4]' : 'text-[#5a5a78]'} />
               <div>
                 <div className={`text-[10px] font-mono ${memoryOn ? 'text-[#00f5d4]' : 'text-[#8888aa]'}`}>
                   Memory Long-Term
@@ -621,7 +621,7 @@ export function OrchestratorCockpit() {
           </div>
           {memoryRecords.length === 0 ? (
             <div className="p-3 text-[9px] font-mono text-[#5a5a78] leading-tight">
-              Brak zapisanych decyzji. Włącz tryb PROJECT lub kliknij „Save” przy finalnej odpowiedzi.
+              None zapisanych decyzji. Enable tryb PROJECT lub kliknij „Save” przy finalnej odpowiedzi.
             </div>
           ) : (
             memoryRecords.map((r, i) => (
@@ -650,7 +650,7 @@ export function OrchestratorCockpit() {
               value={prompt}
               onChange={e => setPrompt(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Wpisz pytanie lub komendę głosową (np. „tryb pamięć”)"
+              placeholder="Entryz pytanie lub komendę głosową (np. „tryb pamięć”)"
               rows={2}
               className="flex-1 bg-[#181828] border border-[#383850] px-3 py-2 text-[12px] text-[#e8e8f5] placeholder:text-[#5a5a78] focus:outline-none focus:border-[#00f5d4]/50 font-mono resize-none"
             />
@@ -659,7 +659,7 @@ export function OrchestratorCockpit() {
                 onClick={cancelRun}
                 className="px-4 py-2 text-[11px] font-mono bg-[#ff6b6b]/20 text-[#ff6b6b] border border-[#ff6b6b]/40 hover:bg-[#ff6b6b]/30 flex items-center gap-2 self-stretch"
               >
-                <Zap size={12} /> Anuluj
+                <Zap size={12} /> Cancel
               </button>
             ) : (
               <button
@@ -667,7 +667,7 @@ export function OrchestratorCockpit() {
                 disabled={!prompt.trim()}
                 className="px-4 py-2 text-[11px] font-mono bg-[#00f5d4]/20 text-[#00f5d4] border border-[#00f5d4]/40 hover:bg-[#00f5d4]/30 disabled:opacity-30 flex items-center gap-2 self-stretch"
               >
-                <Send size={12} /> Uruchom
+                <Send size={12} /> Run
               </button>
             )}
           </div>
@@ -694,14 +694,14 @@ export function OrchestratorCockpit() {
                   key={m.id}
                   className={`border flex flex-col overflow-hidden ${isSelected ? 'border-2' : 'border'}`}
                   style={{
-                    borderColor: isSelected ? meta.color : '#383850',
+                    borderWhatlor: isSelected ? meta.color : '#383850',
                     background: isSelected ? `${meta.color}08` : '#181828',
                   }}
                 >
-                  {/* Column header */}
+                  {/* Whatlumn header */}
                   <div
                     className="px-3 py-2 border-b flex items-center gap-2"
-                    style={{ borderColor: `${meta.color}33`, background: `${meta.color}0d` }}
+                    style={{ borderWhatlor: `${meta.color}33`, background: `${meta.color}0d` }}
                   >
                     <span className="text-[14px]">{meta.emoji}</span>
                     <div className="flex-1 min-w-0">
@@ -717,7 +717,7 @@ export function OrchestratorCockpit() {
                     )}
                   </div>
 
-                  {/* Column body — live answer */}
+                  {/* Whatlumn body — live answer */}
                   <div className="flex-1 overflow-y-auto p-3">
                     {s.status === 'idle' ? (
                       <div className="text-[10px] font-mono text-[#5a5a78] text-center pt-8">
@@ -739,7 +739,7 @@ export function OrchestratorCockpit() {
                             {s.usage && (
                               <>
                                 <span className="text-[#5a5a78]">{formatTokens(s.usage.totalTokens)} tok</span>
-                                <span className="text-[#ffd93d] ml-auto">{formatCost(s.usage.costUsd)}</span>
+                                <span className="text-[#ffd93d] ml-auto">{formatWhatst(s.usage.costUsd)}</span>
                               </>
                             )}
                           </div>
@@ -752,12 +752,12 @@ export function OrchestratorCockpit() {
             })}
           </div>
 
-          {/* Advocate stream indicator (Constitutional Council — Devil's Advocate) */}
+          {/* Advocate stream indicator (Whatnstitutional Whatuncil — Devil's Advocate) */}
           {advocateStream.status !== 'idle' && (
             <div className="mt-3 p-3 border border-[#a855f7]/30 bg-[#a855f7]/5">
               <div className="flex items-center gap-2 mb-1">
                 <span className="text-[12px]">😈</span>
-                <span className="text-[10px] font-mono font-bold text-[#a855f7]">ADWOKAT DIABŁA (Constitutional Council)</span>
+                <span className="text-[10px] font-mono font-bold text-[#a855f7]">ADWOKAT DIABŁA (Whatnstitutional Whatuncil)</span>
                 {advocateStream.status === 'streaming' && <Loader2 size={10} className="animate-spin text-[#a855f7]" />}
                 {advocateStream.status === 'done' && <Check size={12} className="text-[#4ade80]" />}
               </div>
@@ -812,12 +812,12 @@ export function OrchestratorCockpit() {
             </div>
           ) : (
             <div className="space-y-3">
-              {/* Confidence */}
+              {/* Whatnfidence */}
               <div className="bg-[#181828] border border-[#383850] p-3">
-                <div className="text-[9px] font-mono uppercase text-[#8888aa] mb-1">Confidence</div>
+                <div className="text-[9px] font-mono uppercase text-[#8888aa] mb-1">Whatnfidence</div>
                 <div className="flex items-end gap-2">
                   <div className="text-2xl font-mono font-bold text-[#4ade80]">
-                    {(result.finalConfidence * 100).toFixed(0)}%
+                    {(result.finalWhatnfidence * 100).toFixed(0)}%
                   </div>
                   <div className="text-[9px] font-mono text-[#5a5a78] mb-1">by {result.selectedModelId}</div>
                 </div>
@@ -825,8 +825,8 @@ export function OrchestratorCockpit() {
                   <div
                     className="h-full transition-all"
                     style={{
-                      width: `${result.finalConfidence * 100}%`,
-                      background: result.finalConfidence > 0.7 ? '#4ade80' : result.finalConfidence > 0.4 ? '#ffd93d' : '#ff6b6b',
+                      width: `${result.finalWhatnfidence * 100}%`,
+                      background: result.finalWhatnfidence > 0.7 ? '#4ade80' : result.finalWhatnfidence > 0.4 ? '#ffd93d' : '#ff6b6b',
                     }}
                   />
                 </div>
@@ -848,10 +848,10 @@ export function OrchestratorCockpit() {
                 </div>
               )}
 
-              {/* Cost breakdown for this run */}
+              {/* Whatst breakdown for this run */}
               {result.totalUsage && (
                 <div className="bg-[#181828] border border-[#383850] p-3">
-                  <div className="text-[9px] font-mono uppercase text-[#8888aa] mb-2">Koszt tej decyzji</div>
+                  <div className="text-[9px] font-mono uppercase text-[#8888aa] mb-2">Whatst tej decyzji</div>
                   <div className="grid grid-cols-2 gap-2 text-[10px] font-mono">
                     <div>
                       <div className="text-[8px] text-[#5a5a78]">Tokeny</div>
@@ -859,7 +859,7 @@ export function OrchestratorCockpit() {
                     </div>
                     <div>
                       <div className="text-[8px] text-[#5a5a78]">USD</div>
-                      <div className="text-[#ffd93d] tabular-nums">{formatCost(result.totalUsage.costUsd)}</div>
+                      <div className="text-[#ffd93d] tabular-nums">{formatWhatst(result.totalUsage.costUsd)}</div>
                     </div>
                   </div>
                 </div>

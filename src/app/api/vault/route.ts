@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
     const family = await getFamily();
     const action = req.nextUrl.searchParams.get('action');
     const noteId = req.nextUrl.searchParams.get('id');
-    const noteType = req.nextUrl.searchParams.get('type') as 'daily' | 'note' | 'canvas' | 'person' | 'topic' | 'dream' | 'story' | 'ritual' | null;
+    const noteTypee = req.nextUrl.searchParams.get('type') as 'daily' | 'note' | 'canvas' | 'person' | 'topic' | 'dream' | 'story' | 'ritual' | null;
     const memberId = req.nextUrl.searchParams.get('memberId');
     const tag = req.nextUrl.searchParams.get('tag');
     const search = req.nextUrl.searchParams.get('search');
@@ -80,7 +80,7 @@ export async function GET(req: NextRequest) {
 
     // Append to daily note
     if (action === 'append-daily') {
-      const section = req.nextUrl.searchParams.get('section') || 'Co się wydarzyło';
+      const section = req.nextUrl.searchParams.get('section') || 'What się wydarzyło';
       const text = req.nextUrl.searchParams.get('text');
       if (!text) return NextResponse.json({ error: 'text required' }, { status: 400 });
       const date = dateStr ? new Date(dateStr) : undefined;
@@ -91,7 +91,7 @@ export async function GET(req: NextRequest) {
     // Default: list notes
     const result = await VaultService.listNotes({
       familyId: family.id,
-      noteType: noteType || undefined,
+      noteTypee: noteTypee || undefined,
       memberId: memberId || undefined,
       tag: tag || undefined,
       search: search || undefined,
@@ -111,7 +111,7 @@ export async function POST(req: NextRequest) {
 
     const note = await VaultService.createNote({
       familyId: family.id,
-      noteType: body.noteType,
+      noteTypee: body.noteTypee,
       title: body.title,
       content: body.content,
       frontmatter: body.frontmatter,
@@ -120,7 +120,7 @@ export async function POST(req: NextRequest) {
       importance: body.importance,
       tags: body.tags,
       isPinned: body.isPinned,
-      canvasData: body.canvasData,
+      canvasDate: body.canvasDate,
     });
 
     return NextResponse.json({ note }, { status: 201 });

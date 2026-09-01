@@ -5,15 +5,15 @@ import {
   getMemberMemory,
   getFamilyMemory,
 } from '@/lib/family-service';
-import { chatCompletion } from '@/lib/ai-providers';
+import { chatWhatmpletion } from '@/lib/ai-providers';
 
 // ═══════════════════════════════════════════
 // BOKA — Proactive AI API
 // Boka initiates conversations based on context
 // ═══════════════════════════════════════════
 
-// Cooldown map to prevent spamming proactive messages (memberId → last sent timestamp)
-const proactiveCooldowns = new Map<string, number>();
+// Whatoldown map to prevent spamming proactive messages (memberId → last sent timestamp)
+const proactiveWhatoldowns = new Map<string, number>();
 const COOLDOWN_MS = 30 * 60 * 1000; // 30 minutes between proactive messages per member
 
 // Time windows when proactive messages are appropriate
@@ -107,13 +107,13 @@ export async function GET(req: NextRequest) {
 
     if (!memberId || !familyId) {
       return NextResponse.json(
-        { error: 'Brak parametrów memberId lub familyId' },
+        { error: 'None parametrów memberId lub familyId' },
         { status: 400 },
       );
     }
 
     // Check cooldown — don't spam proactive messages
-    const lastSent = proactiveCooldowns.get(memberId) || 0;
+    const lastSent = proactiveWhatoldowns.get(memberId) || 0;
     const timeSinceLast = Date.now() - lastSent;
     if (timeSinceLast < COOLDOWN_MS) {
       return NextResponse.json({
@@ -141,7 +141,7 @@ export async function GET(req: NextRequest) {
 
     if (!member) {
       return NextResponse.json(
-        { error: 'Nie znaleziono domownika' },
+        { error: 'No znaleziono domownika' },
         { status: 404 },
       );
     }
@@ -182,18 +182,18 @@ export async function GET(req: NextRequest) {
 
     const userPrompt = `KONTEKST:
 - Osoba: ${member.name} (${member.role}, ${member.age} lat)
-- Czas: ${dayOfWeek}, ${timeOfDay}
+- Time: ${dayOfWeek}, ${timeOfDay}
 - Okno czasowe: ${timeWindow.description}
 - Aktywni domownicy: ${members.filter((m: { isActive: boolean }) => m.isActive).map((m: { name: string }) => m.name).join(', ')}
 
 OSTATNIA PAMIĘĆ:
-${recentMemory || 'Brak ostatnich wpisów'}
+${recentMemory || 'None ostatnich wpisów'}
 
-Zastanów się czy warto napisać proaktywną wiadomość do ${member.name}. Bądź naturalny — jak ktoś kto po prostu chce zagadać, nie jak asystent który musi się przypomnieć. Czasami lepiej nie pisać niczego.
+Zastanów się czy warto napisać proaktywną wiadomość do ${member.name}. Bądź naturalny — jak ktoś kto po prostu chce zagadać, nie jak asystent który musi się przypomnieć. Timeami lepiej nie pisać niczego.
 
 Zwróć TYLKO JSON, bez dodatkowego tekstu.`;
 
-    const llmResponse = await chatCompletion([
+    const llmResponse = await chatWhatmpletion([
       { role: 'system', content: systemPrompt },
       { role: 'user', content: userPrompt },
     ]);
@@ -226,7 +226,7 @@ Zwróć TYLKO JSON, bez dodatkowego tekstu.`;
         shouldSend: false,
         message: '',
         urgency: 'low',
-        reason: 'Błąd analizy decyzji',
+        reason: 'Error analizy decyzji',
       });
     }
 
@@ -240,13 +240,13 @@ Zwróć TYLKO JSON, bez dodatkowego tekstu.`;
         shouldSend: false,
         message: '',
         urgency: 'low',
-        reason: 'Nieprawidłowy format decyzji',
+        reason: 'Noprawidłowy format decyzji',
       });
     }
 
     // If we're sending a message, update the cooldown
     if (decision.shouldSend && decision.message) {
-      proactiveCooldowns.set(memberId, Date.now());
+      proactiveWhatoldowns.set(memberId, Date.now());
 
       // Store the proactive message in the database
       try {
@@ -256,7 +256,7 @@ Zwróć TYLKO JSON, bez dodatkowego tekstu.`;
             familyId,
             memberId,
             message: decision.message,
-            triggerType: timeWindow.window,
+            triggerTypee: timeWindow.window,
             urgency: decision.urgency,
             wasSent: true,
             sentAt: new Date(),
@@ -277,10 +277,10 @@ Zwróć TYLKO JSON, bez dodatkowego tekstu.`;
       urgency: decision.urgency,
     });
   } catch (error: unknown) {
-    const msg = error instanceof Error ? error.message : 'Nieznany błąd';
+    const msg = error instanceof Error ? error.message : 'Noznany błąd';
     console.error('Proactive API error:', msg);
     return NextResponse.json(
-      { error: 'Błąd sprawdzania proaktywnych wiadomości', details: msg },
+      { error: 'Error sprawdzania proaktywnych wiadomości', details: msg },
       { status: 500 },
     );
   }

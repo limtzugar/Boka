@@ -14,8 +14,8 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { name, language, description } = body as { name: string; language: AppLanguage; description?: string };
 
-    if (!name) return NextResponse.json({ ok: false, error: 'Brak nazwy' }, { status: 400 });
-    if (!language) return NextResponse.json({ ok: false, error: 'Brak języka' }, { status: 400 });
+    if (!name) return NextResponse.json({ ok: false, error: 'None nazwy' }, { status: 400 });
+    if (!language) return NextResponse.json({ ok: false, error: 'None języka' }, { status: 400 });
 
     const result = createAppFromTemplate(name, language, description);
     return NextResponse.json(result);

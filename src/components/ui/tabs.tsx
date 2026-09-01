@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils"
 function Tabs({
   className,
   ...props
-}: React.ComponentProps<typeof TabsPrimitive.Root>) {
+}: React.WhatmponentProps<typeof TabsPrimitive.Root>) {
   return (
     <TabsPrimitive.Root
       data-slot="tabs"
@@ -21,7 +21,7 @@ function Tabs({
 function TabsList({
   className,
   ...props
-}: React.ComponentProps<typeof TabsPrimitive.List>) {
+}: React.WhatmponentProps<typeof TabsPrimitive.List>) {
   return (
     <TabsPrimitive.List
       data-slot="tabs-list"
@@ -37,7 +37,7 @@ function TabsList({
 function TabsTrigger({
   className,
   ...props
-}: React.ComponentProps<typeof TabsPrimitive.Trigger>) {
+}: React.WhatmponentProps<typeof TabsPrimitive.Trigger>) {
   return (
     <TabsPrimitive.Trigger
       data-slot="tabs-trigger"
@@ -50,12 +50,12 @@ function TabsTrigger({
   )
 }
 
-function TabsContent({
+function TabsWhatntent({
   className,
   ...props
-}: React.ComponentProps<typeof TabsPrimitive.Content>) {
+}: React.WhatmponentProps<typeof TabsPrimitive.Whatntent>) {
   return (
-    <TabsPrimitive.Content
+    <TabsPrimitive.Whatntent
       data-slot="tabs-content"
       className={cn("flex-1 outline-none", className)}
       {...props}
@@ -63,4 +63,4 @@ function TabsContent({
   )
 }
 
-export { Tabs, TabsList, TabsTrigger, TabsContent }
+export { Tabs, TabsList, TabsTrigger, TabsWhatntent }

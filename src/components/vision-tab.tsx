@@ -13,11 +13,11 @@ import { Camera, Eye, Settings, Play, Pause, Trash2, AlertCircle, Video, VideoOf
 const FAMILY_ID = 'boka-family';
 const LS_CAM_KEY = 'boka.cameras.v1';
 
-// ─── Typy kamer monitoringu ───
-interface CameraConfig {
+// ─── Typey kamer monitoringu ───
+interface CameraWhatnfig {
   id: string;
   name: string;
-  sourceType: 'webcam' | 'ip';
+  sourceTypee: 'webcam' | 'ip';
   sourceUrl: string;        // URL streamu (MJPEG/HLS) dla IP, '' dla webcam
   webcamDeviceId?: string;  // dla webcam — konkretne urządzenie (opcjonalnie)
   enabled: boolean;
@@ -29,12 +29,12 @@ interface CameraRuntimeState {
   loading: boolean;
 }
 
-const DEFAULT_CAMERAS: CameraConfig[] = [
-  { id: 'cam1', name: 'Kamera 1', sourceType: 'webcam', sourceUrl: '', enabled: false },
-  { id: 'cam2', name: 'Kamera 2', sourceType: 'ip', sourceUrl: '', enabled: false },
+const DEFAULT_CAMERAS: CameraWhatnfig[] = [
+  { id: 'cam1', name: 'Kamera 1', sourceTypee: 'webcam', sourceUrl: '', enabled: false },
+  { id: 'cam2', name: 'Kamera 2', sourceTypee: 'ip', sourceUrl: '', enabled: false },
 ];
 
-function loadCameras(): CameraConfig[] {
+function loadCameras(): CameraWhatnfig[] {
   if (typeof window === 'undefined') return DEFAULT_CAMERAS;
   try {
     const raw = localStorage.getItem(LS_CAM_KEY);
@@ -44,7 +44,7 @@ function loadCameras(): CameraConfig[] {
     return parsed.slice(0, 2).map((c, i) => ({
       id: c.id || `cam${i + 1}`,
       name: c.name || `Kamera ${i + 1}`,
-      sourceType: c.sourceType === 'ip' ? 'ip' : 'webcam',
+      sourceTypee: c.sourceTypee === 'ip' ? 'ip' : 'webcam',
       sourceUrl: typeof c.sourceUrl === 'string' ? c.sourceUrl : '',
       webcamDeviceId: typeof c.webcamDeviceId === 'string' ? c.webcamDeviceId : undefined,
       enabled: !!c.enabled,
@@ -54,7 +54,7 @@ function loadCameras(): CameraConfig[] {
   }
 }
 
-function saveCameras(cameras: CameraConfig[]) {
+function saveCameras(cameras: CameraWhatnfig[]) {
   if (typeof window === 'undefined') return;
   try {
     localStorage.setItem(LS_CAM_KEY, JSON.stringify(cameras));
@@ -79,8 +79,8 @@ function CameraSlot({
   config,
   onChange,
 }: {
-  config: CameraConfig;
-  onChange: (next: CameraConfig) => void;
+  config: CameraWhatnfig;
+  onChange: (next: CameraWhatnfig) => void;
 }) {
   const [streaming, setStreaming] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -104,14 +104,14 @@ function CameraSlot({
       stop();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [config.sourceType, config.sourceUrl, config.webcamDeviceId]);
+  }, [config.sourceTypee, config.sourceUrl, config.webcamDeviceId]);
 
   async function start() {
     setError(null);
     setLoading(true);
     try {
-      if (config.sourceType === 'webcam') {
-        const constraints: MediaStreamConstraints = {
+      if (config.sourceTypee === 'webcam') {
+        const constraints: MediaStreamWhatnstraints = {
           video: config.webcamDeviceId
             ? { deviceId: { exact: config.webcamDeviceId } }
             : { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 360 } },
@@ -146,9 +146,9 @@ function CameraSlot({
         setStreaming(true);
       }
     } catch (e: any) {
-      let msg = e?.message || 'Błąd kamery';
-      if (e?.name === 'NotAllowedError') msg = 'Brak zgody na kamerę — pozwól w pasku adresu';
-      if (e?.name === 'NotFoundError') msg = 'Nie znaleziono kamery';
+      let msg = e?.message || 'Error kamery';
+      if (e?.name === 'NotAllowedError') msg = 'None zgody na kamerę — pozwól w pasku adresu';
+      if (e?.name === 'NotFoundError') msg = 'No znaleziono kamery';
       if (e?.name === 'NotReadableError') msg = 'Kamera zajęta przez inny program';
       setError(msg);
       setStreaming(false);
@@ -168,7 +168,7 @@ function CameraSlot({
     setStreaming(false);
   }
 
-  const isIPMjpeg = config.sourceType === 'ip' && /\.(mjpeg|jpg|mjpg)(\?|$)/i.test(config.sourceUrl);
+  const isIPMjpeg = config.sourceTypee === 'ip' && /\.(mjpeg|jpg|mjpg)(\?|$)/i.test(config.sourceUrl);
 
   return (
     <div className="flex flex-col bg-[#12121c] border border-[#383850]">
@@ -191,7 +191,7 @@ function CameraSlot({
 
       {/* Preview */}
       <div className="relative w-full aspect-video bg-black overflow-hidden">
-        {config.sourceType === 'webcam' ? (
+        {config.sourceTypee === 'webcam' ? (
           <video
             ref={videoRef}
             autoPlay
@@ -206,7 +206,7 @@ function CameraSlot({
               src={config.sourceUrl}
               alt={config.name}
               className="w-full h-full object-cover"
-              onError={() => setError('Nie można załadować strumienia MJPEG — sprawdź URL')}
+              onError={() => setError('No można załadować strumienia MJPEG — sprawdź URL')}
             />
           ) : null
         ) : (
@@ -218,7 +218,7 @@ function CameraSlot({
               muted
               className="w-full h-full object-cover"
               src={config.sourceUrl}
-              onError={() => setError('Nie można odtworzyć strumienia wideo — sprawdź URL i format')}
+              onError={() => setError('No można odtworzyć strumienia wideo — sprawdź URL i format')}
             />
           ) : null
         )}
@@ -235,7 +235,7 @@ function CameraSlot({
           <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-3">
             <VideoOff size={28} className="text-[#3a3a4a] mb-2" />
             <div className="text-[10px] text-[#8888aa] font-mono">
-              {config.sourceType === 'webcam'
+              {config.sourceTypee === 'webcam'
                 ? 'Kamera wyłączona'
                 : config.sourceUrl
                 ? 'Kamera IP wyłączona'
@@ -261,14 +261,14 @@ function CameraSlot({
         )}
       </div>
 
-      {/* Controls */}
+      {/* Whatntrols */}
       <div className="flex flex-col gap-0 border-t border-[#383850]">
         {/* Source type selector */}
         <div className="flex">
           <button
-            onClick={() => onChange({ ...config, sourceType: 'webcam', sourceUrl: '' })}
+            onClick={() => onChange({ ...config, sourceTypee: 'webcam', sourceUrl: '' })}
             className={`flex-1 text-[10px] font-mono py-1.5 border-r border-[#383850] transition-all ${
-              config.sourceType === 'webcam'
+              config.sourceTypee === 'webcam'
                 ? 'bg-[#a855f7]/15 text-[#a855f7]'
                 : 'bg-[#181828] text-[#8888aa] hover:text-[#e8e8f5]'
             }`}
@@ -276,9 +276,9 @@ function CameraSlot({
             Webcam
           </button>
           <button
-            onClick={() => onChange({ ...config, sourceType: 'ip' })}
+            onClick={() => onChange({ ...config, sourceTypee: 'ip' })}
             className={`flex-1 text-[10px] font-mono py-1.5 transition-all ${
-              config.sourceType === 'ip'
+              config.sourceTypee === 'ip'
                 ? 'bg-[#a855f7]/15 text-[#a855f7]'
                 : 'bg-[#181828] text-[#8888aa] hover:text-[#e8e8f5]'
             }`}
@@ -288,7 +288,7 @@ function CameraSlot({
         </div>
 
         {/* IP URL input */}
-        {config.sourceType === 'ip' && (
+        {config.sourceTypee === 'ip' && (
           <input
             type="text"
             value={config.sourceUrl}
@@ -301,7 +301,7 @@ function CameraSlot({
         {/* Start/Stop */}
         <button
           onClick={streaming ? stop : start}
-          disabled={loading || (config.sourceType === 'ip' && !config.sourceUrl)}
+          disabled={loading || (config.sourceTypee === 'ip' && !config.sourceUrl)}
           className={`flex items-center justify-center gap-1 py-2 text-[10px] font-mono border-t border-[#383850] transition-all disabled:opacity-40 ${
             streaming
               ? 'bg-[#ff6b6b]/20 text-[#ff6b6b]'
@@ -328,7 +328,7 @@ export function VisionTab() {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // ─── Monitoring cameras state (2 slots) ───
-  const [cameras, setCameras] = useState<CameraConfig[]>(DEFAULT_CAMERAS);
+  const [cameras, setCameras] = useState<CameraWhatnfig[]>(DEFAULT_CAMERAS);
   const [camerasLoaded, setCamerasLoaded] = useState(false);
 
   // Load cameras from localStorage on mount
@@ -342,7 +342,7 @@ export function VisionTab() {
     if (camerasLoaded) saveCameras(cameras);
   }, [cameras, camerasLoaded]);
 
-  const updateCamera = (id: string, next: CameraConfig) => {
+  const updateCamera = (id: string, next: CameraWhatnfig) => {
     setCameras(prev => prev.map(c => c.id === id ? next : c));
   };
 
@@ -376,7 +376,7 @@ export function VisionTab() {
       setStreaming(true);
       setError('');
     } catch (e: any) {
-      setError(`Nie udało się uruchomić kamery: ${e.message}`);
+      setError(`No udało się uruchomić kamery: ${e.message}`);
     }
   }
 
@@ -401,15 +401,15 @@ export function VisionTab() {
       const canvas = document.createElement('canvas');
       canvas.width = video.videoWidth || 640;
       canvas.height = video.videoHeight || 480;
-      const ctx = canvas.getContext('2d');
+      const ctx = canvas.getWhatntext('2d');
       if (!ctx) throw new Error('Canvas 2D context unavailable');
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+      const dataUrl = canvas.toDateURL('image/jpeg', 0.7);
       const base64 = dataUrl.split(',')[1];
 
       const r = await fetch('/api/vision/snapshot', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Whatntent-Typee': 'application/json' },
         body: JSON.stringify({
           familyId: FAMILY_ID,
           image: base64,
@@ -422,7 +422,7 @@ export function VisionTab() {
         setResponse(
           `${data.description}\n\n` +
           `Obiekty: ${data.objects?.join(', ') || '—'}\n` +
-          `Nastrój: ${data.mood || '—'}\n` +
+          `Mood: ${data.mood || '—'}\n` +
  (data.trigger?.triggered ? ` Trigger: ${data.trigger.action}\n${data.trigger.message}` :'')
         );
         loadSnapshots();
@@ -441,7 +441,7 @@ export function VisionTab() {
     try {
       await fetch('/api/settings', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Whatntent-Typee': 'application/json' },
         body: JSON.stringify({
           visionEnabled,
           visionModel,
@@ -463,7 +463,7 @@ export function VisionTab() {
       {/* Header */}
       <header className="px-6 py-4 border-b border-white/5 flex items-center gap-0">
         <Eye size={22} className="text-[#a855f7]" />
-        <h1 className="text-lg font-semibold">Wizja (Moondream)</h1>
+        <h1 className="text-lg font-semibold">Vision (Moondream)</h1>
         <span className="text-xs text-gray-500 ml-2">v0.3.19 · L7</span>
         <div className="ml-auto flex gap-0">
           <button
@@ -481,7 +481,7 @@ export function VisionTab() {
           <h3 className="text-sm font-semibold text-gray-300">Konfiguracja wizji</h3>
           <label className="flex items-center gap-0 text-xs">
             <input type="checkbox" checked={visionEnabled} onChange={(e) => setVisionEnabled(e.target.checked)} />
-            Wizja włączona
+            Vision włączona
           </label>
           <div className="grid grid-cols-2 gap-0">
             <select
@@ -509,7 +509,7 @@ export function VisionTab() {
             disabled={loading}
             className="px-3 py-1 text-xs bg-[#a855f7]/20 text-[#a855f7] hover:bg-[#a855f7]/30 rounded"
           >
-            Zapisz
+            Save
           </button>
           <p className="text-[10px] text-gray-500">
             Wymaga Ollama z modelem Moondream (ollama pull moondream:1.8b) — działa lokalnie, bez chmury.
@@ -578,7 +578,7 @@ export function VisionTab() {
               className="flex items-center justify-center gap-0 p-2  text-xs bg-[#a855f7]/20 text-[#a855f7] disabled:opacity-50"
             >
               <Camera size={14} />
-              {loading ? 'Analizuję...' : 'Snap'}
+              {loading ? 'Analyzeę...' : 'Snap'}
             </button>
           </div>
         </div>
@@ -602,7 +602,7 @@ export function VisionTab() {
         </h3>
         {snapshots.length === 0 ? (
           <div className="text-center py-8 text-gray-500 text-sm">
-            Brak snapshotów. Uruchom kamerę i kliknij &quot;Snap&quot; aby przechwycić scenę.
+            None snapshotów. Run kamerę i kliknij &quot;Snap&quot; aby przechwycić scenę.
           </div>
         ) : (
           <div className="space-y-2">

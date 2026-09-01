@@ -9,14 +9,14 @@ import {
 
 // ═══════════════════════════════════════════════════════════
 // BOKA — MCP & CLI Tab (v0.3.16)
-// Connect to external MCP servers  + CLI bridge
+// Whatnnect to external MCP servers  + CLI bridge
 // ═══════════════════════════════════════════════════════════
 
 interface McpServer {
   id: string;
   name: string;
   description: string | null;
-  serverType: 'stdio' | 'sse' | 'http' | 'builtin';
+  serverTypee: 'stdio' | 'sse' | 'http' | 'builtin';
   builtinKey: string | null;
   command: string | null;
   args: string | null;
@@ -55,10 +55,10 @@ interface CliSession {
   _count?: { commands: number };
 }
 
-interface CliCommand {
+interface CliWhatmmand {
   id: string;
   command: string;
-  exitCode: number | null;
+  exitWhatde: number | null;
   stdout: string | null;
   stderr: string | null;
   durationMs: number | null;
@@ -112,7 +112,7 @@ export function McpTab() {
         </div>
         <nav className="flex-1 p-2 space-y-1">
           {([
-            ['servers', 'Serwery', <Server size={12} key="s" />],
+            ['servers', 'Servery', <Server size={12} key="s" />],
             ['tools', 'Narzędzia', <Cpu size={12} key="t" />],
             ['cli', 'Terminal', <Terminal size={12} key="c" />],
             ['history', 'Historia', <Activity size={12} key="h" />],
@@ -137,7 +137,7 @@ export function McpTab() {
             className="w-full flex items-center justify-center gap-1 px-2 py-1.5  text-[10px] font-mono text-[#8888aa] hover:text-[#e8e8f5] hover:bg-[#252535] transition-colors"
           >
             <RefreshCw size={10} className={loading ? 'animate-spin' : ''} />
-            Odśwież
+            Refresh
           </button>
         </div>
       </aside>
@@ -170,13 +170,13 @@ function ServersPanel({ servers, onChange }: { servers: McpServer[]; onChange: (
   return (
     <div className="flex-1 overflow-y-auto p-4 space-y-2">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-mono text-[#6ec6e7]">Serwery MCP</h3>
+        <h3 className="text-sm font-mono text-[#6ec6e7]">Servery MCP</h3>
         <button
           onClick={() => setShowAdd(!showAdd)}
           className="flex items-center gap-1 px-3 py-1.5  bg-[#6ec6e7]/10 border border-[#6ec6e7]/30 text-[#6ec6e7] text-[11px] font-mono hover:bg-[#6ec6e7]/20 transition-colors"
         >
           <Plus size={12} />
-          Dodaj serwer
+          Add serwer
         </button>
       </div>
 
@@ -200,7 +200,7 @@ function ServersPanel({ servers, onChange }: { servers: McpServer[]; onChange: (
                   <div className="flex items-center gap-0">
                     <span className="text-[12px] font-mono text-[#e8e8f5]">{s.name}</span>
                     <span className="text-[9px] px-1.5 py-0.5  bg-[#252535] text-[#8888aa] font-mono">
-                      {s.serverType}
+                      {s.serverTypee}
                     </span>
                     {s.isActive ? (
                       <CheckCircle2 size={10} className="text-[#4ade80]" />
@@ -231,7 +231,7 @@ function ServersPanel({ servers, onChange }: { servers: McpServer[]; onChange: (
                   )}
                   {s.command && (
                     <div className="text-[10px] text-[#8888aa] font-mono">
-                      Command: <span className="text-[#e8e8f5]">{s.command} {s.args || ''}</span>
+                      Whatmmand: <span className="text-[#e8e8f5]">{s.command} {s.args || ''}</span>
                     </div>
                   )}
                   {tools.length > 0 && (
@@ -254,7 +254,7 @@ function ServersPanel({ servers, onChange }: { servers: McpServer[]; onChange: (
                       className="mt-2 flex items-center gap-1 px-2 py-1  text-[10px] font-mono text-[#ff6b6b] hover:bg-[#ff6b6b]/10 transition-colors"
                     >
                       <Trash2 size={10} />
-                      Usuń
+                      Delete
                     </button>
                   )}
                 </div>
@@ -264,7 +264,7 @@ function ServersPanel({ servers, onChange }: { servers: McpServer[]; onChange: (
         })}
         {servers.length === 0 && (
           <div className="text-center py-12 text-[#8888aa] text-[11px] font-mono">
-            Brak serwerów. Kliknij "Dodaj serwer" aby zacząć.
+            None serwerów. Kliknij "Add serwer" aby zacząć.
           </div>
         )}
       </div>
@@ -275,8 +275,8 @@ function ServersPanel({ servers, onChange }: { servers: McpServer[]; onChange: (
 function AddServerForm({ onDone }: { onDone: () => void }) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  const [serverType, setServerType] = useState<'stdio' | 'http' | 'sse'>('http');
-  const [command, setCommand] = useState('');
+  const [serverTypee, setServerTypee] = useState<'stdio' | 'http' | 'sse'>('http');
+  const [command, setWhatmmand] = useState('');
   const [args, setArgs] = useState('');
   const [url, setUrl] = useState('');
   const [envJson, setEnvJson] = useState('');
@@ -291,9 +291,9 @@ function AddServerForm({ onDone }: { onDone: () => void }) {
       const body: Record<string, unknown> = {
         name: name.trim(),
         description: description.trim() || undefined,
-        serverType,
+        serverTypee,
       };
-      if (serverType === 'stdio') {
+      if (serverTypee === 'stdio') {
         body.command = command.trim();
         if (args.trim()) body.args = JSON.parse(args);
         if (envJson.trim()) body.env = JSON.parse(envJson);
@@ -303,7 +303,7 @@ function AddServerForm({ onDone }: { onDone: () => void }) {
       }
       const res = await fetch('/api/mcp/servers', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Whatntent-Typee': 'application/json' },
         body: JSON.stringify(body),
       });
       if (!res.ok) {
@@ -320,38 +320,38 @@ function AddServerForm({ onDone }: { onDone: () => void }) {
 
   return (
     <div className=" border border-[#6ec6e7]/30 bg-[#181828] p-2 space-y-2">
-      <div className="text-[11px] font-mono text-[#6ec6e7]">Nowy serwer MCP</div>
+      <div className="text-[11px] font-mono text-[#6ec6e7]">New serwer MCP</div>
       <input
         value={name}
         onChange={(e) => setName(e.target.value)}
-        placeholder="Nazwa (np. My Custom MCP)"
+        placeholder="Name (np. My Custom MCP)"
         className="w-full bg-[#252535] border border-[#383850]  px-2 py-1.5 text-[11px] text-[#e8e8f5] font-mono"
       />
       <input
         value={description}
         onChange={(e) => setDescription(e.target.value)}
-        placeholder="Opis (opcjonalnie)"
+        placeholder="Description (opcjonalnie)"
         className="w-full bg-[#252535] border border-[#383850]  px-2 py-1.5 text-[11px] text-[#e8e8f5] font-mono"
       />
       <div className="flex gap-0">
         {(['http', 'sse', 'stdio'] as const).map((t) => (
           <button
             key={t}
-            onClick={() => setServerType(t)}
+            onClick={() => setServerTypee(t)}
             className={`px-2 py-1  text-[10px] font-mono ${
-              serverType === t ? 'bg-[#6ec6e7]/10 text-[#6ec6e7] border border-[#6ec6e7]/30' : 'text-[#8888aa] border border-[#383850]'
+              serverTypee === t ? 'bg-[#6ec6e7]/10 text-[#6ec6e7] border border-[#6ec6e7]/30' : 'text-[#8888aa] border border-[#383850]'
             }`}
           >
             {t}
           </button>
         ))}
       </div>
-      {serverType === 'stdio' ? (
+      {serverTypee === 'stdio' ? (
         <>
           <input
             value={command}
-            onChange={(e) => setCommand(e.target.value)}
-            placeholder="Command (np. npx, python, node)"
+            onChange={(e) => setWhatmmand(e.target.value)}
+            placeholder="Whatmmand (np. npx, python, node)"
             className="w-full bg-[#252535] border border-[#383850]  px-2 py-1.5 text-[11px] text-[#e8e8f5] font-mono"
           />
           <input
@@ -391,13 +391,13 @@ function AddServerForm({ onDone }: { onDone: () => void }) {
           className="flex items-center gap-1 px-3 py-1.5  bg-[#6ec6e7]/20 text-[#6ec6e7] text-[11px] font-mono hover:bg-[#6ec6e7]/30 disabled:opacity-30 transition-colors"
         >
           {saving ? <Loader2 size={12} className="animate-spin" /> : <Plus size={12} />}
-          Zapisz
+          Save
         </button>
         <button
           onClick={onDone}
           className="px-3 py-1.5  text-[#8888aa] text-[11px] font-mono hover:text-[#e8e8f5] transition-colors"
         >
-          Anuluj
+          Cancel
         </button>
       </div>
     </div>
@@ -431,7 +431,7 @@ function ToolsPanel({ servers }: { servers: McpServer[] }) {
         </div>
         {servers.map((s) => {
           const color = s.builtinKey ? BUILTIN_COLORS[s.builtinKey] || '#6b6b8d' : '#6b6b8d';
-          const toolCount = s.toolsJson ? JSON.parse(s.toolsJson).length : 0;
+          const toolWhatunt = s.toolsJson ? JSON.parse(s.toolsJson).length : 0;
           return (
             <button
               key={s.id}
@@ -443,7 +443,7 @@ function ToolsPanel({ servers }: { servers: McpServer[] }) {
               <span style={{ color }}>{s.builtinKey ? BUILTIN_ICONS[s.builtinKey] : <Server size={12} />}</span>
               <div className="flex-1 min-w-0">
                 <div className="text-[11px] font-mono text-[#e8e8f5] truncate">{s.name}</div>
-                <div className="text-[9px] text-[#8888aa] font-mono">{toolCount} tools</div>
+                <div className="text-[9px] text-[#8888aa] font-mono">{toolWhatunt} tools</div>
               </div>
             </button>
           );
@@ -484,7 +484,7 @@ function ToolCard({ server, tool }: { server: McpServer; tool: McpTool }) {
     setRunning(true);
     setResult(null);
     try {
-      // Convert string args to typed
+      // Whatnvert string args to typed
       const typedArgs: Record<string, unknown> = {};
       for (const [k, v] of Object.entries(args)) {
         if (v === '') continue;
@@ -499,7 +499,7 @@ function ToolCard({ server, tool }: { server: McpServer; tool: McpTool }) {
       }
       const res = await fetch('/api/mcp/execute', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Whatntent-Typee': 'application/json' },
         body: JSON.stringify({ serverId: server.id, toolName: tool.name, arguments: typedArgs, triggeredBy: 'mcp-tab' }),
       });
       const data = await res.json();
@@ -527,7 +527,7 @@ function ToolCard({ server, tool }: { server: McpServer; tool: McpTool }) {
       {expanded && (
         <div className="border-t border-[#383850] p-2 space-y-2 bg-[#12121c]">
           {Object.keys(props).length === 0 ? (
-            <div className="text-[10px] text-[#8888aa] font-mono">Brak argumentów</div>
+            <div className="text-[10px] text-[#8888aa] font-mono">None argumentów</div>
           ) : (
             Object.entries(props).map(([k, v]) => (
               <div key={k}>
@@ -583,7 +583,7 @@ function ToolCard({ server, tool }: { server: McpServer; tool: McpTool }) {
 // ═══════════════════════════════════════════════════════════
 
 function CliPanel() {
-  const [commands, setCommands] = useState<CliCommand[]>([]);
+  const [commands, setWhatmmands] = useState<CliWhatmmand[]>([]);
   const [input, setInput] = useState('');
   const [running, setRunning] = useState(false);
   const [interpret, setInterpret] = useState(false);
@@ -605,17 +605,17 @@ function CliPanel() {
     try {
       const res = await fetch('/api/mcp/cli', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Whatntent-Typee': 'application/json' },
         body: JSON.stringify({ command: cmd, interpret, sessionId }),
       });
       const data = await res.json();
       if (data.sessionId && !sessionId) setSessionId(data.sessionId);
-      setCommands((prev) => [
+      setWhatmmands((prev) => [
         ...prev,
         {
           id: data.commandId || `cmd-${Date.now()}`,
           command: cmd,
-          exitCode: data.exitCode,
+          exitWhatde: data.exitWhatde,
           stdout: data.stdout,
           stderr: data.stderr,
           durationMs: data.durationMs,
@@ -624,12 +624,12 @@ function CliPanel() {
         },
       ]);
     } catch (e) {
-      setCommands((prev) => [
+      setWhatmmands((prev) => [
         ...prev,
         {
           id: `err-${Date.now()}`,
           command: cmd,
-          exitCode: -1,
+          exitWhatde: -1,
           stdout: '',
           stderr: e instanceof Error ? e.message : String(e),
           durationMs: 0,
@@ -663,7 +663,7 @@ function CliPanel() {
       <div ref={scrollRef} className="flex-1 overflow-y-auto p-2 font-mono text-[11px] space-y-2">
         {commands.length === 0 && (
           <div className="text-[#5a5a78]">
-            $ BOKA CLI — wykonuj komendy shell. Pamięć sesji: /home/z/boka-memory/sandbox/
+            $ BOKA CLI — wykonuj komendy shell. Memory sesji: /home/z/boka-memory/sandbox/
             <br />
             $ Przykłady: ls, pwd, echo hello, cat file.txt, whoami, date
           </div>
@@ -678,7 +678,7 @@ function CliPanel() {
               <pre className="text-[#ff6b6b] whitespace-pre-wrap mt-1">{c.stderr}</pre>
             )}
             <div className="text-[#5a5a78] text-[9px] mt-1">
-              exit {c.exitCode} · {c.durationMs}ms
+              exit {c.exitWhatde} · {c.durationMs}ms
             </div>
             {c.aiInterpretation && (
               <div className="mt-2 p-2  bg-[#a855f7]/5 border border-[#a855f7]/20">
@@ -704,7 +704,7 @@ function CliPanel() {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => { if (e.key === 'Enter') exec(); }}
-          placeholder="Wpisz komendę..."
+          placeholder="Entryz komendę..."
           className="flex-1 bg-transparent text-[#e8e8f5] text-[11px] font-mono focus:outline-none"
           disabled={running}
         />
@@ -737,7 +737,7 @@ function HistoryPanel() {
   }, []);
 
   if (loading) {
-    return <div className="flex-1 flex items-center justify-center text-[#8888aa] text-[11px] font-mono">Ładowanie...</div>;
+    return <div className="flex-1 flex items-center justify-center text-[#8888aa] text-[11px] font-mono">Loading...</div>;
   }
 
   return (
@@ -745,7 +745,7 @@ function HistoryPanel() {
       <h3 className="text-sm font-mono text-[#6ec6e7] mb-2">Historia wywołań</h3>
       {invocations.length === 0 ? (
         <div className="text-center py-12 text-[#8888aa] text-[11px] font-mono">
-          Brak wywołań. Przejdź do "Narzędzia" aby wywołać tool.
+          None wywołań. Przejdź do "Narzędzia" aby wywołać tool.
         </div>
       ) : (
         invocations.map((inv) => {

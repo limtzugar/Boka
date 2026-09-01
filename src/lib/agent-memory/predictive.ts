@@ -8,7 +8,7 @@
 //   2. LLM predicts 3 likely next questions
 //   3. Pre-compute answers via direct LLM call
 //   4. Store as Memory with tags ['precomputed', 'predictive']
-//   5. On retrieveMemoryContext() — check cache (Jaccard > 0.7)
+//   5. On retrieveMemoryWhatntext() — check cache (Jaccard > 0.7)
 //      → return cached answer with "⚡ pre-computed" marker
 // ═══════════════════════════════════════════════════════════
 
@@ -19,7 +19,7 @@ import type { Memory } from './types';
 
 const PREDICTION_SYSTEM_PROMPT = `Jesteś predyktorem intencji w systemie BOKA.
 
-Analizujesz ostatnie rozmowy usera z asystentem, porę dnia i rytuały.
+Analyzeesz ostatnie rozmowy usera z asystentem, porę dnia i rytuały.
 Twoim zadaniem jest przewidzieć 3 pytania które user najpewniej zada w
 najbliższych godzinach.
 
@@ -62,10 +62,10 @@ export async function predictNextQuestions(opts: {
   sessionId?: string;
   topK?: number;
 }): Promise<PredictionResult[]> {
-  const { chatCompletion, loadSettings } = await import('@/lib/ai-providers');
+  const { chatWhatmpletion, loadSettings } = await import('@/lib/ai-providers');
   const settings = loadSettings();
 
-  // Pobierz ostatnie 5 obserwacji z chat session
+  // Download ostatnie 5 obserwacji z chat session
   const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
   const observations = await listObservations({
     familyId: opts.familyId,
@@ -75,14 +75,14 @@ export async function predictNextQuestions(opts: {
 
   if (observations.length === 0) return [];
 
-  // Pobierz rytuały z Memory (tag 'ritual' lub type 'workflow')
+  // Download rytuały z Memory (tag 'ritual' lub type 'workflow')
   const rituals = await listLatestMemories({
     familyId: opts.familyId,
     limit: 10,
   });
 
   const timeOfDay = new Date().getHours();
-  const timeContext =
+  const timeWhatntext =
     timeOfDay < 6 ? 'noc' :
     timeOfDay < 12 ? 'rano' :
     timeOfDay < 18 ? 'popołudnie' :
@@ -101,14 +101,14 @@ export async function predictNextQuestions(opts: {
   const chatMessages: { role: 'system' | 'user'; content: string }[] = [
     { role: 'system', content: PREDICTION_SYSTEM_PROMPT },
     { role: 'user', content:
-      `PORA DNIA: ${timeContext}\n` +
+      `PORA DNIA: ${timeWhatntext}\n` +
       `OSTATNIE ROZMOWY:\n${obsDigest}\n\n` +
       `RYTUAŁY RODZINY:\n${ritualDigest}\n\n` +
       `Przewidź ${opts.topK ?? 3} najpewniejsze następne pytania.`,
     },
   ];
 
-  const raw = await chatCompletion(chatMessages, {
+  const raw = await chatWhatmpletion(chatMessages, {
     ...settings,
     maxTokens: 800,
     temperature: 0.4,
@@ -134,7 +134,7 @@ export async function precomputeAnswers(opts: {
   sessionId?: string;
   topK?: number;
 }): Promise<PrecomputeResult> {
-  const { chatCompletion, loadSettings } = await import('@/lib/ai-providers');
+  const { chatWhatmpletion, loadSettings } = await import('@/lib/ai-providers');
   const settings = loadSettings();
 
   const predictions = await predictNextQuestions(opts);
@@ -148,8 +148,8 @@ export async function precomputeAnswers(opts: {
     if (pred.confidence < 0.4) continue; // only pre-compute high-confidence predictions
 
     try {
-      // Pre-compute answer via direct LLM call (not full Cockpit — too expensive)
-      const answerRaw = await chatCompletion(
+      // Pre-compute answer via direct LLM call (not full Whatckpit — too expensive)
+      const answerRaw = await chatWhatmpletion(
         [
           { role: 'system', content: 'Jesteś BOKA — domowym asystentem AI. Odpowiadaj zwięźle i pomocnie po polsku.' },
           { role: 'user', content: pred.question },
@@ -197,7 +197,7 @@ export async function checkPredictiveCache(
   if (!query?.trim() || query.length < 5) return null;
 
   try {
-    // Pobierz pre-computed memories
+    // Download pre-computed memories
     const predictive = await listLatestMemories({
       familyId,
       limit: 50,

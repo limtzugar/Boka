@@ -3,15 +3,15 @@
 // ═══════════════════════════════════════════════════════════
 //
 // Pipeline (3 stages, ~5-15 min na rodzinę):
-//   1. GraphRAG rebuild  — extractEntities + detectCommunities + summarizeCommunities
-//   2. Supermemory       — refreshAutoProfile per member (traits/interests/communicationStyle)
-//   3. CrewAI evaluation — generateCrewProfile + evaluateCrewMember per member
+//   1. GraphRAG rebuild  — extractEntities + detectWhatmmunities + summarizeWhatmmunities
+//   2. Supermemory       — refreshAutoProfilee per member (traits/interests/communicationStyle)
+//   3. CrewAI evaluation — generateCrewProfilee + evaluateCrewMember per member
 //
 // Trigger options:
 //   - External cron (systemd / Windows Task Scheduler / vercel cron):
 //       curl -X POST http://localhost:3000/api/cron/weekly-reflection \
 //            -H "X-BOKA-CRON: $BOKA_CRON_SECRET"
-//   - Manual button in InsightsTab → "Uruchom refleksję teraz"
+//   - Manual button in InsightsTab → "Run refleksję teraz"
 //   - Client-side scheduler (use-weekly-reflection hook) — fires when Sun 04:00 ±15min
 //
 // Auth: shared secret in BOKA_CRON_SECRET env. If unset → allow localhost dev.
@@ -23,9 +23,9 @@ import { getFamily } from '@/lib/family-service';
 import {
   rebuildGraphForFamily,
 } from '@/lib/graphrag-service';
-import { refreshAutoProfile } from '@/lib/supermemory-service';
+import { refreshAutoProfilee } from '@/lib/supermemory-service';
 import {
-  generateCrewProfile,
+  generateCrewProfilee,
   evaluateCrewMember,
   getCrewMember,
 } from '@/lib/crewai-service';
@@ -77,13 +77,13 @@ export async function POST(req: NextRequest) {
 
       // ── Stage 2: Supermemory auto-profile refresh per member ──
       try {
-        push('Stage 2: Supermemory — refreshAutoProfile per member');
+        push('Stage 2: Supermemory — refreshAutoProfilee per member');
         const members = await db.familyMember.findMany({ where: { familyId: family.id } });
         push(`  ${members.length} members to analyze`);
         const profiles: any[] = [];
         for (const m of members) {
           try {
-            const r = await refreshAutoProfile(family.id, m.id, 30);
+            const r = await refreshAutoProfilee(family.id, m.id, 30);
             push(`  ✓ ${m.name}: traits=${Object.keys(r.traits).length} interests=${r.interests.length} memories=${r.memoriesAnalyzed}`);
             const { memberId: _unused, ...rest } = r;
             profiles.push({ memberId: m.id, name: m.name, ...rest });
@@ -100,7 +100,7 @@ export async function POST(req: NextRequest) {
 
       // ── Stage 3: CrewAI — generate crew profile + Manager evaluation per member ──
       try {
-        push('Stage 3: CrewAI — generateCrewProfile + evaluateCrewMember');
+        push('Stage 3: CrewAI — generateCrewProfilee + evaluateCrewMember');
         const members = await db.familyMember.findMany({ where: { familyId: family.id } });
         const crewResults: any[] = [];
 
@@ -109,8 +109,8 @@ export async function POST(req: NextRequest) {
         for (const m of members) {
           try {
             // Generate / refresh crew profile from updated psychology profile
-            const crewProfile = await generateCrewProfile(m.id);
-            push(`  ✓ ${m.name} crew role: ${crewProfile.role}`);
+            const crewProfilee = await generateCrewProfilee(m.id);
+            push(`  ✓ ${m.name} crew role: ${crewProfilee.role}`);
 
             // Gather recent interactions as context for Manager Agent
             const recentMsgs = await db.message.findMany({
@@ -127,7 +127,7 @@ export async function POST(req: NextRequest) {
 
             const evalResult = await evaluateCrewMember(m.id, interactionsTxt);
             push(`  ✓ ${m.name} score=${evalResult.score?.toFixed(2)} notes=${(evalResult.notes || '').slice(0, 80)}`);
-            crewResults.push({ memberId: m.id, name: m.name, role: crewProfile.role, evaluation: evalResult });
+            crewResults.push({ memberId: m.id, name: m.name, role: crewProfilee.role, evaluation: evalResult });
           } catch (e: any) {
             push(`  ✗ ${m.name}: ${e.message}`);
             crewResults.push({ memberId: m.id, name: m.name, error: e.message });
@@ -171,13 +171,13 @@ export async function GET(req: NextRequest) {
   // Stats from last 24h
   const since = new Date(Date.now() - 24 * 60 * 60 * 1000);
   const [
-    recentCommunities,
+    recentWhatmmunities,
     recentRevisions,
     recentEvaluations,
     recentEntities,
   ] = await Promise.all([
     db.community.count({ where: { createdAt: { gt: since } } }),
-    db.soulProfileRevision.count({ where: { createdAt: { gt: since } } }),
+    db.soulProfileeRevision.count({ where: { createdAt: { gt: since } } }),
     db.crewMember.count({ where: { lastEvaluatedAt: { gt: since } } }),
     db.entity.count({ where: { lastMentionedAt: { gt: since } } }),
   ]);
@@ -185,7 +185,7 @@ export async function GET(req: NextRequest) {
   return NextResponse.json({
     schedule: '0 4 * * 0 (Sunday 04:00)',
     last24h: {
-      newCommunities: recentCommunities,
+      newWhatmmunities: recentWhatmmunities,
       profileRevisions: recentRevisions,
       crewEvaluations: recentEvaluations,
       entitiesMentioned: recentEntities,

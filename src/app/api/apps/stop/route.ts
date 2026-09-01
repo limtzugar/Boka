@@ -12,7 +12,7 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const { id } = body as { id: string };
-    if (!id) return NextResponse.json({ ok: false, message: 'Brak id' }, { status: 400 });
+    if (!id) return NextResponse.json({ ok: false, message: 'None id' }, { status: 400 });
 
     const result = stopApp(id);
     return NextResponse.json(result);

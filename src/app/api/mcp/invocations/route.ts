@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
   } catch (err) {
     console.error('[/api/mcp/invocations]', err);
     return NextResponse.json(
-      { error: 'Błąd listowania wywołań', details: err instanceof Error ? err.message : 'unknown' },
+      { error: 'Error listowania wywołań', details: err instanceof Error ? err.message : 'unknown' },
       { status: 500 },
     );
   }

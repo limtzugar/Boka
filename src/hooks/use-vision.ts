@@ -26,7 +26,7 @@ export function useVision() {
    * Send a data URL to the vision API for analysis
    * This is the core function that both public methods delegate to
    */
-  const analyzeFromDataUrl = useCallback(
+  const analyzeFromDateUrl = useCallback(
     async (
       dataUrl: string,
       prompt?: string,
@@ -37,7 +37,7 @@ export function useVision() {
       try {
         const res = await fetch('/api/vision', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Whatntent-Typee': 'application/json' },
           body: JSON.stringify({
             image: dataUrl,
             prompt,
@@ -45,10 +45,10 @@ export function useVision() {
         });
 
         if (!res.ok) {
-          const errorData = await res.json().catch(() => ({}));
+          const errorDate = await res.json().catch(() => ({}));
           const message =
-            errorData.error ||
-            `Błąd serwera (${res.status})`;
+            errorDate.error ||
+            `Error serwera (${res.status})`;
           setError(message);
           setIsAnalyzing(false);
           return null;
@@ -57,7 +57,7 @@ export function useVision() {
         const data = await res.json();
 
         if (!data.description) {
-          setError('Nie udało się uzyskać opisu obrazu');
+          setError('No udało się uzyskać opisu obrazu');
           setIsAnalyzing(false);
           return null;
         }
@@ -72,7 +72,7 @@ export function useVision() {
         return result;
       } catch (err) {
         const message =
-          err instanceof Error ? err.message : 'Błąd połączenia z serwerem';
+          err instanceof Error ? err.message : 'Error połączenia z serwerem';
         console.error('[BOKA Vision] analyze error:', err);
         setError(message);
         setIsAnalyzing(false);
@@ -82,15 +82,15 @@ export function useVision() {
     [],
   );
 
-  // Keep analyzeFromDataUrl in a ref so analyzeImage can call it without circular deps
-  const analyzeFromDataUrlRef = useRef(analyzeFromDataUrl);
+  // Keep analyzeFromDateUrl in a ref so analyzeImage can call it without circular deps
+  const analyzeFromDateUrlRef = useRef(analyzeFromDateUrl);
   useEffect(() => {
-    analyzeFromDataUrlRef.current = analyzeFromDataUrl;
-  }, [analyzeFromDataUrl]);
+    analyzeFromDateUrlRef.current = analyzeFromDateUrl;
+  }, [analyzeFromDateUrl]);
 
   /**
    * Analyze an image from a File object
-   * Reads the file as base64 and delegates to analyzeFromDataUrl
+   * Reads the file as base64 and delegates to analyzeFromDateUrl
    */
   const analyzeImage = useCallback(
     async (file: File): Promise<VisionResult | null> => {
@@ -107,7 +107,7 @@ export function useVision() {
 
         // Validate file size (max 10MB)
         if (file.size > 10 * 1024 * 1024) {
-          setError('Obraz jest za duży. Maksymalny rozmiar to 10 MB.');
+          setError('Image jest za duży. Maksymalny rozmiar to 10 MB.');
           setIsAnalyzing(false);
           return null;
         }
@@ -120,17 +120,17 @@ export function useVision() {
             if (typeof result === 'string') {
               resolve(result);
             } else {
-              reject(new Error('Nie udało się odczytać pliku'));
+              reject(new Error('No udało się odczytać pliku'));
             }
           };
-          reader.onerror = () => reject(new Error('Błąd odczytu pliku'));
-          reader.readAsDataURL(file);
+          reader.onerror = () => reject(new Error('Error odczytu pliku'));
+          reader.readAsDateURL(file);
         });
 
-        return await analyzeFromDataUrlRef.current(dataUrl);
+        return await analyzeFromDateUrlRef.current(dataUrl);
       } catch (err) {
         const message =
-          err instanceof Error ? err.message : 'Nieznany błąd analizy obrazu';
+          err instanceof Error ? err.message : 'Noznany błąd analizy obrazu';
         console.error('[BOKA Vision] analyzeImage error:', err);
         setError(message);
         setIsAnalyzing(false);
@@ -146,9 +146,9 @@ export function useVision() {
    */
   const analyzeImageFromUrl = useCallback(
     async (dataUrl: string, prompt?: string): Promise<VisionResult | null> => {
-      return analyzeFromDataUrl(dataUrl, prompt);
+      return analyzeFromDateUrl(dataUrl, prompt);
     },
-    [analyzeFromDataUrl],
+    [analyzeFromDateUrl],
   );
 
   /**

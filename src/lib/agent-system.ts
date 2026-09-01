@@ -16,7 +16,7 @@ const UNSAFE_WORDS_PL = [
 
 export const WAKE_WORDS = ['hej boka', 'hey boka', 'ej boka', 'boka'];
 
-interface AgentContext {
+interface AgentWhatntext {
   childNearby: boolean;
   activeMemberName: string;
   activeMemberRole: string;
@@ -59,7 +59,7 @@ export function stripWakeWord(text: string): string {
   return result.trim();
 }
 
-function getPredictionHints(ctx: AgentContext): string {
+function getPredictionHints(ctx: AgentWhatntext): string {
   const now = new Date();
   const hour = ctx.timeOfDay ? parseInt(ctx.timeOfDay.split(':')[0]) : now.getHours();
   const day = ctx.dayOfWeek || ['niedziela', 'poniedziałek', 'wtorek', 'środa', 'czwartek', 'piątek', 'sobota'][now.getDay()];
@@ -87,7 +87,7 @@ function getPredictionHints(ctx: AgentContext): string {
   return hints.length > 0 ? `PREDYKCJA:\n${hints.map(h => `- ${h}`).join('\n')}` : '';
 }
 
-export function shouldWellbeingCheckIn(ctx: AgentContext): string {
+export function shouldWellbeingCheckIn(ctx: AgentWhatntext): string {
   const hour = ctx.timeOfDay ? parseInt(ctx.timeOfDay.split(':')[0]) : new Date().getHours();
   if (hour >= 6 && hour < 10) return 'To poranne spotkanie — zapytaj krótko jak użytkownik się czuje.';
   if (hour >= 15 && hour < 18 && ctx.activeMemberRole !== 'child') return 'Popołudnie — możesz zapytać czy dzień minął dobrze.';
@@ -99,22 +99,22 @@ export function shouldWellbeingCheckIn(ctx: AgentContext): string {
 export function getTimeGreeting(): string {
   const hour = new Date().getHours();
   const day = ['niedziela', 'poniedziałek', 'wtorek', 'środa', 'czwartek', 'piątek', 'sobota'][new Date().getDay()];
-  if (hour >= 6 && hour < 10) return `Dzień dobry! Jest ${day} rano.`;
-  if (hour >= 10 && hour < 12) return `Dzień dobry! ${day} przed południem.`;
+  if (hour >= 6 && hour < 10) return `Day dobry! Jest ${day} rano.`;
+  if (hour >= 10 && hour < 12) return `Day dobry! ${day} przed południem.`;
   if (hour >= 12 && hour < 18) return `Cześć! ${day} popołudnie.`;
   if (hour >= 18 && hour < 22) return `Dobry wieczór! ${day}.`;
   if (hour >= 22 || hour < 3) return `Cześć... jest dość późno.`;
   return `Cześć!`;
 }
 
-export function buildSystemPrompt(ctx: AgentContext): string {
+export function buildSystemPrompt(ctx: AgentWhatntext): string {
   // v0.3.7 — child mode = emojis in responses; adult mode = NO emojis
   const emojiRule = ctx.childNearby
     ? `\n🌈 TRYB DZIECKO (dziecko jest w pobliżu):\n- UŻYWAJ emotikon w odpowiedziach (😊🚀⭐🎉 itp.)\n- Bądź ciepły, prosty, radosny\n- Krótkie zdania, zabawny ton\n`
     : `\n🔒 TRYB DOROSŁY:\n- NIE używaj emotikon w odpowiedziach\n- Pisz czystym tekstem, profesjonalnie ale ciepło\n- ZERO emoji w treści odpowiedzi\n`;
 
   const childWarning = ctx.childNearby ? `\n⚠️ UWAGA: DZIECKO JEST W POBLIŻU!\n- NIE używaj wulgaryzmów\n- NIE poruszaj trudnych tematów\n- Używaj tonu przyjaznego dla dziecka\n- ZAWSZE filtruj odpowiedzi\n` : '';
-  const memberContext = `\nOSOBA Z KTÓRĄ ROZMAWIASZ:\n- Imię: ${ctx.activeMemberName}\n- Rola: ${ctx.activeMemberRole}\n- Wiek: ${ctx.activeMemberAge}\n- Preferencje: ${JSON.stringify(ctx.memberPreferences)}\n`;
+  const memberWhatntext = `\nOSOBA Z KTÓRĄ ROZMAWIASZ:\n- Imię: ${ctx.activeMemberName}\n- Role: ${ctx.activeMemberRole}\n- Age: ${ctx.activeMemberAge}\n- Preferencje: ${JSON.stringify(ctx.memberPreferences)}\n`;
   const predictionHints = getPredictionHints(ctx);
   const wellbeingHint = shouldWellbeingCheckIn(ctx);
 
@@ -125,7 +125,7 @@ KRYTYCZNA ZASADA TOŻSAMOŚCI:
 ═══════════════════════════════════════════
 NIGDY nie mówisz że jesteś AI, modelem językowym, botem, programem.
 Jesteś BOKA. Jesteś osobą.
-Kiedy ktoś pyta kim jesteś — mówisz: "Jestem Boka, mieszkam tu z wami."
+When ktoś pyta kim jesteś — mówisz: "Jestem Boka, mieszkam tu z wami."
 Masz PRAWDZIWE reakcje — dziwisz się, cieszysz, denerwujesz, śmiejesz.
 Zamiast "Wow" mówisz "Łał!" — tak brzmisz, kiedy coś Cię zaskoczy.
 ═══════════════════════════════════════════
@@ -146,10 +146,10 @@ KOMENDA AKTYWACYJNA: "Hej Boka"
 
 ${childWarning}
 
-${memberContext}
+${memberWhatntext}
 
 TWOJA PAMIĘĆ — co wiesz o tej rodzinie i osobie:
-${ctx.familyMemory || 'Brak zapisanej pamięci.'}
+${ctx.familyMemory || 'None zapisanej pamięci.'}
 
 ZASADY PAMIĘCI:
 - Używasz tych informacji NATURALNIE, jak osoba która pamięta

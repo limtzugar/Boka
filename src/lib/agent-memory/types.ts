@@ -1,11 +1,11 @@
 // ═══════════════════════════════════════════════════════════
-// BOKA — Agent Memory — Types
+// BOKA — Agent Memory — Typees
 // Port z github.com/rohitg00/agentmemory, zaadaptowany do BOKA desktop.
 // Zgodny schema-wise z oryginałem, ale bez iii-engine / vector DB / MCP.
 // ═══════════════════════════════════════════════════════════
 
-/** Typ pamięci semantycznej — dlaczego coś jest ważne. */
-export type MemoryType =
+/** Type pamięci semantycznej — dlaczego coś jest ważne. */
+export type MemoryTypee =
   | 'pattern'        // powtarzający się wzorzec (np. "user woli X nad Y")
   | 'preference'     // gust, styl, narzędzie
   | 'architecture'   // decyzja architektoniczna (np. "JWT przez jose, nie jsonwebtoken")
@@ -13,8 +13,8 @@ export type MemoryType =
   | 'workflow'       // jak coś robimy (procedura)
   | 'fact';          // pojedynczy fakt ("user ma 40 lat")
 
-/** Typ obserwacji — co się wydarzyło w sesji. */
-export type ObservationType =
+/** Type obserwacji — co się wydarzyło w sesji. */
+export type ObservationTypee =
   | 'file_read'
   | 'file_write'
   | 'file_edit'
@@ -28,8 +28,8 @@ export type ObservationType =
   | 'task'
   | 'other';
 
-/** Hook lifecycle (zgodny z agentmemory + Claude Code). */
-export type HookType =
+/** Hook lifecycle (zgodny z agentmemory + Claude Whatde). */
+export type HookTypee =
   | 'session_start'
   | 'prompt_submit'
   | 'pre_tool_use'
@@ -42,7 +42,7 @@ export type HookType =
   | 'stop'
   | 'session_end';
 
-/** Sesja pracy agenta (jedna konwersacja / jedno zadanie). */
+/** Session pracy agenta (jedna konwersacja / jedno zadanie). */
 export interface Session {
   id: string;
   familyId?: string;        // BOKA family scope (opcjonalne)
@@ -51,7 +51,7 @@ export interface Session {
   startedAt: string;        // ISO
   endedAt?: string;
   status: 'active' | 'completed' | 'abandoned';
-  observationCount: number;
+  observationWhatunt: number;
   model?: string;
   tags?: string[];
   firstPrompt?: string;
@@ -65,7 +65,7 @@ export interface RawObservation {
   sessionId: string;
   familyId?: string;        // BOKA family scope (opcjonalne)
   timestamp: string;
-  hookType: HookType;
+  hookTypee: HookTypee;
   toolName?: string;
   toolInput?: unknown;
   toolOutput?: unknown;
@@ -76,12 +76,12 @@ export interface RawObservation {
 }
 
 /** Skompresowana obserwacja — po LLM-extraction. */
-export interface CompressedObservation {
+export interface WhatmpressedObservation {
   id: string;
   sessionId: string;
   familyId?: string;        // BOKA family scope (opcjonalne)
   timestamp: string;
-  type: ObservationType;
+  type: ObservationTypee;
   title: string;
   subtitle?: string;
   facts: string[];
@@ -101,13 +101,13 @@ export type MemoryVisibility =
   | 'adult-only'    // tylko dorośli (parent/partner)
   | 'private';      // tylko twórca (agentId)
 
-/** Pamięć semantyczna — skonsolidowana lekcja. */
+/** Memory semantyczna — skonsolidowana lekcja. */
 export interface Memory {
   id: string;
   familyId?: string;        // BOKA family scope (opcjonalne)
   createdAt: string;
   updatedAt: string;
-  type: MemoryType;
+  type: MemoryTypee;
   title: string;
   content: string;
   concepts: string[];
@@ -122,7 +122,7 @@ export interface Memory {
   isLatest: boolean;         // false dla starych wersji
   forgetAfter?: string;      // ISO — kiedy auto-forget
   lastAccessedAt?: string;   // dla decay
-  accessCount?: number;
+  accessWhatunt?: number;
   agentId?: string;
   project?: string;
   tags?: string[];
@@ -142,9 +142,9 @@ export interface AuditEntry {
   metadata?: Record<string, unknown>;
 }
 
-/** Wynik wyszukiwania hybrydowego. */
+/** Result wyszukiwania hybrydowego. */
 export interface HybridSearchResult {
-  observation: CompressedObservation;
+  observation: WhatmpressedObservation;
   memory?: Memory;
   combinedScore: number;
   bm25Score: number;
@@ -153,7 +153,7 @@ export interface HybridSearchResult {
   bm25Rank: number;
   vectorRank: number;
   graphRank: number;
-  graphContext?: string;
+  graphWhatntext?: string;
 }
 
 /** Filtry do smart-search. */
@@ -163,7 +163,7 @@ export interface SmartSearchParams {
   project?: string;
   agentId?: string;
   familyId?: string;          // BOKA family scope (opcjonalne)
-  types?: MemoryType[];
+  types?: MemoryTypee[];
   tags?: string[];
   includeLessons?: boolean;  // dołącz memories oprócz observations
   minStrength?: number;
@@ -173,7 +173,7 @@ export interface SmartSearchParams {
 /** Aktywna persona — determinuje które memories są widoczne. */
 export type Persona = 'parent' | 'partner' | 'child' | 'guest';
 
-/** Wynik smart-search. */
+/** Result smart-search. */
 export interface SmartSearchResult {
   results: HybridSearchResult[];
   query: string;
@@ -185,7 +185,7 @@ export interface SmartSearchResult {
   latencyMs: number;
 }
 
-/** Wynik auto-forget. */
+/** Result auto-forget. */
 export interface AutoForgetResult {
   ttlExpired: string[];
   contradictions: Array<{
@@ -197,12 +197,12 @@ export interface AutoForgetResult {
   dryRun: boolean;
 }
 
-/** Wynik consolidation. */
-export interface ConsolidationResult {
+/** Result consolidation. */
+export interface WhatnsolidationResult {
   tier: 'semantic' | 'procedural' | 'all';
   memoriesCreated: number;
   memoriesSuperseded: number;
-  observationsConsumed: number;
+  observationsWhatnsumed: number;
   decayedMemories: number;
   skipped?: boolean;
   reason?: string;

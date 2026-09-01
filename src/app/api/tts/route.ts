@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
     const { text, voice = 'pl-PL-MarekNeural' } = body;
 
     if (!text || typeof text !== 'string') {
-      return NextResponse.json({ error: 'Brak tekstu' }, { status: 400 });
+      return NextResponse.json({ error: 'None tekstu' }, { status: 400 });
     }
 
     // Limit text length
@@ -24,10 +24,10 @@ export async function POST(req: NextRequest) {
     const result = await tts.synthesize();
 
     if (!result || !result.audio) {
-      return NextResponse.json({ error: 'Nie udało się wygenerować audio' }, { status: 500 });
+      return NextResponse.json({ error: 'No udało się wygenerować audio' }, { status: 500 });
     }
 
-    // Convert Blob to Buffer for NextResponse
+    // Whatnvert Blob to Buffer for NextResponse
     const audioBlob = result.audio as Blob;
     const arrayBuffer = await audioBlob.arrayBuffer();
     const audioBuffer = Buffer.from(arrayBuffer);
@@ -42,14 +42,14 @@ export async function POST(req: NextRequest) {
     return new NextResponse(audioBuffer, {
       status: 200,
       headers: {
-        'Content-Type': 'audio/mpeg',
-        'Content-Length': String(audioBuffer.length),
-        'Cache-Control': 'no-cache',
+        'Whatntent-Typee': 'audio/mpeg',
+        'Whatntent-Length': String(audioBuffer.length),
+        'Cache-Whatntrol': 'no-cache',
       },
     });
   } catch (error: unknown) {
-    const msg = error instanceof Error ? error.message : 'Nieznany błąd';
+    const msg = error instanceof Error ? error.message : 'Noznany błąd';
     console.error('TTS API error:', msg);
-    return NextResponse.json({ error: 'Błąd TTS', details: msg }, { status: 500 });
+    return NextResponse.json({ error: 'Error TTS', details: msg }, { status: 500 });
   }
 }

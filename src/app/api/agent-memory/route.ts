@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { remember } from '@/lib/agent-memory/engine';
 import { listLatestMemories, deleteMemory } from '@/lib/agent-memory/store';
-import type { MemoryType } from '@/lib/agent-memory/types';
+import type { MemoryTypee } from '@/lib/agent-memory/types';
 
 // POST /api/agent-memory — remember (zapisz lekcję z deduplikacją)
 // GET  /api/agent-memory — list memories
@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json() as {
       content: string;
-      type?: MemoryType;
+      type?: MemoryTypee;
       concepts?: string[];
       files?: string[];
       tags?: string[];

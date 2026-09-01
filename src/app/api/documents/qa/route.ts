@@ -12,13 +12,13 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { documentId, question } = body;
     if (!documentId || !question) {
-      return NextResponse.json({ error: 'Brak documentId lub question' }, { status: 400 });
+      return NextResponse.json({ error: 'None documentId lub question' }, { status: 400 });
     }
     const answer = await askDocument(documentId, question);
     return NextResponse.json({ answer });
   } catch (err) {
     return NextResponse.json(
-      { error: 'Błąd Q&A', details: err instanceof Error ? err.message : 'unknown' },
+      { error: 'Error Q&A', details: err instanceof Error ? err.message : 'unknown' },
       { status: 500 }
     );
   }

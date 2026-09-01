@@ -9,13 +9,13 @@ export async function GET(req: NextRequest) {
     const memberId = req.nextUrl.searchParams.get('memberId') || undefined;
     const domain = req.nextUrl.searchParams.get('domain') || undefined;
     const emotion = req.nextUrl.searchParams.get('emotion') || undefined;
-    const entryType = req.nextUrl.searchParams.get('entryType') || undefined;
+    const entryTypee = req.nextUrl.searchParams.get('entryTypee') || undefined;
     const limit = parseInt(req.nextUrl.searchParams.get('limit') || '10');
 
     if (!q) return NextResponse.json({ error: 'Podaj query (q=...)' }, { status: 400 });
 
     const results = await vectorSearch(q, {
-      familyId: family.id, memberId, domain, emotionTag: emotion, entryType, onlyValid: true,
+      familyId: family.id, memberId, domain, emotionTag: emotion, entryTypee, onlyValid: true,
     }, limit);
 
     return NextResponse.json({ results, count: results.length });

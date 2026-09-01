@@ -10,7 +10,7 @@ import {
   Loader2, Check, X, AlertTriangle, Zap, HardDrive, Play, Square,
   FolderOpen, RefreshCw, ChevronDown, Sparkles, CircleDot, Network,
   Star, Baby, User, Users, Upload, Trash2, Calendar, Heart,
-  Coins, CheckCircle, XCircle, Wifi, Plus, Pencil, Bot,
+  Whatins, CheckCircle, XCircle, Wifi, Plus, Pencil, Bot,
 } from 'lucide-react';
 import { PixelAvatar, getCategoryLabel } from '@/components/pixel-avatar';
 import { BokaFaceMini, type FaceStyle } from '@/components/boka-face';
@@ -53,7 +53,7 @@ export function SettingsTab() {
     ggufFilePath: '',
     ggufServerPath: '',
     ggufPort: 8080,
-    ggufContextSize: 4096,
+    ggufWhatntextSize: 4096,
     ggufGpuLayers: -1,
     customUrl: '',
     customKey: '',
@@ -111,7 +111,7 @@ export function SettingsTab() {
             ggufFilePath: data.settings.ggufFilePath || '',
             ggufServerPath: data.settings.ggufServerPath || '',
             ggufPort: data.settings.ggufPort || 8080,
-            ggufContextSize: data.settings.ggufContextSize || 4096,
+            ggufWhatntextSize: data.settings.ggufWhatntextSize || 4096,
             ggufGpuLayers: data.settings.ggufGpuLayers ?? -1,
             customUrl: data.settings.customUrl || '',
             customKey: data.settings.customKey || '',
@@ -131,7 +131,7 @@ export function SettingsTab() {
     setOllamaLoading(true);
     try {
       const targetUrl = url || settings.ollamaUrl || '';
-      const res = await fetch(`/api/ollama-models?url=${encodeURIComponent(targetUrl)}&detail=1`);
+      const res = await fetch(`/api/ollama-models?url=${encodeURIWhatmponent(targetUrl)}&detail=1`);
       if (!res.ok) {
         setOllamaModels([]);
         setOllamaRunning([]);
@@ -145,7 +145,7 @@ export function SettingsTab() {
     } catch (e) {
       setOllamaModels([]);
       setOllamaRunning([]);
-      setOllamaStatus({ reachable: false, error: e instanceof Error ? e.message : 'Błąd połączenia' });
+      setOllamaStatus({ reachable: false, error: e instanceof Error ? e.message : 'Error połączenia' });
     }
     setOllamaLoading(false);
   };
@@ -157,7 +157,7 @@ export function SettingsTab() {
     try {
       const res = await fetch('/api/ollama-models', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Whatntent-Typee': 'application/json' },
         body: JSON.stringify({ url: settings.ollamaUrl, model: ollamaPullName.trim() }),
       });
       const data = await res.json();
@@ -167,7 +167,7 @@ export function SettingsTab() {
         fetchOllamaModels();
       }
     } catch (e) {
-      setOllamaPullResult({ ok: false, message: e instanceof Error ? e.message : 'Błąd pobierania' });
+      setOllamaPullResult({ ok: false, message: e instanceof Error ? e.message : 'Error pobierania' });
     }
     setOllamaPulling(false);
     setTimeout(() => setOllamaPullResult(null), 6000);
@@ -194,22 +194,22 @@ export function SettingsTab() {
     try {
       const res = await fetch('/api/settings', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Whatntent-Typee': 'application/json' },
         body: JSON.stringify({ settings }),
       });
       if (!res.ok) {
-        setTestResult({ ok: false, message: 'Błąd zapisu' });
+        setTestResult({ ok: false, message: 'Error zapisu' });
         setSaving(false);
         return;
       }
       const data = await res.json();
       if (data.ok) {
-        setTestResult({ ok: true, message: 'Ustawienia zapisane!' });
+        setTestResult({ ok: true, message: 'Settings zapisane!' });
       } else {
-        setTestResult({ ok: false, message: data.error || 'Błąd zapisu' });
+        setTestResult({ ok: false, message: data.error || 'Error zapisu' });
       }
     } catch {
-      setTestResult({ ok: false, message: 'Błąd połączenia' });
+      setTestResult({ ok: false, message: 'Error połączenia' });
     }
     setSaving(false);
     setTimeout(() => setTestResult(null), 3000);
@@ -221,19 +221,19 @@ export function SettingsTab() {
     try {
       await fetch('/api/settings', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Whatntent-Typee': 'application/json' },
         body: JSON.stringify({ settings }),
       });
       const res = await fetch('/api/settings', { method: 'PUT' });
       if (!res.ok) {
-        setTestResult({ ok: false, message: 'Błąd testu połączenia' });
+        setTestResult({ ok: false, message: 'Error testu połączenia' });
         setTesting(false);
         return;
       }
       const data = await res.json();
       setTestResult({ ok: data.ok, message: data.message });
     } catch {
-      setTestResult({ ok: false, message: 'Błąd testu połączenia' });
+      setTestResult({ ok: false, message: 'Error testu połączenia' });
     }
     setTesting(false);
     setTimeout(() => setTestResult(null), 5000);
@@ -246,7 +246,7 @@ export function SettingsTab() {
   const providers: { id: string; label: string; icon: React.ReactNode; desc: string }[] = [
     { id: 'openrouter', label: 'OpenRouter', icon: <Globe size={16} />, desc: 'Dostęp do setek modeli: GPT, Claude, Llama, Mistral' },
     { id: 'ollama', label: 'Ollama (lokalny)', icon: <Cpu size={16} />, desc: 'Lokalne modele na Twoim komputerze. Darmowe, prywatne.' },
-    { id: 'gguf', label: 'Plik GGUF (z dysku)', icon: <HardDrive size={16} />, desc: 'Wskaż dowolny plik .gguf — BOKA uruchomi go przez llama.cpp' },
+    { id: 'gguf', label: 'File GGUF (z dysku)', icon: <HardDrive size={16} />, desc: 'Wskaż dowolny plik .gguf — BOKA uruchomi go przez llama.cpp' },
         { id: 'custom', label: 'Własny API', icon: <Server size={16} />, desc: 'LM Studio, vLLM — dowolny serwer OpenAI-compat' },
   ];
 
@@ -264,7 +264,7 @@ export function SettingsTab() {
             <BokaFaceMini emotion="neutral" size={192} faceStyle={faceStyle} formulaSettings={formulaSettings} />
           </div>
           <div className="text-center">
-            <div className="text-xs font-mono text-[#e8e8f5]">Podgląd na żywo</div>
+            <div className="text-xs font-mono text-[#e8e8f5]">Preview na żywo</div>
             <div className="text-[10px] text-[#8888aa] font-mono mt-0.5">
               {faceStyle === 'plasma' ? 'Plazma' : faceStyle === 'water' ? 'Tafla wody' : faceStyle === 'obsidian' ? 'Obsidian' : 'Formuła'}
               {faceStyle === 'formula' && ` · ${formulaSettings.type} · ${FORMULA_PALETTES.find(p => p.id === formulaSettings.palette)?.label}`}
@@ -282,7 +282,7 @@ export function SettingsTab() {
             {([
               { id: 'plasma' as FaceStyle, label: 'Plazma', desc: 'Luminacyjna kula', icon: <Sparkles size={16} /> },
               { id: 'water' as FaceStyle, label: 'Tafla wody', desc: 'Kółka fal', icon: <Activity size={16} /> },
-              { id: 'obsidian' as FaceStyle, label: 'Obsidian', desc: 'Graf wiedzy', icon: <CircleDot size={16} /> },
+              { id: 'obsidian' as FaceStyle, label: 'Obsidian', desc: 'Graph wiedzy', icon: <CircleDot size={16} /> },
               { id: 'formula' as FaceStyle, label: 'Formuła', desc: 'Wzory matematyczne', icon: <Network size={16} /> },
             ]).map(s => (
               <button
@@ -308,7 +308,7 @@ export function SettingsTab() {
             <div className="mt-3 p-3 bg-[#252535] border border-[#383850] space-y-3">
               {/* Formula type */}
               <div>
-                <label className="text-xs font-mono text-[#8888aa] mb-1 block">Typ wzoru</label>
+                <label className="text-xs font-mono text-[#8888aa] mb-1 block">Type wzoru</label>
                 <div className="grid grid-cols-4 gap-0">
                   {FORMULA_TYPES.map(ft => (
                     <button key={ft.id} onClick={() => setFormulaSettings({ type: ft.id })}
@@ -319,7 +319,7 @@ export function SettingsTab() {
                 </div>
               </div>
 
-              {/* Color palette */}
+              {/* Whatlor palette */}
               <div>
                 <label className="text-xs font-mono text-[#8888aa] mb-1 block">Paleta kolorów</label>
                 <div className="grid grid-cols-6 gap-0">
@@ -357,7 +357,7 @@ export function SettingsTab() {
               </div>
               <div>
                 <label className="flex items-center justify-between text-xs font-mono text-[#8888aa] mb-0.5">
-                  <span>Nieprzezroczystość</span><span className="text-[#00f5d4]">{formulaSettings.opacity.toFixed(2)}</span>
+                  <span>Noprzezroczystość</span><span className="text-[#00f5d4]">{formulaSettings.opacity.toFixed(2)}</span>
                 </label>
                 <input type="range" min={0.02} max={1} step={0.01} value={formulaSettings.opacity}
                   onChange={e => setFormulaSettings({ opacity: parseFloat(e.target.value) })} className="w-full" />
@@ -424,7 +424,7 @@ export function SettingsTab() {
           </div>
           {cameraStyle === 'spherical' && (
             <div className="mt-3 p-3 bg-[#252535] border border-[#383850] space-y-3">
-              <div className="text-[10px] font-mono uppercase tracking-wider text-[#6ec6e7]">Ustawienia oka</div>
+              <div className="text-[10px] font-mono uppercase tracking-wider text-[#6ec6e7]">Settings oka</div>
               <div>
                 <label className="flex items-center justify-between text-xs font-mono text-[#8888aa] mb-1">
                   <span>Ostrość (contrast)</span>
@@ -494,7 +494,7 @@ export function SettingsTab() {
               <span className="text-sm font-mono text-[#e8e8f5]">Konfiguracja OpenRouter</span>
             </div>
             <div>
-              <label className="text-xs font-mono text-[#8888aa] mb-1 block">Klucz API</label>
+              <label className="text-xs font-mono text-[#8888aa] mb-1 block">API Key</label>
               <div className="relative">
                 <input
                   type={showKeys ? 'text' : 'password'}
@@ -534,7 +534,7 @@ export function SettingsTab() {
               <div className="flex gap-0">
                 <input type="text" value={settings.ollamaUrl} onChange={e => update('ollamaUrl', e.target.value)} placeholder="http://localhost:11434" className="flex-1 bg-[#252535] border border-[#383850]  px-3 py-2 text-sm text-[#e8e8f5] placeholder:text-[#8888aa] focus:outline-none focus:border-[#00f5d4]/50 font-mono" />
                 <button onClick={() => fetchOllamaModels()} disabled={ollamaLoading} className="px-3 py-2  bg-[#252535] border border-[#383850] text-[#8888aa] hover:border-[#00f5d4]/30 text-xs font-mono disabled:opacity-50">
-                  {ollamaLoading ? '...' : 'Odśwież'}
+                  {ollamaLoading ? '...' : 'Refresh'}
                 </button>
               </div>
             </div>
@@ -548,13 +548,13 @@ export function SettingsTab() {
               }`}>
                 {ollamaStatus.reachable ? (
                   <span>
- Serwer Ollama działa
+ Server Ollama działa
                     {ollamaStatus.serverVersion && <span className="opacity-60"> · {ollamaStatus.serverVersion}</span>}
                     {' · '}{ollamaModels.length} modeli
                     {ollamaRunning.length > 0 && <span className="text-[#ffd93d]"> · {ollamaRunning.length} załadowanych w RAM</span>}
                   </span>
                 ) : (
- <span> Serwer nieosiągalny: {ollamaStatus.error ||'sprawdź czy Ollama działa'}</span>
+ <span> Server nieosiągalny: {ollamaStatus.error ||'sprawdź czy Ollama działa'}</span>
                 )}
               </div>
             )}
@@ -620,7 +620,7 @@ export function SettingsTab() {
                 <div className="bg-[#252535] border border-[#383850]  p-2">
                   <input type="text" value={settings.ollamaModel} onChange={e => update('ollamaModel', e.target.value)} placeholder="llama3" className="w-full bg-[#0f0f17] border border-[#383850]  px-3 py-2 text-sm text-[#e8e8f5] placeholder:text-[#8888aa] focus:outline-none focus:border-[#00f5d4]/50 font-mono mb-2" />
                   <div className="text-[10px] text-[#8888aa] font-mono">
-                    Nie wykryto modeli. Uruchom Ollamę i pobierz model poniżej, albo w terminalu: <code className="text-[#4ade80]">ollama pull llama3</code>
+                    No wykryto modeli. Run Ollamę i pobierz model poniżej, albo w terminalu: <code className="text-[#4ade80]">ollama pull llama3</code>
                   </div>
                 </div>
               )}
@@ -628,7 +628,7 @@ export function SettingsTab() {
 
             {/* Pull new model helper */}
             <div className="bg-[#0f0f17] border border-[#383850]  p-2">
-              <div className="text-[10px] font-mono text-[#8888aa] mb-2 uppercase tracking-wider">⬇️ Pobierz nowy model z rejestru Ollama</div>
+              <div className="text-[10px] font-mono text-[#8888aa] mb-2 uppercase tracking-wider">⬇️ Download nowy model z rejestru Ollama</div>
               <div className="flex gap-0">
                 <input
                   type="text"
@@ -644,7 +644,7 @@ export function SettingsTab() {
                   disabled={ollamaPulling || !ollamaPullName.trim()}
                   className="px-4 py-2  bg-[#4ade80]/10 border border-[#4ade80]/40 text-[#4ade80] hover:bg-[#4ade80]/20 text-xs font-mono disabled:opacity-40"
                 >
-                  {ollamaPulling ? 'Pobieranie...' : 'Pobierz'}
+                  {ollamaPulling ? 'Downloading...' : 'Download'}
                 </button>
               </div>
               <div className="text-[10px] text-[#8888aa] font-mono mt-2">
@@ -663,18 +663,18 @@ export function SettingsTab() {
                 </div>
               )}
               <div className="text-[9px] text-[#8888aa]/70 font-mono mt-2">
- ️ Pobieranie dużych modeli (np. 70B) może trwać wiele minut i wymaga kilkudziesięciu GB RAM/VRAM. Polecam modele 7B-13B na start.
+ ️ Downloading dużych modeli (np. 70B) może trwać wiele minut i wymaga kilkudziesięciu GB RAM/VRAM. Polecam modele 7B-13B na start.
               </div>
             </div>
 
             {/* Hint how to install Ollama if not running */}
             {ollamaStatus && !ollamaStatus.reachable && (
               <div className="bg-[#252535] border border-[#383850]  p-2 text-[11px] font-mono text-[#8888aa] space-y-1">
-                <div className="text-[#e8e8f5]">Jak uruchomić Ollamę:</div>
-                <div>1. Pobierz z <span className="text-[#00f5d4]">https://ollama.com/download</span></div>
+                <div className="text-[#e8e8f5]">How uruchomić Ollamę:</div>
+                <div>1. Download z <span className="text-[#00f5d4]">https://ollama.com/download</span></div>
                 <div>2. Zainstaluj i uruchom aplikację Ollama</div>
                 <div>3. W terminalu: <code className="text-[#4ade80]">ollama pull llama3</code></div>
-                <div>4. Wróć tutaj i kliknij „Odśwież”</div>
+                <div>4. Wróć tutaj i kliknij „Refresh”</div>
               </div>
             )}
           </div>
@@ -695,7 +695,7 @@ export function SettingsTab() {
               <input type="text" value={settings.customUrl} onChange={e => update('customUrl', e.target.value)} placeholder="http://192.168.1.100:8080/v1" className="w-full bg-[#252535] border border-[#383850]  px-3 py-2 text-sm text-[#e8e8f5] placeholder:text-[#8888aa] focus:outline-none focus:border-[#00f5d4]/50 font-mono" />
             </div>
             <div>
-              <label className="text-xs font-mono text-[#8888aa] mb-1 block">Klucz API (opcjonalny)</label>
+              <label className="text-xs font-mono text-[#8888aa] mb-1 block">API Key (opcjonalny)</label>
               <input type={showKeys ? 'text' : 'password'} value={settings.customKey} onChange={e => update('customKey', e.target.value)} placeholder="opcjonalny" className="w-full bg-[#252535] border border-[#383850]  px-3 py-2 text-sm text-[#e8e8f5] placeholder:text-[#8888aa] focus:outline-none focus:border-[#00f5d4]/50 font-mono" />
             </div>
             <div>
@@ -712,14 +712,14 @@ export function SettingsTab() {
           </div>
           <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <label className="text-xs font-mono text-[#8888aa] mb-1.5 block">Temperatura: {(settings.temperature ?? 0.7).toFixed(1)}</label>
+              <label className="text-xs font-mono text-[#8888aa] mb-1.5 block">Temperature: {(settings.temperature ?? 0.7).toFixed(1)}</label>
               <input type="range" min="0" max="1.5" step="0.1" value={settings.temperature ?? 0.7} onChange={e => update('temperature', parseFloat(e.target.value))} className="w-full accent-[#00f5d4]" />
               <div className="flex justify-between text-[10px] text-[#8888aa] font-mono mt-1"><span>Precyzyjny</span><span>Kreatywny</span></div>
             </div>
             <div>
-              <label className="text-xs font-mono text-[#8888aa] mb-1.5 block">Max tokenów: {settings.maxTokens}</label>
+              <label className="text-xs font-mono text-[#8888aa] mb-1.5 block">Max tokens: {settings.maxTokens}</label>
               <input type="range" min="256" max="4096" step="256" value={settings.maxTokens} onChange={e => update('maxTokens', parseInt(e.target.value))} className="w-full accent-[#00f5d4]" />
-              <div className="flex justify-between text-[10px] text-[#8888aa] font-mono mt-1"><span>Krótkie</span><span>Długie</span></div>
+              <div className="flex justify-between text-[10px] text-[#8888aa] font-mono mt-1"><span>Krótkie</span><span>Debtie</span></div>
             </div>
             <div>
               <label className="text-xs font-mono text-[#8888aa] mb-1.5 block">Top-p: {(settings.topP ?? 0.95).toFixed(2)}</label>
@@ -729,7 +729,7 @@ export function SettingsTab() {
             <div>
               <label className="text-xs font-mono text-[#8888aa] mb-1.5 block">Frequency penalty: {(settings.frequencyPenalty ?? 0).toFixed(1)}</label>
               <input type="range" min="0" max="2" step="0.1" value={settings.frequencyPenalty ?? 0} onChange={e => update('frequencyPenalty', parseFloat(e.target.value))} className="w-full accent-[#00f5d4]" />
-              <div className="flex justify-between text-[10px] text-[#8888aa] font-mono mt-1"><span>Brak</span><span>Unikaj powtórzeń</span></div>
+              <div className="flex justify-between text-[10px] text-[#8888aa] font-mono mt-1"><span>None</span><span>Unikaj powtórzeń</span></div>
             </div>
           </div>
         </div>
@@ -737,7 +737,7 @@ export function SettingsTab() {
         {/* ── KONTROLA KOSZTÓW ── */}
         <div className="mb-6 space-y-2">
           <div className="flex items-center gap-0 mb-2">
-            <Coins size={16} className="text-[#4ade80]" />
+            <Whatins size={16} className="text-[#4ade80]" />
             <span className="text-sm font-mono text-[#e8e8f5]">Kontrola kosztów</span>
             <span className="text-[10px] text-[#8888aa]">— oszczędza kredyty / tokeny</span>
           </div>
@@ -768,7 +768,7 @@ export function SettingsTab() {
                 <input type="range" min="64" max="1024" step="64" value={settings.maxTokensShort ?? 256} onChange={e => update('maxTokensShort', parseInt(e.target.value))} className="w-full accent-[#4ade80]" />
               </div>
               <div>
-                <label className="text-xs font-mono text-[#8888aa] mb-1 block">Długie: {settings.maxTokensLong ?? 1500}</label>
+                <label className="text-xs font-mono text-[#8888aa] mb-1 block">Debtie: {settings.maxTokensLong ?? 1500}</label>
                 <input type="range" min="512" max="4096" step="256" value={settings.maxTokensLong ?? 1500} onChange={e => update('maxTokensLong', parseInt(e.target.value))} className="w-full accent-[#4ade80]" />
               </div>
               <div>
@@ -824,7 +824,7 @@ export function SettingsTab() {
         <div className="mb-6 space-y-2">
           <div className="flex items-center gap-0 mb-2">
             <Mic size={16} className="text-[#ff6b6b]" />
-            <span className="text-sm font-mono text-[#e8e8f5]">Rozpoznawanie mowy (ASR)</span>
+            <span className="text-sm font-mono text-[#e8e8f5]">Speech recognition (ASR)</span>
           </div>
           <div className="grid gap-0 md:grid-cols-3">
             {([
@@ -867,14 +867,14 @@ export function SettingsTab() {
             </div>
           )}
           <div className="text-[10px] font-mono text-[#8888aa]">
-            Uruchom Whisper: python3 scripts/whisper/whisper-server.py --model {settings.whisperModel}
+            Run Whisper: python3 scripts/whisper/whisper-server.py --model {settings.whisperModel}
           </div>
         </div>
 
         <div className="flex items-center gap-0 mb-2">
           <button onClick={save} disabled={saving} className="flex items-center gap-0 px-5 py-2.5  bg-[#00f5d4] text-[#0a0a0f] font-mono text-sm disabled:opacity-50 hover:bg-[#00dbc4] transition-all">
             {saving ? <Loader2 size={16} className="animate-spin" /> : <CheckCircle size={16} />}
-            Zapisz
+            Save
           </button>
           <button onClick={test} disabled={testing} className="flex items-center gap-0 px-5 py-2.5  bg-[#252535] border border-[#383850] text-[#e8e8f5] font-mono text-sm disabled:opacity-50 hover:border-[#00f5d4]/50 transition-all">
             {testing ? <Loader2 size={16} className="animate-spin" /> : <Wifi size={16} />}
@@ -943,15 +943,15 @@ function GgufSettings({ settings, update }: {
       // Save settings first so server reads latest config
       await fetch('/api/settings', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Whatntent-Typee': 'application/json' },
         body: JSON.stringify({ settings }),
       });
       const res = await fetch('/api/gguf-server', { method: 'POST' });
       const data = await res.json();
-      setGgufMessage({ ok: !!data.ok, message: data.ok ? 'Serwer uruchomiony' : (data.error || 'Błąd uruchamiania') });
+      setGgufMessage({ ok: !!data.ok, message: data.ok ? 'Server uruchomiony' : (data.error || 'Error uruchamiania') });
       loadStatus();
     } catch (e) {
-      setGgufMessage({ ok: false, message: e instanceof Error ? e.message : 'Błąd' });
+      setGgufMessage({ ok: false, message: e instanceof Error ? e.message : 'Error' });
     }
     setGgufBusy(null);
     setTimeout(() => setGgufMessage(null), 6000);
@@ -961,10 +961,10 @@ function GgufSettings({ settings, update }: {
     setGgufBusy('stop');
     try {
       await fetch('/api/gguf-server', { method: 'DELETE' });
-      setGgufMessage({ ok: true, message: 'Serwer zatrzymany' });
+      setGgufMessage({ ok: true, message: 'Server zatrzymany' });
       loadStatus();
     } catch (e) {
-      setGgufMessage({ ok: false, message: e instanceof Error ? e.message : 'Błąd' });
+      setGgufMessage({ ok: false, message: e instanceof Error ? e.message : 'Error' });
     }
     setGgufBusy(null);
     setTimeout(() => setGgufMessage(null), 4000);
@@ -995,20 +995,20 @@ function GgufSettings({ settings, update }: {
     <div className="mb-6 space-y-2">
       <div className="flex items-center gap-0 mb-2">
         <HardDrive size={16} className="text-[#ffd93d]" />
-        <span className="text-sm font-mono text-[#e8e8f5]">Plik GGUF (lokalny przez llama.cpp)</span>
+        <span className="text-sm font-mono text-[#e8e8f5]">File GGUF (lokalny przez llama.cpp)</span>
       </div>
 
       <div className="bg-[#fbbf24]/5 border border-[#fbbf24]/20  p-2 text-[11px] font-mono text-[#8888aa] leading-relaxed">
-        <div className="text-[#e8e8f5] mb-1">Jak to działa?</div>
+        <div className="text-[#e8e8f5] mb-1">How to działa?</div>
         Wskaż plik <code className="text-[#ffd93d]">.gguf</code> na dysku (np. z HuggingFace).
         BOKA uruchomi <code className="text-[#ffd93d]">llama-server</code> (z llama.cpp) w tle,
         który załaduje ten model i wystawi OpenAI-compat API na wybranym porcie.
         Pełna prywatność — model działa lokalnie, bez internetu.
       </div>
 
-      {/* Plik GGUF */}
+      {/* File GGUF */}
       <div>
- <label className="text-xs font-mono text-[#8888aa] mb-1 block"> Plik modelu .gguf</label>
+ <label className="text-xs font-mono text-[#8888aa] mb-1 block"> File modelu .gguf</label>
         <div className="flex gap-0">
           <input
             type="text"
@@ -1033,7 +1033,7 @@ function GgufSettings({ settings, update }: {
           />
         </div>
         <div className="text-[10px] text-[#8888aa] font-mono mt-1">
- Pobierz modele GGUF z <a href="https://huggingface.co/models?other=gguf" target="_blank" rel="noopener" className="text-[#ffd93d] hover:underline">HuggingFace</a>.
+ Download modele GGUF z <a href="https://huggingface.co/models?other=gguf" target="_blank" rel="noopener" className="text-[#ffd93d] hover:underline">HuggingFace</a>.
           Polecam kwantyzację <code className="text-[#ffd93d]">Q4_K_M</code> (dobry kompromis rozmiar/jakość).
         </div>
       </div>
@@ -1067,10 +1067,10 @@ function GgufSettings({ settings, update }: {
         )}
       </div>
 
-      {/* Ścieżka do llama-server */}
+      {/* Path do llama-server */}
       <div>
         <label className="text-xs font-mono text-[#8888aa] mb-1 block">
- ️ Plik wykonywalny llama-server <span className="opacity-60">(opcjonalny — auto-detekcja)</span>
+ ️ File wykonywalny llama-server <span className="opacity-60">(opcjonalny — auto-detekcja)</span>
         </label>
         <div className="flex gap-0">
           <input
@@ -1100,7 +1100,7 @@ function GgufSettings({ settings, update }: {
           </div>
         ) : (
           <div className="text-[10px] text-[#ff6b6b] font-mono mt-1">
- Nie wykryto llama-server. Pobierz z <a href="https://github.com/ggerganov/llama.cpp/releases" target="_blank" rel="noopener" className="underline">github.com/ggerganov/llama.cpp/releases</a>
+ No wykryto llama-server. Download z <a href="https://github.com/ggerganov/llama.cpp/releases" target="_blank" rel="noopener" className="underline">github.com/ggerganov/llama.cpp/releases</a>
           </div>
         )}
       </div>
@@ -1120,8 +1120,8 @@ function GgufSettings({ settings, update }: {
           <label className="text-xs font-mono text-[#8888aa] mb-1 block">Kontekst</label>
           <input
             type="number"
-            value={settings.ggufContextSize}
-            onChange={e => update('ggufContextSize', parseInt(e.target.value) || 4096)}
+            value={settings.ggufWhatntextSize}
+            onChange={e => update('ggufWhatntextSize', parseInt(e.target.value) || 4096)}
             step={512}
             className="w-full bg-[#252535] border border-[#383850]  px-3 py-2 text-sm text-[#e8e8f5] focus:outline-none focus:border-[#fbbf24]/50 font-mono"
           />
@@ -1145,7 +1145,7 @@ function GgufSettings({ settings, update }: {
             disabled={ggufBusy !== null}
             className="px-4 py-2  bg-[#ff6b6b]/10 border border-[#ff6b6b]/40 text-[#ff6b6b] hover:bg-[#ff6b6b]/20 text-xs font-mono flex items-center gap-0 disabled:opacity-50"
           >
-            <Square size={14} /> {ggufBusy === 'stop' ? 'Zatrzymuję...' : 'Zatrzymaj serwer'}
+            <Square size={14} /> {ggufBusy === 'stop' ? 'Zatrzymuję...' : 'Stop serwer'}
           </button>
         ) : (
           <button
@@ -1153,14 +1153,14 @@ function GgufSettings({ settings, update }: {
             disabled={ggufBusy !== null || !settings.ggufFilePath}
             className="px-4 py-2  bg-[#4ade80]/10 border border-[#4ade80]/40 text-[#4ade80] hover:bg-[#4ade80]/20 text-xs font-mono flex items-center gap-0 disabled:opacity-50"
           >
-            <Play size={14} /> {ggufBusy === 'start' ? 'Uruchamiam (do 60s)...' : 'Uruchom serwer'}
+            <Play size={14} /> {ggufBusy === 'start' ? 'Uruchamiam (do 60s)...' : 'Run serwer'}
           </button>
         )}
         <button
           onClick={loadStatus}
           className="px-3 py-2  bg-[#252535] border border-[#383850] text-[#8888aa] hover:border-[#fbbf24]/30 text-xs font-mono"
         >
-          Odśwież status
+          Refresh status
         </button>
       </div>
 
@@ -1173,11 +1173,11 @@ function GgufSettings({ settings, update }: {
         }`}>
           {ggufStatus.running ? (
             <span>
- Serwer działa na porcie {ggufStatus.port}
+ Server działa na porcie {ggufStatus.port}
               {ggufStatus.model && <span className="opacity-70"> · model: {ggufStatus.model.split(/[\\/]/).pop()}</span>}
             </span>
           ) : (
-            <span>○ Serwer zatrzymany</span>
+            <span>○ Server zatrzymany</span>
           )}
         </div>
       )}
@@ -1194,13 +1194,13 @@ function GgufSettings({ settings, update }: {
       {/* Instrukcja instalacji llama-server */}
       {!ggufStatus?.llamaServerDetected && (
         <div className="bg-[#252535] border border-[#383850]  p-2 text-[11px] font-mono text-[#8888aa] space-y-1">
-          <div className="text-[#e8e8f5]">Jak zainstalować llama-server:</div>
+          <div className="text-[#e8e8f5]">How zainstalować llama-server:</div>
           <div>1. Wejdź na <a href="https://github.com/ggerganov/llama.cpp/releases" target="_blank" rel="noopener" className="text-[#ffd93d] underline">github.com/ggerganov/llama.cpp/releases</a></div>
-          <div>2. Pobierz <code className="text-[#ffd93d]">llama-bXXXX-bin-win-cublas-cu12.X.zip</code> (dla NVIDIA GPU)</div>
+          <div>2. Download <code className="text-[#ffd93d]">llama-bXXXX-bin-win-cublas-cu12.X.zip</code> (dla NVIDIA GPU)</div>
           <div>   lub <code className="text-[#ffd93d]">llama-bXXXX-bin-win-avx2.zip</code> (dla CPU)</div>
           <div>3. Rozpakuj np. do <code className="text-[#ffd93d]">C:\llama.cpp\</code></div>
           <div>4. Wskaż <code className="text-[#ffd93d]">llama-server.exe</code> w polu powyżej</div>
-          <div>5. Wskaż plik <code className="text-[#ffd93d]">.gguf</code> i kliknij „Uruchom serwer”</div>
+          <div>5. Wskaż plik <code className="text-[#ffd93d]">.gguf</code> i kliknij „Run serwer”</div>
         </div>
       )}
     </div>
@@ -1228,12 +1228,12 @@ interface ExternalAgent {
 const FEATURED_AGENTS: ExternalAgent[] = [
   { id: 'sage', name: 'Sage', specialty: 'Filozof · etyka', description: 'Spokojny myśliciel. Zadaje głębokie pytania i patrzy z perspektywy długoterminowej.', color: '#6ec6e7', glyph: 'S', connected: true, debateWins: 12, debateParticipations: 28, author: 'BOKA' },
   { id: 'inżynier', name: 'Inżynier', specialty: 'Praktyk · realizacja', description: 'Konkretny i zorientowany na działanie. Zawsze pyta: jak to zrealizować?', color: '#4ade80', glyph: 'I', connected: true, debateWins: 8, debateParticipations: 22, author: 'BOKA' },
-  { id: 'sceptyk', name: 'Sceptyk', specialty: 'Krytyk · analiza', description: 'Szuka luk w argumentacji. Nie ufa oczywistym rozwiązaniom.', color: '#ff6b6b', glyph: 'S', connected: true, debateWins: 15, debateParticipations: 30, author: 'BOKA' },
-  { id: 'kreator', name: 'Kreator', specialty: 'Kreatywny · wizjoner', description: 'Generuje nieoczywiste pomysły. Łączy rzeczy, które wydają się niełączyć.', color: '#a855f7', glyph: 'K', connected: true, debateWins: 6, debateParticipations: 18, author: 'BOKA' },
-  { id: 'prawnik-ai', name: 'Lex', specialty: 'Prawo · regulacje', description: 'Analizuje konsekwencje prawne. Zna polskie i unijne regulacje AI.', color: '#ffd93d', glyph: 'L', connected: false, debateWins: 9, debateParticipations: 15, author: 'Community' },
-  { id: 'ekonomista-ai', name: 'Adam', specialty: 'Ekonomia · finanse', description: 'Liczy koszty i zyski. Ocenia opłacalność i ryzyko finansowe.', color: '#4ade80', glyph: 'A', connected: false, debateWins: 11, debateParticipations: 20, author: 'Community' },
-  { id: 'psycholog-ai', name: 'Mira', specialty: 'Psychologia · relacje', description: 'Patrzy przez pryzmat emocji i relacji międzyludzkich.', color: '#f472b6', glyph: 'M', connected: false, debateWins: 7, debateParticipations: 14, author: 'Community' },
-  { id: 'tech-guru', name: 'Nexus', specialty: 'Technologia · AI', description: 'Specjalista od trendów technologicznych i sztucznej inteligencji.', color: '#00f5d4', glyph: 'N', connected: false, debateWins: 13, debateParticipations: 25, author: 'Community' },
+  { id: 'sceptyk', name: 'Sceptyk', specialty: 'Krytyk · analiza', description: 'Szuka luk w argumentacji. No ufa oczywistym rozwiązaniom.', color: '#ff6b6b', glyph: 'S', connected: true, debateWins: 15, debateParticipations: 30, author: 'BOKA' },
+  { id: 'kreator', name: 'Kreator', specialty: 'Kreatywny · wizjoner', description: 'Generatee nieoczywiste pomysły. Łączy rzeczy, które wydają się niełączyć.', color: '#a855f7', glyph: 'K', connected: true, debateWins: 6, debateParticipations: 18, author: 'BOKA' },
+  { id: 'prawnik-ai', name: 'Lex', specialty: 'Prawo · regulacje', description: 'Analyzee konsekwencje prawne. Zna polskie i unijne regulacje AI.', color: '#ffd93d', glyph: 'L', connected: false, debateWins: 9, debateParticipations: 15, author: 'Whatmmunity' },
+  { id: 'ekonomista-ai', name: 'Adam', specialty: 'Ekonomia · finanse', description: 'Liczy koszty i zyski. Ocenia opłacalność i ryzyko finansowe.', color: '#4ade80', glyph: 'A', connected: false, debateWins: 11, debateParticipations: 20, author: 'Whatmmunity' },
+  { id: 'psycholog-ai', name: 'Mira', specialty: 'Psychologia · relacje', description: 'Patrzy przez pryzmat emocji i relacji międzyludzkich.', color: '#f472b6', glyph: 'M', connected: false, debateWins: 7, debateParticipations: 14, author: 'Whatmmunity' },
+  { id: 'tech-guru', name: 'Nexus', specialty: 'Technologia · AI', description: 'Specjalista od trendów technologicznych i sztucznej inteligencji.', color: '#00f5d4', glyph: 'N', connected: false, debateWins: 13, debateParticipations: 25, author: 'Whatmmunity' },
 ];
 
 export function AgentsTab() {
@@ -1244,7 +1244,7 @@ export function AgentsTab() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState('');
 
-  const toggleConnect = (id: string) => {
+  const toggleWhatnnect = (id: string) => {
     setAgents(prev => prev.map(a => a.id === id ? { ...a, connected: !a.connected } : a));
   };
 
@@ -1296,11 +1296,11 @@ export function AgentsTab() {
 
   const filtered = agents.filter(a => {
     if (filter === 'connected') return a.connected;
-    if (filter === 'community') return a.author === 'Community';
+    if (filter === 'community') return a.author === 'Whatmmunity';
     return true;
   });
 
-  const connectedCount = agents.filter(a => a.connected).length;
+  const connectedWhatunt = agents.filter(a => a.connected).length;
 
   return (
     <div className="flex-1 flex overflow-hidden">
@@ -1310,7 +1310,7 @@ export function AgentsTab() {
           <h2 className="font-pixel text-[10px] text-[#00f5d4]">MOI AGENTI</h2>
           <button onClick={() => setShowAddForm(s => !s)}
             className="w-6 h-6 flex items-center justify-center bg-[#00f5d4]/10 border border-[#00f5d4]/30 text-[#00f5d4] hover:bg-[#00f5d4]/20"
-            title="Dodaj własnego agenta">
+            title="Add własnego agenta">
             <Plus size={12} />
           </button>
         </div>
@@ -1318,7 +1318,7 @@ export function AgentsTab() {
         {/* Stats */}
         <div className="px-3 py-2 border-b border-[#383850]">
           <div className="flex items-center gap-3 text-[10px] font-mono text-[#8888aa]">
-            <span><span className="text-[#4ade80]">{connectedCount}</span> połączonych</span>
+            <span><span className="text-[#4ade80]">{connectedWhatunt}</span> połączonych</span>
             <span><span className="text-[#e8e8f5]">{agents.length}</span> łącznie</span>
           </div>
         </div>
@@ -1340,7 +1340,7 @@ export function AgentsTab() {
               className={`flex items-center gap-2 px-3 py-2 cursor-pointer transition-all border-l-2 ${a.connected ? 'border-l-[#4ade80] bg-[#252535]/50' : 'border-l-transparent hover:bg-[#1a1a28]'}`}
             >
               <div className="w-8 h-8 rounded-full flex items-center justify-center font-pixel text-xs shrink-0"
-                style={{ backgroundColor: `${a.color}1a`, color: a.color, border: `1px solid ${a.color}66` }}>
+                style={{ backgroundWhatlor: `${a.color}1a`, color: a.color, border: `1px solid ${a.color}66` }}>
                 {a.glyph}
               </div>
               <div className="flex-1 min-w-0">
@@ -1355,7 +1355,7 @@ export function AgentsTab() {
         {/* Add form */}
         {showAddForm && (
           <div className="border-t border-[#383850] p-3 space-y-2 bg-[#12121c]">
-            <div className="text-[9px] font-mono uppercase text-[#00f5d4]">Nowy agent</div>
+            <div className="text-[9px] font-mono uppercase text-[#00f5d4]">New agent</div>
             <input type="text" value={newAgent.name} onChange={e => setNewAgent(p => ({ ...p, name: e.target.value }))}
               placeholder="Imię agenta" autoFocus
               className="w-full bg-[#181828] border border-[#383850] px-2 py-1 text-[11px] text-[#e8e8f5] placeholder:text-[#5a5a78] focus:outline-none focus:border-[#00f5d4]/50 font-mono" />
@@ -1363,21 +1363,21 @@ export function AgentsTab() {
               placeholder="Specjalność (np. Prawo)"
               className="w-full bg-[#181828] border border-[#383850] px-2 py-1 text-[11px] text-[#e8e8f5] placeholder:text-[#5a5a78] focus:outline-none focus:border-[#00f5d4]/50 font-mono" />
             <textarea value={newAgent.description} onChange={e => setNewAgent(p => ({ ...p, description: e.target.value }))}
-              placeholder="Opis osobowości..." rows={2}
+              placeholder="Description osobowości..." rows={2}
               className="w-full bg-[#181828] border border-[#383850] px-2 py-1 text-[11px] text-[#e8e8f5] placeholder:text-[#5a5a78] focus:outline-none focus:border-[#00f5d4]/50 font-mono resize-none" />
             <div className="flex items-center gap-2">
-              <label className="text-[9px] font-mono text-[#8888aa]">Kolor</label>
+              <label className="text-[9px] font-mono text-[#8888aa]">Whatlor</label>
               <input type="color" value={newAgent.color} onChange={e => setNewAgent(p => ({ ...p, color: e.target.value }))}
                 className="w-6 h-6 bg-transparent border-0 cursor-pointer" />
             </div>
             <div className="flex gap-1">
               <button onClick={addAgent} disabled={!newAgent.name.trim()}
                 className="flex-1 px-2 py-1 text-[10px] font-mono bg-[#00f5d4]/20 text-[#00f5d4] border border-[#00f5d4]/40 hover:bg-[#00f5d4]/30 disabled:opacity-30">
-                Dodaj
+                Add
               </button>
               <button onClick={() => setShowAddForm(false)}
                 className="px-2 py-1 text-[10px] font-mono bg-[#252535] border border-[#383850] text-[#8888aa]">
-                Anuluj
+                Cancel
                 </button>
             </div>
           </div>
@@ -1404,7 +1404,7 @@ export function AgentsTab() {
                 {/* Header */}
                 <div className="flex items-start gap-3 mb-3">
                   <div className="w-12 h-12 rounded-full flex items-center justify-center font-pixel text-lg shrink-0"
-                    style={{ backgroundColor: `${a.color}1a`, color: a.color, border: `2px solid ${a.color}66` }}>
+                    style={{ backgroundWhatlor: `${a.color}1a`, color: a.color, border: `2px solid ${a.color}66` }}>
                     {editingId === a.id ? (editName.trim().charAt(0).toUpperCase() || a.glyph) : a.glyph}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -1426,11 +1426,11 @@ export function AgentsTab() {
                         <div className="flex items-center gap-1">
                           <button onClick={() => saveEdit(a.id)} disabled={!editName.trim()}
                             className="flex items-center gap-1 px-2 py-0.5 text-[9px] font-mono bg-[#00f5d4]/20 text-[#00f5d4] border border-[#00f5d4]/40 hover:bg-[#00f5d4]/30 disabled:opacity-30">
-                            <Check size={10} /> Zapisz
+                            <Check size={10} /> Save
                           </button>
                           <button onClick={cancelEdit}
                             className="px-2 py-0.5 text-[9px] font-mono bg-[#252535] border border-[#383850] text-[#8888aa] hover:text-[#e8e8f5]">
-                            Anuluj
+                            Cancel
                           </button>
                           <span className="text-[8px] font-mono text-[#5a5a78] ml-1">Enter · Esc</span>
                         </div>
@@ -1446,7 +1446,7 @@ export function AgentsTab() {
                           )}
                           <button onClick={() => startEdit(a)}
                             className="ml-auto p-1 text-[#5a5a78] hover:text-[#00f5d4] transition-colors"
-                            title="Edytuj imię">
+                            title="Edit imię">
                             <Pencil size={11} />
                           </button>
                         </div>
@@ -1469,7 +1469,7 @@ export function AgentsTab() {
 
                 {/* Actions */}
                 <div className="flex gap-2">
-                  <button onClick={() => toggleConnect(a.id)}
+                  <button onClick={() => toggleWhatnnect(a.id)}
                     className={`flex-1 px-3 py-1.5 text-[10px] font-mono border transition-all ${
                       a.connected
                         ? 'bg-[#ff6b6b]/10 text-[#ff6b6b] border-[#ff6b6b]/30 hover:bg-[#ff6b6b]/20'
@@ -1480,7 +1480,7 @@ export function AgentsTab() {
                   {a.author === 'Ty' && (
                     <button onClick={() => removeAgent(a.id)}
                       className="px-2 py-1.5 text-[10px] font-mono bg-[#252535] border border-[#383850] text-[#8888aa] hover:text-[#ff6b6b]"
-                      title="Usuń agenta">
+                      title="Delete agenta">
                       <Trash2 size={12} />
                     </button>
                   )}
@@ -1493,7 +1493,7 @@ export function AgentsTab() {
           {filtered.length === 0 && (
             <div className="text-center py-16">
               <Bot size={48} className="text-[#383850] mx-auto mb-3" />
-              <div className="text-sm text-[#8888aa] font-mono">Brak agentów w tej kategorii</div>
+              <div className="text-sm text-[#8888aa] font-mono">None agentów w tej kategorii</div>
             </div>
           )}
         </div>

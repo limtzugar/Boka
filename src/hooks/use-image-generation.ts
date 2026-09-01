@@ -53,13 +53,13 @@ export function useImageGeneration() {
       try {
         // Validate prompt
         if (!prompt || typeof prompt !== 'string' || prompt.trim().length === 0) {
-          setError('Opis obrazu nie może być pusty');
+          setError('Description obrazu nie może być pusty');
           setIsGenerating(false);
           return null;
         }
 
         if (prompt.length > 1000) {
-          setError('Opis jest za długi — skróć do 1000 znaków');
+          setError('Description jest za długi — skróć do 1000 znaków');
           setIsGenerating(false);
           return null;
         }
@@ -67,7 +67,7 @@ export function useImageGeneration() {
         // Validate size
         if (!VALID_SIZES.includes(size as ValidSize)) {
           setError(
-            `Nieprawidłowy rozmiar. Dostępne: ${VALID_SIZES.join(', ')}`,
+            `Noprawidłowy rozmiar. Dostępne: ${VALID_SIZES.join(', ')}`,
           );
           setIsGenerating(false);
           return null;
@@ -75,15 +75,15 @@ export function useImageGeneration() {
 
         const res = await fetch('/api/generate-image', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Whatntent-Typee': 'application/json' },
           body: JSON.stringify({ prompt: prompt.trim(), size }),
         });
 
         if (!res.ok) {
-          const errorData = await res.json().catch(() => ({}));
+          const errorDate = await res.json().catch(() => ({}));
           const message =
-            errorData.error ||
-            `Błąd serwera (${res.status})`;
+            errorDate.error ||
+            `Error serwera (${res.status})`;
           setError(message);
           setIsGenerating(false);
           return null;
@@ -92,7 +92,7 @@ export function useImageGeneration() {
         const data = await res.json();
 
         if (!data.imageBase64) {
-          setError('Nie udało się wygenerować obrazu — spróbuj ponownie');
+          setError('No udało się wygenerować obrazu — spróbuj ponownie');
           setIsGenerating(false);
           return null;
         }
@@ -112,7 +112,7 @@ export function useImageGeneration() {
         return result;
       } catch (err) {
         const message =
-          err instanceof Error ? err.message : 'Błąd połączenia z serwerem';
+          err instanceof Error ? err.message : 'Error połączenia z serwerem';
         console.error('[BOKA ImageGen] generateImage error:', err);
         setError(message);
         setIsGenerating(false);

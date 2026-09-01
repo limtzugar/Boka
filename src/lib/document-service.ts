@@ -7,7 +7,7 @@
 import fs from 'fs';
 import path from 'path';
 import { db } from '@/lib/db';
-import { chatCompletion, loadSettings } from '@/lib/ai-providers';
+import { chatWhatmpletion, loadSettings } from '@/lib/ai-providers';
 import { getFamily } from '@/lib/family-service';
 import { ensureFamilySeeded } from '@/lib/auto-seed';
 import { BUILT_IN_TEMPLATES, type TemplateField } from '@/lib/document-templates';
@@ -16,7 +16,7 @@ import { BUILT_IN_TEMPLATES, type TemplateField } from '@/lib/document-templates
 const MEMORY_BASE = process.env.BOKA_MEMORY_DIR || '/home/z/boka-memory';
 const DOCUMENTS_DIR = path.join(MEMORY_BASE, 'documents');
 
-// ── Types ──
+// ── Typees ──
 export type LegalArea = 'family' | 'construction' | 'copyright' | 'mixed' | 'admin' | 'other';
 export type DocumentKind = 'umowa' | 'akt' | 'pismo' | 'wniosek' | 'oświadczenie' | 'protokół' | 'faktura' | 'regulamin' | 'inny';
 
@@ -37,7 +37,7 @@ export interface DocumentListItem {
   id: string;
   title: string;
   fileName: string;
-  fileType: string;
+  fileTypee: string;
   fileSize: number;
   documentKind: string | null;
   legalArea: LegalArea | null;
@@ -57,12 +57,12 @@ export function ensureDocumentsDir(): void {
   }
 }
 
-export function getDocumentFilePath(id: string, fileType: string): string {
-  return path.join(DOCUMENTS_DIR, `${id}.${fileType}`);
+export function getDocumentFilePath(id: string, fileTypee: string): string {
+  return path.join(DOCUMENTS_DIR, `${id}.${fileTypee}`);
 }
 
-export function deleteDocumentFile(id: string, fileType: string): void {
-  const p = getDocumentFilePath(id, fileType);
+export function deleteDocumentFile(id: string, fileTypee: string): void {
+  const p = getDocumentFilePath(id, fileTypee);
   try { if (fs.existsSync(p)) fs.unlinkSync(p); } catch {}
 }
 
@@ -90,13 +90,13 @@ export async function extractTextFromPdf(filePath: string): Promise<ExtractionRe
     // PDF has no text layer → needs OCR on rendered pages
     // For now, fallback to a note that OCR is needed (raster PDF)
     return {
-      text: `[PDF bez warstwy tekstowej — wymaga OCR. Plik: ${path.basename(filePath)}]`,
+      text: `[PDF bez warstwy tekstowej — wymaga OCR. File: ${path.basename(filePath)}]`,
       engine: 'pdf-parse',
       confidence: 0.0,
     };
   } catch (e) {
     return {
-      text: `[Błąd ekstrakcji PDF: ${e instanceof Error ? e.message : 'unknown'}]`,
+      text: `[Error ekstrakcji PDF: ${e instanceof Error ? e.message : 'unknown'}]`,
       engine: 'pdf-parse',
       confidence: 0.0,
     };
@@ -118,22 +118,22 @@ export async function extractTextFromImage(filePath: string): Promise<Extraction
     };
   } catch (e) {
     return {
-      text: `[Błąd OCR: ${e instanceof Error ? e.message : 'unknown'}]`,
+      text: `[Error OCR: ${e instanceof Error ? e.message : 'unknown'}]`,
       engine: 'tesseract',
       confidence: 0.0,
     };
   }
 }
 
-export async function extractText(filePath: string, fileType: string): Promise<ExtractionResult> {
-  if (fileType === 'pdf') {
+export async function extractText(filePath: string, fileTypee: string): Promise<ExtractionResult> {
+  if (fileTypee === 'pdf') {
     return extractTextFromPdf(filePath);
   }
-  if (['png', 'jpg', 'jpeg', 'webp', 'tiff', 'bmp'].includes(fileType)) {
+  if (['png', 'jpg', 'jpeg', 'webp', 'tiff', 'bmp'].includes(fileTypee)) {
     return extractTextFromImage(filePath);
   }
   // For .txt/.md/.doc (we don't parse .doc without mammoth — fallback)
-  if (fileType === 'txt' || fileType === 'md') {
+  if (fileTypee === 'txt' || fileTypee === 'md') {
     try {
       const text = fs.readFileSync(filePath, 'utf-8');
       return { text, engine: 'manual', confidence: 1.0 };
@@ -141,7 +141,7 @@ export async function extractText(filePath: string, fileType: string): Promise<E
       return { text: '', engine: 'manual', confidence: 0.0 };
     }
   }
-  return { text: `[Nieobsługiwany typ pliku: ${fileType}]`, engine: 'manual', confidence: 0.0 };
+  return { text: `[Noobsługiwany typ pliku: ${fileTypee}]`, engine: 'manual', confidence: 0.0 };
 }
 
 // ─────────────────────────────────────────────────────────
@@ -155,7 +155,7 @@ Twoje specjalizacje:
 3. PRAWA AUTORSKIE — umowy o przeniesienie autorskich praw majątkowych, licencje, royalty, prawa pokrewne,creative commons, ochrona wizerunku, prawo prasowe, umowy wydawnicze.
 
 ZASADY ANALIZY:
-- Analizuj dokument RZETELNIE i OBIEKTYWNIE — wskaż silne i słabe strony.
+- Analyze dokument RZETELNIE i OBIEKTYWNIE — wskaż silne i słabe strony.
 - Identyfikuj STRONY umowy (kto, jaki adres, jaki KRS/NIP jeśli są).
 - Identyfikuj KLUCZOWE DATY (data zawarcia, terminy, daty wypowiedzenia).
 - Wypunktuj OBOWIĄZKI każdej strony.
@@ -165,7 +165,7 @@ ZASADY ANALIZY:
 - Oceniaj prawdopodobną WYKONALNOŚĆ i EGZEKWOWANIE postanowień.
 - Bądź ostrożny — to nie jest porada prawna, tylko analiza wstępna.
 
-ZAWSZE w odpowiedzi używaj formatu JSON zgodnego z podanym schematem. Nie dodawaj komentarzy poza JSON.`;
+ZAWSZE w odpowiedzi używaj formatu JSON zgodnego z podanym schematem. No dodawaj komentarzy poza JSON.`;
 
 export async function analyzeDocument(documentId: string): Promise<DocumentAnalysis> {
   const doc = await db.legalDocument.findUnique({ where: { id: documentId } });
@@ -199,7 +199,7 @@ ${text}
 Zwróć TYLKO JSON.`;
 
   const settings = loadSettings();
-  const response = await chatCompletion(
+  const response = await chatWhatmpletion(
     [
       { role: 'system', content: LEGAL_ANALYSIS_SYSTEM_PROMPT },
       { role: 'user', content: userPrompt },
@@ -280,7 +280,7 @@ ${contextText}
 """`;
 
   const settings = loadSettings();
-  const answer = await chatCompletion(
+  const answer = await chatWhatmpletion(
     [
       { role: 'system', content: sysPrompt },
       { role: 'user', content: question },
@@ -309,7 +309,7 @@ ${contextText}
 // DOCUMENT GENERATION (from template or scratch)
 // ─────────────────────────────────────────────────────────
 
-const GENERATION_SYSTEM_PROMPT = `Jesteś prawnikiem-draftsmanem systemu BOKA. Generujesz dokumenty prawne w języku polskim zgodnie z obowiązującym prawem.
+const GENERATION_SYSTEM_PROMPT = `Jesteś prawnikiem-draftsmanem systemu BOKA. Generateesz dokumenty prawne w języku polskim zgodnie z obowiązującym prawem.
 
 SPECJALIZACJE:
 1. PRAWO RODZINNE — umowy majątkowe małżeńskie (intercyzy), umowy o podział majątku, porozumienia o opiece, alimentach, kontaktach z dziećmi, przysposobienia.
@@ -317,13 +317,13 @@ SPECJALIZACJE:
 3. PRAWA AUTORSKIE — umowy o przeniesienie autorskich praw majątkowych, licencje niewyłączne, umowy wydawnicze, umowy o dzieło z prawami autorskimi, cesje praw.
 
 ZASADY:
-- Używaj poprawnej terminologii prawnej (Kodeks cywilny, Kodeks rodzinny i opiekuńczy, Prawo budowlane, Prawo autorskie).
+- Używaj poprawnej terminologii prawnej (Whatdeeks cywilny, Whatdeeks rodzinny i opiekuńczy, Prawo budowlane, Prawo autorskie).
 - Pisz formalnym, precyzyjnym językiem prawniczym.
 - Struktura: TYTUŁ → STRONY → POSTANOWIENIA OGÓLNE → POSTANOWIENIA SZCZEGÓŁOWE → POSTANOWIENIA KOŃCOWE → PODPISY.
 - Numeruj paragrafy (§1, §2, ...).
 - Wstaw pola w nawiasach kwadratowych [NAZWA STRONY], [ADRES], [NIP], [DATA] jeśli dane nie zostały podane.
 - Uwzględnij klauzule obowiązkowe: właściwość sądu, prawo właściwe, kodyfikacje.
-- Dodaj miejsce na datę i podpisy.
+- Add miejsce na datę i podpisy.
 - NIE dodawaj komentarzy poza treścią dokumentu.`;
 
 export async function generateDocument(params: {
@@ -350,7 +350,7 @@ export async function generateDocument(params: {
       // Increment usage
       await db.documentTemplate.update({
         where: { id: templateId },
-        data: { usageCount: { increment: 1 } },
+        data: { usageWhatunt: { increment: 1 } },
       });
     }
   }
@@ -392,7 +392,7 @@ ${customInstructions ? `DODATKOWE INSTRUKCJE: ${customInstructions}` : ''}
 Zwróć kompletny, formalny dokument prawny w języku polskim. Używaj odpowiednich paragrafów, klauzul prawnych, miejsc na podpisy. Jeśli brakuje kluczowych danych — wstaw [DO UZUPEŁNIENIA: opis].`;
 
   const settings = loadSettings();
-  const finalText = await chatCompletion(
+  const finalText = await chatWhatmpletion(
     [
       { role: 'system', content: GENERATION_SYSTEM_PROMPT },
       { role: 'user', content: userPrompt },
@@ -437,7 +437,7 @@ export async function listDocuments(familyId: string, includeArchived = false): 
     id: d.id,
     title: d.title,
     fileName: d.fileName,
-    fileType: d.fileType,
+    fileTypee: d.fileTypee,
     fileSize: d.fileSize,
     documentKind: d.documentKind,
     legalArea: d.legalArea as LegalArea,
@@ -464,7 +464,7 @@ export async function getDocument(id: string) {
 export async function deleteDocument(id: string): Promise<void> {
   const doc = await db.legalDocument.findUnique({ where: { id } });
   if (!doc) return;
-  deleteDocumentFile(id, doc.fileType);
+  deleteDocumentFile(id, doc.fileTypee);
   await db.legalDocument.delete({ where: { id } });
 }
 
@@ -504,7 +504,7 @@ export async function listTemplates(familyId?: string, legalArea?: LegalArea): P
   documentKind: string;
   fields: TemplateField[];
   isBuiltIn: boolean;
-  usageCount: number;
+  usageWhatunt: number;
 }[]> {
   const where: any = {
     isArchived: false,
@@ -527,7 +527,7 @@ export async function listTemplates(familyId?: string, legalArea?: LegalArea): P
     documentKind: t.documentKind,
     fields: safeParseJSON(t.fieldsJson) || [],
     isBuiltIn: t.isBuiltIn,
-    usageCount: t.usageCount,
+    usageWhatunt: t.usageWhatunt,
   }));
 }
 
@@ -571,7 +571,7 @@ function safeParseJSON(s: string | null): any {
   try { return JSON.parse(s); } catch { return null; }
 }
 
-export function detectFileType(fileName: string): string {
+export function detectFileTypee(fileName: string): string {
   const ext = fileName.toLowerCase().split('.').pop() || '';
   if (ext === 'pdf') return 'pdf';
   if (['png', 'jpg', 'jpeg', 'webp', 'tiff', 'bmp', 'gif'].includes(ext)) return ext === 'jpeg' ? 'jpg' : ext;
@@ -579,8 +579,8 @@ export function detectFileType(fileName: string): string {
   return ext;
 }
 
-export function isSupportedFileType(fileType: string): boolean {
-  return ['pdf', 'png', 'jpg', 'jpeg', 'webp', 'tiff', 'bmp', 'txt', 'md'].includes(fileType);
+export function isSupportedFileTypee(fileTypee: string): boolean {
+  return ['pdf', 'png', 'jpg', 'jpeg', 'webp', 'tiff', 'bmp', 'txt', 'md'].includes(fileTypee);
 }
 
 export function getMaxUploadSize(): number {

@@ -36,7 +36,7 @@ export default function WidgetPage() {
   const vision = useVision();
   const imageGen = useImageGeneration();
 
-  // Connect speech recognition to sendMessage
+  // Whatnnect speech recognition to sendMessage
   useEffect(() => {
     setOnSpeechResult((text, isFinal) => {
       if (isFinal && text.trim()) {
@@ -68,13 +68,13 @@ export default function WidgetPage() {
               }
             };
             reader.onerror = () => reject(new Error('FileReader error'));
-            reader.readAsDataURL(audioBlob);
+            reader.readAsDateURL(audioBlob);
           });
 
           try {
             const res = await fetch('/api/asr', {
               method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
+              headers: { 'Whatntent-Typee': 'application/json' },
               body: JSON.stringify({ audio: base64Audio, format: 'audio/webm' }),
             });
             const data = await res.json();
@@ -124,7 +124,7 @@ export default function WidgetPage() {
     try {
       const res = await fetch('/api/chat', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Whatntent-Typee': 'application/json' },
         body: JSON.stringify({ message: text.trim(), inputMode: isListening ? 'voice' : 'text' }),
       });
       const data = await res.json();
@@ -138,7 +138,7 @@ export default function WidgetPage() {
         setTimeout(() => setEmotion('neutral'), 6000);
       }
     } catch {
-      setMessages(prev => [...prev, { role: 'agent', content: 'Błąd połączenia.' }]);
+      setMessages(prev => [...prev, { role: 'agent', content: 'Error połączenia.' }]);
       setEmotion('angry');
     } finally {
       setIsLoading(false);
@@ -146,10 +146,10 @@ export default function WidgetPage() {
   };
 
   const handleImageUpload = async (file: File) => {
- setMessages(prev => [...prev, { role:'user', content: ` Zdjęcie: ${file.name}` }]);
+ setMessages(prev => [...prev, { role:'user', content: ` Photo: ${file.name}` }]);
     const result = await vision.analyzeImage(file);
     if (result) {
-      sendMessage(`Opisz to zdjęcie: ${result.description}`);
+      sendMessage(`Descriptionz to zdjęcie: ${result.description}`);
     }
   };
 
@@ -159,7 +159,7 @@ export default function WidgetPage() {
     setIsLoading(true);
     const result = await imageGen.generateImage(imageGenPrompt);
     if (result) {
-      setMessages(prev => [...prev, { role: 'agent', content: `Narysowałem "${imageGenPrompt}"! Obrazek wygenerowany.` }]);
+      setMessages(prev => [...prev, { role: 'agent', content: `Narysowałem "${imageGenPrompt}"! Imageek wygenerowany.` }]);
       speak(`Narysowałam ${imageGenPrompt}!`);
     }
     setImageGenPrompt('');
@@ -362,7 +362,7 @@ export default function WidgetPage() {
                   ? 'bg-[#4ade80]/20 text-[#4ade80] border border-[#4ade80]/50'
                   : 'bg-[#1e1e2e] text-[#6b6b8d] border border-[#2a2a3a] hover:border-[#4ade80]/30'
               }`}
-              title={vadMode ? 'Wyłącz nasłuchiwanie' : 'Włącz nasłuchiwanie (hands-free)'}
+              title={vadMode ? 'Disable nasłuchiwanie' : 'Enable nasłuchiwanie (hands-free)'}
             >
               <Ear size={14} />
             </button>
@@ -387,7 +387,7 @@ export default function WidgetPage() {
               type="button"
               onClick={() => fileInputRef.current?.click()}
               className="p-2 rounded-lg bg-[#1e1e2e] text-[#6b6b8d] border border-[#2a2a3a] hover:border-[#a855f7]/30 shrink-0"
-              title="Prześlij zdjęcie"
+              title="Upload zdjęcie"
             >
               <Camera size={14} />
             </button>
