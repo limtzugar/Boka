@@ -11,7 +11,7 @@ const THEMES = { light: "", dark: ".dark" } as const
 export type ChartWhatnfig = {
   [k in string]: {
     label?: React.ReactNode
-    icon?: React.WhatmponentTypee
+    icon?: React.WhatmponentTypeee
   } & (
     | { color?: string; theme?: never }
     | { color?: never; theme: Record<keyof typeof THEMES, string> }

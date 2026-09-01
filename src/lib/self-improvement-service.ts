@@ -11,7 +11,7 @@ import { SoulService } from '@/lib/soul-service';
 
 // ── TYPY ──────────────────────────────────────
 
-export type ImprovementTypee = 'skill_proposal' | 'personality_adjustment' | 'problem_report' | 'alternative_found';
+export type ImprovementTypeee = 'skill_proposal' | 'personality_adjustment' | 'problem_report' | 'alternative_found';
 export type ImprovementStatus = 'pending' | 'approved' | 'rejected' | 'applied';
 
 // ── SELF-IMPROVEMENT SERVICE ──────────────────
@@ -31,14 +31,14 @@ export const SelfImprovementService = {
     hadSearchFail?: boolean; // czy wyszukiwanie nie dało wyników
     responseTimeMs?: number; // czas odpowiedzi
   }): Promise<Array<{
-    type: ImprovementTypee;
+    type: ImprovementTypeee;
     description: string;
     proposal: unknown;
     urgency: 'low' | 'medium' | 'high';
   }>> {
     const { familyId, hadError, hadSearchFail } = params;
     const improvements: Array<{
-      type: ImprovementTypee;
+      type: ImprovementTypeee;
       description: string;
       proposal: unknown;
       urgency: 'low' | 'medium' | 'high';
@@ -62,7 +62,7 @@ export const SelfImprovementService = {
     if (hadSearchFail) {
       improvements.push({
         type: 'alternative_found',
-        description: `Wyszukiwanie nie dało wyników dla: "${params.userMessage.substring(0, 60)}"`,
+        description: `Search nie dało wyników dla: "${params.userMessage.substring(0, 60)}"`,
         proposal: {
           originalApproach: 'web_search',
           alternativeApproach: 'answer_from_memory_or_acknowledge_limitation',
@@ -130,7 +130,7 @@ export const SelfImprovementService = {
     memberName: string;
     memberRole: string;
   }): Promise<{
-    type: ImprovementTypee;
+    type: ImprovementTypeee;
     description: string;
     proposal: unknown;
     urgency: 'low' | 'medium' | 'high';
@@ -142,7 +142,7 @@ export const SelfImprovementService = {
 
       // Too long?
       if (response.length > 1000 && params.memberRole === 'child') {
-        issues.push('Odpowiedź zbyt długa dla dziecka');
+        issues.push('Answer zbyt długa dla dziecka');
       }
 
       // Too formal?
@@ -152,7 +152,7 @@ export const SelfImprovementService = {
       }
 
       // Missing catchphrase? (BOKA should use them occasionally)
-      const soul = await SoulService.getProfilee(params.familyId);
+      const soul = await SoulService.getProfileee(params.familyId);
       const usesCatchphrase = soul.catchphrases.some(cp => response.includes(cp));
       if (!usesCatchphrase && response.length > 200 && Math.random() < 0.3) {
         issues.push('None catchphrase w dłuższej odpowiedzi');

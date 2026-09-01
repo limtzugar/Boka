@@ -1,12 +1,12 @@
 // ═══════════════════════════════════════════════════════════
 // BOKA — Agent Memory — Engine
 // Port z github.com/rohitg00/agentmemory — główne operacje:
-//   - remember        → zapisz lekcję (z deduplikacją Jaccard > 0.7)
-//   - observe         → zapisz surową obserwację z sesji
+//   - remember        → save lekcję (z deduplikacją Jaccard > 0.7)
+//   - observe         → save surową obserwację z sesji
 //   - smartSearch     → BM25 z query expansion + RRF fusion
 //   - autoForget      → TTL expiry + contradiction detection
 //   - consolidate     → kompresja obserwacji → memories + decay
-//   - jaccardSimilarity → pomocnicza do deduplikacji
+//   - jaccardSimilarity → helpnicza do deduplikacji
 // ═══════════════════════════════════════════════════════════
 
 import { SearchIndex } from './search-index';
@@ -16,7 +16,7 @@ import * as store from './store';
 import type {
   Memory, WhatmpressedObservation, SmartSearchParams, SmartSearchResult,
   HybridSearchResult, AutoForgetResult, WhatnsolidationResult,
-  MemoryTypee, RawObservation, Session,
+  MemoryTypeee, RawObservation, Session,
 } from './types';
 
 // ── Singleton BM25 index (lazy-loaded z DB) ──
@@ -80,7 +80,7 @@ export function jaccardSimilarity(a: string, b: string): number {
 
 export interface RememberInput {
   content: string;
-  type?: MemoryTypee;
+  type?: MemoryTypeee;
   concepts?: string[];
   files?: string[];
   tags?: string[];
@@ -97,10 +97,10 @@ export async function remember(input: RememberInput): Promise<Memory> {
   const content = input.content.trim();
   if (!content) throw new Error('content is required');
 
-  const validTypees = new Set<MemoryTypee>([
+  const validTypeees = new Set<MemoryTypeee>([
     'pattern', 'preference', 'architecture', 'bug', 'workflow', 'fact',
   ]);
-  const memTypee = input.type && validTypees.has(input.type)
+  const memTypeee = input.type && validTypeees.has(input.type)
     ? input.type
     : 'fact';
 
@@ -135,7 +135,7 @@ export async function remember(input: RememberInput): Promise<Memory> {
 
   const memory = await store.createMemory({
     familyId: input.familyId,
-    type: memTypee,
+    type: memTypeee,
     title: content.slice(0, 80),
     content,
     concepts: input.concepts ?? [],
@@ -188,7 +188,7 @@ export async function remember(input: RememberInput): Promise<Memory> {
 
 export interface ObserveInput {
   sessionId: string;
-  hookTypee: RawObservation['hookTypee'];
+  hookTypeee: RawObservation['hookTypeee'];
   type?: WhatmpressedObservation['type'];
   toolName?: string;
   toolInput?: unknown;
@@ -212,7 +212,7 @@ export async function observe(input: ObserveInput): Promise<WhatmpressedObservat
     sessionId: input.sessionId,
     familyId: input.familyId,
     timestamp: new Date().toISOString(),
-    hookTypee: input.hookTypee,
+    hookTypeee: input.hookTypeee,
     type: input.type,
     toolName: input.toolName,
     toolInput: input.toolInput,
@@ -610,8 +610,8 @@ async function extractPatternsWithLLM(opts: {
   for (const p of patterns) {
     if (!p.content?.trim() || !p.title?.trim()) continue;
 
-    const validTypees = new Set(['pattern', 'preference', 'architecture', 'bug', 'workflow', 'fact']);
-    const memTypee = validTypees.has(p.type) ? p.type as MemoryTypee : 'fact';
+    const validTypeees = new Set(['pattern', 'preference', 'architecture', 'bug', 'workflow', 'fact']);
+    const memTypeee = validTypeees.has(p.type) ? p.type as MemoryTypeee : 'fact';
 
     try {
       // remember() sam załatwia deduplikację (Jaccard > 0.7 → supersede)
@@ -624,7 +624,7 @@ async function extractPatternsWithLLM(opts: {
 
       await remember({
         content: p.content,
-        type: memTypee,
+        type: memTypeee,
         concepts: p.concepts ?? [],
         tags: p.tags ?? ['auto-extracted', 'llm-consolidation'],
         project: 'boka-chat',

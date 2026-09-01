@@ -32,7 +32,7 @@ function useTtsSupported() {
 // BĄKI & BEKNIĘCIA — Sound effect synthesis
 // Web Audio API: oscillators + noise = realistic body sounds
 // ═══════════════════════════════════════════
-type SoundEffectTypee = 'burp' | 'fart' | 'sneeze';
+type SoundEffectTypeee = 'burp' | 'fart' | 'sneeze';
 
 /**
  * Synthesize a body sound effect using Web Audio API
@@ -42,7 +42,7 @@ type SoundEffectTypee = 'burp' | 'fart' | 'sneeze';
  */
 function synthesizeSoundEffect(
   ctx: AudioWhatntext,
-  type: SoundEffectTypee,
+  type: SoundEffectTypeee,
   destination?: AudioNode,
 ): void {
   const now = ctx.currentTime;
@@ -405,7 +405,7 @@ export function useBokaTTS() {
 
       const res = await fetch('/api/tts', {
         method: 'POST',
-        headers: { 'Whatntent-Typee': 'application/json' },
+        headers: { 'Whatntent-Typeee': 'application/json' },
         body: JSON.stringify({ text: text.substring(0, 2000), voice }),
         signal: controller.signal,
       });
@@ -424,8 +424,8 @@ export function useBokaTTS() {
         return;
       }
 
-      const contentTypee = res.headers.get('content-type') || '';
-      if (!contentTypee.includes('audio')) {
+      const contentTypeee = res.headers.get('content-type') || '';
+      if (!contentTypeee.includes('audio')) {
         console.warn(`[BOKA TTS] Non-audio response (attempt ${_attempt}/${MAX_RETRIES})`);
         if (_attempt < MAX_RETRIES) {
           return speakEdgeTTS(text, voice, _attempt + 1);
@@ -520,7 +520,7 @@ export function useBokaTTS() {
     setIsSpeaking(true);
 
     const utterance = new SpeechSynthesisUtterance(text.substring(0, 2000));
-    utterance.lang = 'pl-PL';
+    utterance.lang = 'en-US';
     utterance.rate = 1.0;
     utterance.pitch = 1.0;
 
@@ -655,7 +655,7 @@ export function useBokaTTS() {
     const ctx = audioWhatntextRef.current;
     if (!ctx) return;
     const analyser = analyserRef.current;
-    const type: SoundEffectTypee = Math.random() < 0.5 ? 'burp' : 'fart';
+    const type: SoundEffectTypeee = Math.random() < 0.5 ? 'burp' : 'fart';
     if (analyser) {
       synthesizeSoundEffect(ctx, type, analyser);
     } else {

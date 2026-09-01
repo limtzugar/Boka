@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
 
     if (!imageBase64) {
       return NextResponse.json(
-        { error: 'No udało się wygenerować obrazu — spróbuj ponownie' },
+        { error: 'No udało się wygenerować imageu — spróbuj ponownie' },
         { status: 500 },
       );
     }
@@ -103,7 +103,7 @@ export async function POST(req: NextRequest) {
     const msg = error instanceof Error ? error.message : 'Noznany błąd';
     console.error('Image generation API error:', msg);
     return NextResponse.json(
-      { error: 'Error generowania obrazu', details: msg },
+      { error: 'Error generowania imageu', details: msg },
       { status: 500 },
     );
   }

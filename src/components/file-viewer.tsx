@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { FileText, FileWhatde, X, Loader2, AlertTriangle } from 'lucide-react';
 
 // ═══════════════════════════════════════════════════════════
-// FileViewer — wyświetla zawartość pliku tekstowego (.txt/.html/.md/.js/itp.)
+// FileViewer — wyświetla zawartość file tekstowego (.txt/.html/.md/.js/itp.)
 // GET /api/files/read?path=... → { path, name, ext, size, content, truncated }
 // HTML jest renderowany jako tekst (źródło), nie wykonuje się
 // ═══════════════════════════════════════════════════════════
@@ -39,7 +39,7 @@ function getLanguageLabel(ext: string): string {
   const map: Record<string, string> = {
     txt: 'Tekst', md: 'Markdown', markdown: 'Markdown',
     html: 'HTML', htm: 'HTML', css: 'CSS',
-    js: 'JavaScript', jsx: 'React JSX', ts: 'TypeeScript', tsx: 'React TSX',
+    js: 'JavaScript', jsx: 'React JSX', ts: 'TypeeeScript', tsx: 'React TSX',
     json: 'JSON', xml: 'XML', yaml: 'YAML', yml: 'YAML',
     py: 'Python', rb: 'Ruby', go: 'Go', rs: 'Rust',
     java: 'Java', c: 'C', cpp: 'C++', cs: 'C#', php: 'PHP',
@@ -98,7 +98,7 @@ export function FileViewer({ path, onClose }: FileViewerProps) {
         <button
           onClick={onClose}
           className="text-[#8888aa] hover:text-[#ff6b6b] transition-colors shrink-0"
-          title="Close podgląd"
+          title="Close preview"
         >
           <X size={14} />
         </button>
@@ -123,7 +123,7 @@ export function FileViewer({ path, onClose }: FileViewerProps) {
       <div className="flex-1 overflow-auto">
         {loading && (
           <div className="text-center py-8 text-[10px] text-[#8888aa] font-mono">
-            <Loader2 size={14} className="inline animate-spin mr-1" /> Wczytywanie pliku...
+            <Loader2 size={14} className="inline animate-spin mr-1" /> Wczytywanie file...
           </div>
         )}
         {error && (

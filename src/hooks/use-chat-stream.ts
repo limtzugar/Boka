@@ -77,7 +77,7 @@ export function useChatStream() {
 
         const res = await fetch('/api/chat-stream', {
           method: 'POST',
-          headers: { 'Whatntent-Typee': 'application/json' },
+          headers: { 'Whatntent-Typeee': 'application/json' },
           body: JSON.stringify({
             message: (message || '').trim(),
             memberId,
@@ -93,7 +93,7 @@ export function useChatStream() {
         if (!res.ok) {
           const errorDate = await res.json().catch(() => ({}));
           const errorMessage =
-            errorDate.error || `Error serwera (${res.status})`;
+            errorDate.error || `Error servera (${res.status})`;
           callbacks.onError(errorMessage);
           setIsStreaming(false);
           return;

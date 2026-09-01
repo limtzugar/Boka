@@ -17,10 +17,10 @@ export interface TTSVoice {
 // Edge TTS Polish voices (free, neural, natural)
 export const EDGE_TTS_VOICES: TTSVoice[] = [
   {
-    id: 'pl-PL-MarekNeural',
+    id: 'en-US-GuyNeural',
     name: 'Marek',
     provider: 'edge-tts',
-    lang: 'pl-PL',
+    lang: 'en-US',
     gender: 'male',
     description: 'Naturalny głos męski — spokojny, ciepły ton',
   },
@@ -28,7 +28,7 @@ export const EDGE_TTS_VOICES: TTSVoice[] = [
     id: 'pl-PL-ZofiaNeural',
     name: 'Zofia',
     provider: 'edge-tts',
-    lang: 'pl-PL',
+    lang: 'en-US',
     gender: 'female',
     description: 'Naturalny głos żeński — jasny, przyjazny',
   },
@@ -36,7 +36,7 @@ export const EDGE_TTS_VOICES: TTSVoice[] = [
     id: 'pl-PL-AgnieszkaNeural',
     name: 'Agnieszka',
     provider: 'edge-tts',
-    lang: 'pl-PL',
+    lang: 'en-US',
     gender: 'female',
     description: 'Naturalny głos żeński — cieplejszy, niższy ton',
   },
@@ -48,4 +48,4 @@ export function getAvailableVoices(): TTSVoice[] {
 }
 
 // Default voice
-export const DEFAULT_VOICE_ID = 'pl-PL-MarekNeural';
+export const DEFAULT_VOICE_ID = 'en-US-GuyNeural';

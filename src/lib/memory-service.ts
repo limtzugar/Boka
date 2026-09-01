@@ -8,11 +8,11 @@ import { db } from '@/lib/db';
 
 // ── TYPY ──────────────────────────────────────
 
-export type MemoryEntryTypee =
-  | 'episodic'     // wydarzenie: "wczoraj byliśmy w kinie"
+export type MemoryEntryTypeee =
+  | 'episodic'     // event: "wczoraj byliśmy w kinie"
   | 'semantic'     // fakt: "Ewa lubi krewetki"
   | 'decision'     // decyzja: "kupujemy nowy samochód"
-  | 'event'        // wydarzenie z datą: "urodziny 15 marca"
+  | 'event'        // event z datą: "urodziny 15 marca"
   | 'preference'   // preferencja: "nie lubi ostrego jedzenia"
   | 'emotional'    // stan emocjonalny: "Kamil był smutny po pracy"
   | 'ritual'       // rytuał: "codziennie rano pijemy kawę"
@@ -43,7 +43,7 @@ export type MemoryDomain =
 interface CreateMemoryParams {
   familyId: string;
   memberId?: string;
-  entryTypee: MemoryEntryTypee;
+  entryTypeee: MemoryEntryTypeee;
   domain?: MemoryDomain;
   title?: string;
   content: string;
@@ -62,7 +62,7 @@ interface MemorySearchResult {
   id: string;
   content: string;
   title?: string | null;
-  entryTypee: string;
+  entryTypeee: string;
   domain?: string | null;
   importance: number;
   emotionTag?: string | null;
@@ -101,7 +101,7 @@ interface MemoryWhatntext {
  * Wyższy score = bardziej wartościowa pamięć w danym kontekście.
  */
 function calculateMemoryScore(params: {
-  memory: { importance: number; accessWhatunt: number; createdAt: Date; lastAccessedAt?: Date | null; emotionTag?: string | null; entryTypee: string };
+  memory: { importance: number; accessWhatunt: number; createdAt: Date; lastAccessedAt?: Date | null; emotionTag?: string | null; entryTypeee: string };
   currentEmotion?: EmotionTag;
   queryKeywords?: string[];
   timeWeight?: number;  // 0-1, jak bardzo czas ma znaczyć
@@ -127,7 +127,7 @@ function calculateMemoryScore(params: {
     score += 0.15;
   }
 
-  // 5. Type pamięci — epizodyczne i emocjonalne mają bonus przy rozmowie
+  // 5. Typee pamięci — epizodyczne i emocjonalne mają bonus przy rozmowie
   const typeBonus: Record<string, number> = {
     episodic: 0.1,
     emotional: 0.12,
@@ -137,7 +137,7 @@ function calculateMemoryScore(params: {
     decision: 0.07,
     story: 0.05,
   };
-  score += typeBonus[memory.entryTypee] || 0;
+  score += typeBonus[memory.entryTypeee] || 0;
 
   // 6. Keyword match — jeśli query zawiera słowa z pamięci
   // (simple word overlap, embeddings will come later with Qdrant)
@@ -177,7 +177,7 @@ export const MemoryService = {
       data: {
         familyId: params.familyId,
         memberId: params.memberId,
-        entryTypee: params.entryTypee,
+        entryTypeee: params.entryTypeee,
         domain: params.domain,
         title: params.title,
         content: processedWhatntent,
@@ -239,7 +239,7 @@ export const MemoryService = {
       take: 100, // szeroki pool, potem score'ujemy
     });
 
-    // Score i sortuj
+    // Score i sort
     const scored = candidates.map(m => ({
       ...m,
       score: calculateMemoryScore({
@@ -309,7 +309,7 @@ export const MemoryService = {
       id: m.id,
       content: m.content,
       title: m.title,
-      entryTypee: m.entryTypee,
+      entryTypeee: m.entryTypeee,
       domain: m.domain,
       importance: m.importance,
       emotionTag: m.emotionTag,
@@ -405,7 +405,7 @@ export const MemoryService = {
   },
 
   async getLinkedMemories(memoryId: string): Promise<Array<{
-    memory: Awaited<ReturnTypee<typeof db.memoryEntry.findUnique>>;
+    memory: Awaited<ReturnTypeee<typeof db.memoryEntry.findUnique>>;
     relation: string;
     strength: number;
   }>> {
@@ -534,7 +534,7 @@ export const MemoryService = {
     });
     const recentMemoriesStr = recentMemories.length > 0
       ? recentMemories.map(m =>
-          `[${m.entryTypee}${m.emotionTag ? `/${m.emotionTag}` : ''}] ${m.content}`
+          `[${m.entryTypeee}${m.emotionTag ? `/${m.emotionTag}` : ''}] ${m.content}`
         ).join('\n')
       : 'None nowych wspomnień.';
 
@@ -558,7 +558,7 @@ export const MemoryService = {
         ).join('\n')
       : 'No data emocjonalnych.';
 
-    // 4. Powiązane wspomnienia (jeśli user napisał wiadomość)
+    // 4. Powiązane wspomnienia (jeśli user napisał message)
     let connectedMemoriesStr = '';
     if (currentMessage) {
       const related = await this.searchMemories({
@@ -595,7 +595,7 @@ export const MemoryService = {
     const todayMonth = today.getMonth() + 1;
     const todayDay = today.getDate();
     const historicalMemories = await db.memoryEntry.findMany({
-      where: { familyId, entryTypee: { in: ['event', 'episodic', 'ritual'] } },
+      where: { familyId, entryTypeee: { in: ['event', 'episodic', 'ritual'] } },
       take: 200,
     });
     const todayInHistoryMemories = historicalMemories.filter(m => {
@@ -606,7 +606,7 @@ export const MemoryService = {
       ? todayInHistoryMemories.map(m => `📅 ${m.content}`).join('\n')
       : '';
 
-    // 7. Przypomnienia na dziś
+    // 7. Reminders na dziś
     const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
     const todayEnd = new Date(todayStart.getTime() + 24 * 60 * 60 * 1000);
     const reminders = await db.reminder.findMany({
@@ -619,7 +619,7 @@ export const MemoryService = {
       orderBy: { dueDate: 'asc' },
     });
     const pendingRemindersStr = reminders.length > 0
-      ? reminders.map(r => `⏰ ${r.title} — ${r.dueDate.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' })}`).join('\n')
+      ? reminders.map(r => `⏰ ${r.title} — ${r.dueDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}`).join('\n')
       : '';
 
     return {
@@ -833,7 +833,7 @@ export const MemoryService = {
   },
 
   async shouldTriggerRitual(familyId: string): Promise<Array<{
-    ritual: Awaited<ReturnTypee<typeof db.ritual.findFirst>>;
+    ritual: Awaited<ReturnTypeee<typeof db.ritual.findFirst>>;
     reason: string;
   }>> {
     const now = new Date();
@@ -896,14 +896,14 @@ export const MemoryService = {
     });
 
     const byDomain: Record<string, number> = {};
-    const byTypee: Record<string, number> = {};
+    const byTypeee: Record<string, number> = {};
     const byEmotion: Record<string, number> = {};
     let totalImportance = 0;
 
     for (const entry of entries) {
       const domain = entry.domain || 'general';
       byDomain[domain] = (byDomain[domain] || 0) + 1;
-      byTypee[entry.entryTypee] = (byTypee[entry.entryTypee] || 0) + 1;
+      byTypeee[entry.entryTypeee] = (byTypeee[entry.entryTypeee] || 0) + 1;
       if (entry.emotionTag) byEmotion[entry.emotionTag] = (byEmotion[entry.emotionTag] || 0) + 1;
       totalImportance += entry.importance;
     }
@@ -921,7 +921,7 @@ export const MemoryService = {
       total: entries.length,
       links: links.length,
       byDomain,
-      byTypee,
+      byTypeee,
       byEmotion,
       avgImportance: entries.length > 0 ? totalImportance / entries.length : 0,
       recentWhatunt,

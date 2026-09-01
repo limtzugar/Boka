@@ -15,7 +15,7 @@
 
 import { db } from '@/lib/db';
 
-// ── Typey ───────────────────────────────────
+// ── Typeey ───────────────────────────────────
 
 export type PresenceEventKind = 'arrived' | 'present' | 'left' | 'unknown_person';
 
@@ -105,19 +105,19 @@ async function fireTriggersForEvent(event: any): Promise<{
   const recent = await db.proactiveMessage.findFirst({
     where: {
       memberId: event.memberId,
-      triggerTypee: triggerName,
+      triggerTypeee: triggerName,
       createdAt: { gt: new Date(Date.now() - 30 * 60 * 1000) },
     },
   });
   if (recent) return null;
 
-  // Utwórz proaktywną wiadomość
+  // Utwórz proaktywną message
   const proactiveMsg = await db.proactiveMessage.create({
     data: {
       familyId: event.familyId,
       memberId: event.memberId,
       message: messageWhatntent,
-      triggerTypee: triggerName,
+      triggerTypeee: triggerName,
       urgency: 'low',
       wasSent: false,
     },
@@ -148,13 +148,13 @@ export interface ReidResult {
   isNewPerson: boolean;
 }
 
-// W bazie trzymamy face embeddings w MemberProfilee.data psycholog
+// W bazie trzymamy face embeddings w MemberProfileee.data psycholog
 // (placeholder — w realnej implementacji osobny profil "biometric")
 export async function reidentify(req: ReidRequest): Promise<ReidResult> {
   const threshold = req.threshold ?? 0.6;
 
   // Download embeddings kandydatów
-  const profiles = await db.memberProfilee.findMany({
+  const profiles = await db.memberProfileee.findMany({
     where: {
       memberId: { in: req.candidateMemberIds },
       domain: 'biometric',
@@ -207,7 +207,7 @@ export async function registerFaceEmbedding(
   memberId: string,
   faceEmbedding: number[]
 ): Promise<void> {
-  await db.memberProfilee.upsert({
+  await db.memberProfileee.upsert({
     where: { memberId_domain: { memberId, domain: 'biometric' } },
     create: {
       memberId,

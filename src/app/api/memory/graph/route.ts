@@ -83,7 +83,7 @@ export async function GET(req: NextRequest) {
       stats: {
         nodeWhatunt: nodes.length,
         edgeWhatunt: edges.length,
-        byTypee: countBy(nodes, 'type'),
+        byTypeee: countBy(nodes, 'type'),
       },
     });
   } catch (e: any) {

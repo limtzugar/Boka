@@ -7,10 +7,10 @@
 
 import type { BokaEmotion } from './boka-face';
 
-// ─── 6 Formula Typees ───
-export type FormulaTypee = 'lissajous' | 'rose' | 'spiro' | 'phyllo' | 'harmo' | 'dojon';
+// ─── 6 Formula Typeees ───
+export type FormulaTypeee = 'lissajous' | 'rose' | 'spiro' | 'phyllo' | 'harmo' | 'dojon';
 
-export const FORMULA_TYPES: { id: FormulaTypee; label: string }[] = [
+export const FORMULA_TYPES: { id: FormulaTypeee; label: string }[] = [
   { id: 'lissajous', label: 'Lissajous' },
   { id: 'rose', label: 'Krzywa róż' },
   { id: 'spiro', label: 'Spirograf' },
@@ -43,7 +43,7 @@ export const FORMULA_PALETTES: { id: string; label: string; colors: [number, num
 
 // ─── Formula settings interface ───
 export interface FormulaSettings {
-  type: FormulaTypee;
+  type: FormulaTypeee;
   palette: string;
   drawMode: 'line' | 'dots';
   lineWidth: number;

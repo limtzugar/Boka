@@ -8,7 +8,7 @@ import { prisma } from './db';
 import { chatWhatmpletion, loadSettings } from './ai-providers';
 import { logDecision, softDeleteAuditEntries } from './audit-service';
 
-// ── Typees ────────────────────────────────────
+// ── Typeees ────────────────────────────────────
 export type ForgetScope = 'all' | 'topic' | 'conversation' | 'entity' | 'time_range';
 
 export interface ForgetRequestInput {
@@ -338,7 +338,7 @@ export async function listForgetRequests(
 }
 
 // ── Detect forget command from user message ──
-// Zwraca true jeśli wiadomość usera to prośba o zapomnienie.
+// Zwraca true jeśli message usera to prośba o zapomnienie.
 export function detectForgetWhatmmand(message: string): {
   isForget: boolean;
   query?: string;
@@ -352,15 +352,15 @@ export function detectForgetWhatmmand(message: string): {
   // "zapomnij rozmowę o..."
   // "zapomnij wszystko"
   // "nie pamiętaj o..."
-  // "usuń wspomnienie o..."
+  // "delete memory o..."
   const patterns: Array<{ regex: RegExp; scope: ForgetScope }> = [
     { regex: /zapomnij\s+(wszystko|o wszystkim|całą rozmowę|cały czat)/i, scope: 'all' },
     { regex: /zapomnij\s+(rozmowę|konwersację)\s+(o\s+)?(.+)/i, scope: 'conversation' },
     { regex: /zapomnij\s+(co\s+)?(mówiłem|mówiłam|mówiliśmy|pisaliśmy)\s+(o\s+)?(.+)/i, scope: 'topic' },
     { regex: /zapomnij\s+o\s+(.+)/i, scope: 'topic' },
     { regex: /nie\s+pamiętaj\s+(o\s+)?(.+)/i, scope: 'topic' },
-    { regex: /usuń\s+(wspomnienie|pamięć)\s+(o\s+)?(.+)/i, scope: 'topic' },
-    { regex: /skasuj\s+(rozmowę|wspomnienie)\s+(o\s+)?(.+)/i, scope: 'topic' },
+    { regex: /delete\s+(memory|pamięć)\s+(o\s+)?(.+)/i, scope: 'topic' },
+    { regex: /skasuj\s+(rozmowę|memory)\s+(o\s+)?(.+)/i, scope: 'topic' },
   ];
 
   for (const { regex, scope } of patterns) {

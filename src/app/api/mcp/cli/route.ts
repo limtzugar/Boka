@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
       const s = await db.cliSession.create({
         data: {
           familyId: family.id,
-          name: `CLI ${new Date().toLocaleString('pl-PL')}`,
+          name: `CLI ${new Date().toLocaleString('en-US')}`,
           cwd: cwd || null,
           shell: process.platform === 'win32' ? 'cmd' : 'bash',
         },

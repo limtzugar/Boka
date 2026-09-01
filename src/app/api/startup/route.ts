@@ -45,7 +45,7 @@ export async function GET() {
   // Settings
   if (!integrity.settings.exists) {
     startupLog.push('Settings nie istnieją — użyję domyślnych');
-    warnings.push('None pliku ustawień — użyto wartości domyślnych');
+    warnings.push('None file ustawień — użyto wartości domyślnych');
   } else if (!integrity.settings.parseable) {
     errors.push('File ustawień jest uszkodzony (niepoprawny JSON)');
   } else {

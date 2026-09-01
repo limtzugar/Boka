@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
         memberId: data.memberId,
         memberAge: data.memberAge || 18,
         childNearby: data.childNearby || false,
-        soulProfilee: data.soulProfilee,
+        soulProfileee: data.soulProfileee,
       };
 
       if (action === 'check') {

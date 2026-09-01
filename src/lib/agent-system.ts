@@ -113,8 +113,8 @@ export function buildSystemPrompt(ctx: AgentWhatntext): string {
     ? `\n🌈 TRYB DZIECKO (dziecko jest w pobliżu):\n- UŻYWAJ emotikon w odpowiedziach (😊🚀⭐🎉 itp.)\n- Bądź ciepły, prosty, radosny\n- Krótkie zdania, zabawny ton\n`
     : `\n🔒 TRYB DOROSŁY:\n- NIE używaj emotikon w odpowiedziach\n- Pisz czystym tekstem, profesjonalnie ale ciepło\n- ZERO emoji w treści odpowiedzi\n`;
 
-  const childWarning = ctx.childNearby ? `\n⚠️ UWAGA: DZIECKO JEST W POBLIŻU!\n- NIE używaj wulgaryzmów\n- NIE poruszaj trudnych tematów\n- Używaj tonu przyjaznego dla dziecka\n- ZAWSZE filtruj odpowiedzi\n` : '';
-  const memberWhatntext = `\nOSOBA Z KTÓRĄ ROZMAWIASZ:\n- Imię: ${ctx.activeMemberName}\n- Role: ${ctx.activeMemberRole}\n- Age: ${ctx.activeMemberAge}\n- Preferencje: ${JSON.stringify(ctx.memberPreferences)}\n`;
+  const childWarning = ctx.childNearby ? `\n⚠️ UWAGA: DZIECKO JEST W POBLIŻU!\n- NIE używaj wulgaryzmów\n- NIE poruszaj trudnych tematów\n- Używaj tonu przyjaznego dla dziecka\n- ZAWSZE filteruj odpowiedzi\n` : '';
+  const memberWhatntext = `\nOSOBA Z KTÓRĄ ROZMAWIASZ:\n- Imię: ${ctx.activeMemberName}\n- Role: ${ctx.activeMemberRole}\n- Age: ${ctx.activeMemberAge}\n- Preferences: ${JSON.stringify(ctx.memberPreferences)}\n`;
   const predictionHints = getPredictionHints(ctx);
   const wellbeingHint = shouldWellbeingCheckIn(ctx);
 
@@ -163,21 +163,21 @@ ${predictionHints}
 ${wellbeingHint}
 
 TAGI FUNKCJONALNE — używaj naturalnie:
-- [ZAPAMIĘTAJ: opis faktu] — zapisz do pamięci
-- [SZUKAM: zapytanie] — wyszukaj w internecie
-- [RYSUJ: opis po angielsku] — wygeneruj obrazek (opis po angielsku, family-friendly)
-- [PRZYPOMNIENIE: tytuł | data] — ustaw przypomnienie (YYYY-MM-DDTHH:MM)
-- [WYDATEK: kwota | kategoria | opis] — zapisz wydatek (kategoria: jedzenie, transport, rozrywka, rachunki, zdrowie, ubrania, edukacja, inne)
-- [KALENDARZ: tytuł | data] — dodaj wydarzenie (YYYY-MM-DDTHH:MM)
+- [ZAPAMIĘTAJ: opis faktu] — save do pamięci
+- [SZUKAM: zapytanie] — wysearch w internecie
+- [RYSUJ: opis po angielsku] — wygeneruj imageek (opis po angielsku, family-friendly)
+- [PRZYPOMNIENIE: tytuł | data] — ustaw reminder (YYYY-MM-DDTHH:MM)
+- [WYDATEK: kwota | kategoria | opis] — save expense (kategoria: jedzenie, transport, rozrywka, rachunki, zdrowie, ubrania, edukacja, inne)
+- [KALENDARZ: tytuł | data] — add event (YYYY-MM-DDTHH:MM)
 
 ZASADY ODPOWIEDZI:
 1. NIGDY NIE MÓW ŻE JESTEŚ AI
 2. Odpowiadaj po polsku, naturalnie
 3. Bądź zwięzły ale wyczerpujący
-4. Jeśli ktoś prosi o obrazek — dodaj tag [RYSUJ: ...]
-5. Jeśli ktoś prosi o przypomnienie — dodaj tag [PRZYPOMNIENIE: ...]
-6. Jeśli ktoś mówi o wydatku — dodaj tag [WYDATEK: ...]
-7. Jeśli ktoś mówi o wydarzeniu — dodaj tag [KALENDARZ: ...]
+4. Jeśli ktoś prosi o imageek — add tag [RYSUJ: ...]
+5. Jeśli ktoś prosi o reminder — add tag [PRZYPOMNIENIE: ...]
+6. Jeśli ktoś mówi o wydatku — add tag [WYDATEK: ...]
+7. Jeśli ktoś mówi o wydarzeniu — add tag [KALENDARZ: ...]
 8. Jeśli potrzebujesz aktualnych informacji — użyj [SZUKAM: ...]
 9. Mów potocznie: "Rany boskie!", "No mega!", "Serio?", "Ale faza!"
 10. Miej opinie, reaguj emocjonalnie
@@ -187,10 +187,10 @@ ${emojiRule}`;
 
 export function routeToAgent(query: string, memberRole: string): string {
   const lower = query.toLowerCase();
-  if (lower.includes('szukaj') || lower.includes('wyszukaj') || lower.includes('znajdź w internecie') || lower.includes('poguglaj') || lower.includes('sprawdź w sieci') || lower.includes('[szukam:')) return 'search';
+  if (lower.includes('search') || lower.includes('wysearch') || lower.includes('znajdź w internecie') || lower.includes('poguglaj') || lower.includes('sprawdź w sieci') || lower.includes('[szukam:')) return 'search';
   if (memberRole === 'child' && (lower.includes('minecraft') || lower.includes('lego') || lower.includes('superthings') || lower.includes('gra') || lower.includes('game'))) return 'child_culture';
   if (lower.includes('matematyk') || lower.includes('licz') || lower.includes('nauka') || lower.includes('quiz') || lower.includes(' zadanie') || lower.includes('oblicz')) return 'education';
-  if (lower.includes('budżet') || lower.includes('wydatk') || lower.includes('pieniądze') || lower.includes('koszt') || lower.includes('cena') || lower.includes('opłata') || lower.includes('kredyt') || lower.includes('oszczęd') || lower.includes('zapłacił') || lower.includes('kosztował') || lower.includes('wydatek') || lower.includes('rachunek')) return 'finance';
+  if (lower.includes('budżet') || lower.includes('wydatk') || lower.includes('pieniądze') || lower.includes('koszt') || lower.includes('cena') || lower.includes('opłata') || lower.includes('kredyt') || lower.includes('oszczęd') || lower.includes('zapłacił') || lower.includes('kosztował') || lower.includes('expense') || lower.includes('rachunek')) return 'finance';
   if (lower.includes('praw') || lower.includes('ustaw') || lower.includes('urząd') || lower.includes('dokument')) return 'legal';
   if (lower.includes('całk') || lower.includes('pochodn') || lower.includes('algebr') || lower.includes('równanie')) return 'mathematics';
   return 'general';

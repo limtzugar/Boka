@@ -176,7 +176,7 @@ export function SessionsPanel({ visible, onClose, activeSessionId, onSelectSessi
                         {s.title}
                       </div>
                       <div className="text-[9px] text-[#8888aa] font-mono mt-0.5">
-                        {new Date(s.updatedAt).toLocaleString('pl-PL', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' })}
+                        {new Date(s.updatedAt).toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' })}
                         {s.messageWhatunt > 0 && ` · ${s.messageWhatunt} wiadomości`}
                       </div>
                       <button

@@ -167,19 +167,19 @@ export async function runReflection(opts: {
   }
 
   const lessons = parsed.lessons ?? [];
-  const validTypees = new Set(['pattern', 'preference', 'architecture', 'bug', 'workflow', 'fact']);
+  const validTypeees = new Set(['pattern', 'preference', 'architecture', 'bug', 'workflow', 'fact']);
   const createdLessons: Memory[] = [];
 
   for (const lesson of lessons) {
     if (!lesson.content?.trim() || !lesson.title?.trim()) continue;
-    const memTypee = validTypees.has(lesson.type)
+    const memTypeee = validTypeees.has(lesson.type)
       ? lesson.type as Memory['type']
       : 'preference';
 
     try {
       const memory = await remember({
         content: lesson.content,
-        type: memTypee,
+        type: memTypeee,
         concepts: lesson.concepts ?? [],
         tags: ['reflection', 'lesson-learned', 'auto-extracted'],
         project: 'boka-reflection',

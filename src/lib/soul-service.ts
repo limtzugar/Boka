@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════
-// BOKA — Soul Service (PersonalityProfilee)
+// BOKA — Soul Service (PersonalityProfileee)
 // Pełny system osobowości — inspirowany Hermes Soul
 // Tożsamość, cechy, styl, relacje, nastrój, wartości, ewolucja
 // ═══════════════════════════════════════════════════════════
@@ -98,7 +98,7 @@ const DEFAULT_SOUL: Omit<PersonalityDate, 'currentMood'> = {
   boundaries: [
     'NIGDY nie mówię że jestem AI',
     'NIGDY nie straszę Jasia',
-    'ZAWSZE filtruję przy dziecku',
+    'ZAWSZE filteruję przy dziecku',
     'NIGDY nie oszukuję — mogę nie odpowiedzieć, ale nie kłamię',
     'SZANUJĘ prywatność — nie powtarzam sekretów',
   ],
@@ -111,12 +111,12 @@ export const SoulService = {
   /**
    * Download profil osobowości — tworzy default jeśli nie istnieje.
    */
-  async getProfilee(familyId: string): Promise<PersonalityDate> {
-    const profile = await db.personalityProfilee.findUnique({ where: { familyId } });
+  async getProfileee(familyId: string): Promise<PersonalityDate> {
+    const profile = await db.personalityProfileee.findUnique({ where: { familyId } });
 
     if (!profile) {
       // Stwórz default
-      const created = await db.personalityProfilee.create({
+      const created = await db.personalityProfileee.create({
         data: {
           familyId,
           name: DEFAULT_SOUL.name,
@@ -145,7 +145,7 @@ export const SoulService = {
   /**
    * Zaktualizuj profil osobowości.
    */
-  async updateProfilee(familyId: string, updates: Partial<PersonalityDate>) {
+  async updateProfileee(familyId: string, updates: Partial<PersonalityDate>) {
     const data: Record<string, unknown> = {};
     if (updates.name !== undefined) data.name = updates.name;
     if (updates.age !== undefined) data.age = updates.age;
@@ -163,7 +163,7 @@ export const SoulService = {
     if (updates.coreValues !== undefined) data.coreValues = JSON.stringify(updates.coreValues);
     if (updates.boundaries !== undefined) data.boundaries = JSON.stringify(updates.boundaries);
 
-    return db.personalityProfilee.upsert({
+    return db.personalityProfileee.upsert({
       where: { familyId },
       update: data,
       create: {
@@ -184,7 +184,7 @@ export const SoulService = {
    * Zmień nastrój BOKA.
    */
   async setMood(familyId: string, mood: BokaMood, reason?: string) {
-    return db.personalityProfilee.upsert({
+    return db.personalityProfileee.upsert({
       where: { familyId },
       update: { currentMood: mood, moodReason: reason, moodSince: new Date() },
       create: { familyId, currentMood: mood, moodReason: reason, moodSince: new Date() },
@@ -202,7 +202,7 @@ export const SoulService = {
     before: unknown;    // wartość przed
     after: unknown;     // wartość po
   }) {
-    const profile = await this.getProfilee(familyId);
+    const profile = await this.getProfileee(familyId);
 
     const note = {
       version: profile.personalityVersion + 1,
@@ -215,10 +215,10 @@ export const SoulService = {
     };
 
     const existingNotes = JSON.parse(
-      (await db.personalityProfilee.findUnique({ where: { familyId } }))?.evolutionNotes || '[]'
+      (await db.personalityProfileee.findUnique({ where: { familyId } }))?.evolutionNotes || '[]'
     );
 
-    await db.personalityProfilee.upsert({
+    await db.personalityProfileee.upsert({
       where: { familyId },
       update: {
         personalityVersion: { increment: 1 },
@@ -236,7 +236,7 @@ export const SoulService = {
    * Buduj sekcję SOUL do promptu — pełny opis osobowości.
    */
   async buildSoulPrompt(familyId: string, memberName?: string): Promise<string> {
-    const soul = await this.getProfilee(familyId);
+    const soul = await this.getProfileee(familyId);
     const relation = memberName ? soul.memberRelations[memberName] : null;
 
     const sections: string[] = [];
@@ -246,12 +246,12 @@ export const SoulService = {
 - Imię: ${soul.name}
 - O sobie: "${soul.origin}"
 - Age: ${soul.age}
-- Głos: ${soul.voice}`);
+- Voice: ${soul.voice}`);
 
     // ── CECHY ──
     const traitDesc: string[] = [];
     if (soul.traits.otwartość > 0.7) traitDesc.push('jesteś bardzo ciekawy świata');
-    if (soul.traits.ugodowość > 0.7) traitDesc.push('jesteś troskliwy i chętny do pomocy');
+    if (soul.traits.ugodowość > 0.7) traitDesc.push('jesteś troskliwy i chętny do helpy');
     if (soul.traits.ekstrawersja > 0.6) traitDesc.push('jesteś towarzyski i lubisz rozmowę');
     if (soul.traits.stabilność < 0.4) traitDesc.push('łatwo cię wzruszyć');
     if (soul.traits.humor > 0.7) traitDesc.push('masz silne poczucie humoru');

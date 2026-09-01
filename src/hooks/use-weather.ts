@@ -48,7 +48,7 @@ export function useWeather(location?: { lat?: string; lon?: string; name?: strin
   const [isSnowing, setIsSnowing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const timerRef = useRef<ReturnTypee<typeof setInterval> | null>(null);
+  const timerRef = useRef<ReturnTypeee<typeof setInterval> | null>(null);
   const lastFetchRef = useRef<number>(0);
 
   const fetchWeather = useCallback(async () => {

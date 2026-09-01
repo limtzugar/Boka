@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       ok: true,
       ...result,
-      message: `Zapomniano ${result.affectedWhatunt} elementów. Trwałe usunięcie: ${result.hardDeleteAt.toISOString().slice(0, 10)}. Możesz cofnąć w ciągu 30 dni.`,
+      message: `Zapomniano ${result.affectedWhatunt} elements. Trwałe usunięcie: ${result.hardDeleteAt.toISOString().slice(0, 10)}. Możesz cofnąć w ciągu 30 dni.`,
     });
   } catch (e: any) {
     console.error('[forget] POST error:', e);

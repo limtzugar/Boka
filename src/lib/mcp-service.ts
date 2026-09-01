@@ -19,7 +19,7 @@ import fs from 'fs';
 import path from 'path';
 import { spawn } from 'child_process';
 
-// ── Typees ──────────────────────────────────────────────────────────
+// ── Typeees ──────────────────────────────────────────────────────────
 
 export interface McpTool {
   name: string;
@@ -35,7 +35,7 @@ export interface McpServerWhatnfig {
   id?: string;
   name: string;
   description?: string;
-  serverTypee: 'stdio' | 'sse' | 'http' | 'builtin';
+  serverTypeee: 'stdio' | 'sse' | 'http' | 'builtin';
   command?: string;
   args?: string[];          // JSON-encoded in DB
   env?: Record<string, string>;
@@ -97,7 +97,7 @@ const BUILTIN_TOOLS: Record<string, McpTool[]> = {
   'boka-tools': [
     {
       name: 'memory_search',
-      description: 'Przeszukaj pamięć BOKA (memory entries). Zwraca dopasowania.',
+      description: 'Przesearch pamięć BOKA (memory entries). Zwraca dopasowania.',
       inputSchema: {
         type: 'object',
         properties: {
@@ -114,7 +114,7 @@ const BUILTIN_TOOLS: Record<string, McpTool[]> = {
         type: 'object',
         properties: {
           content: { type: 'string' },
-          entryTypee: { type: 'string', description: 'fact | event | preference | note' },
+          entryTypeee: { type: 'string', description: 'fact | event | preference | note' },
           importance: { type: 'number', description: '0-1 (default 0.5)' },
           tags: { type: 'array', items: { type: 'string' } },
         },
@@ -140,7 +140,7 @@ const BUILTIN_TOOLS: Record<string, McpTool[]> = {
       inputSchema: {
         type: 'object',
         properties: {
-          message: { type: 'string', description: 'Pytanie do BOKA' },
+          message: { type: 'string', description: 'Question do BOKA' },
         },
         required: ['message'],
       },
@@ -239,13 +239,13 @@ function getHiggsfieldApiKey(): string | null {
 // ── List tools for a server ────────────────────────────────────────
 
 export async function listToolsForServer(server: {
-  serverTypee: string;
+  serverTypeee: string;
   builtinKey?: string | null;
   command?: string | null;
   args?: string | null;
   url?: string | null;
 }): Promise<McpTool[]> {
-  if (server.serverTypee === 'builtin' && server.builtinKey) {
+  if (server.serverTypeee === 'builtin' && server.builtinKey) {
     return BUILTIN_TOOLS[server.builtinKey] || [];
   }
   // For stdio/sse/http — we don't actually run a real MCP client here
@@ -258,7 +258,7 @@ export async function listToolsForServer(server: {
 // ── Execute a tool ─────────────────────────────────────────────────
 
 export async function invokeTool(
-  server: { id: string; serverTypee: string; builtinKey?: string | null; familyId?: string | null },
+  server: { id: string; serverTypeee: string; builtinKey?: string | null; familyId?: string | null },
   toolName: string,
   args: Record<string, unknown>,
   triggeredBy: string = 'user',
@@ -267,9 +267,9 @@ export async function invokeTool(
   try {
     let result: unknown;
 
-    if (server.serverTypee === 'builtin' && server.builtinKey) {
+    if (server.serverTypeee === 'builtin' && server.builtinKey) {
       result = await executeBuiltinTool(server.builtinKey, toolName, args, server.familyId);
-    } else if (server.serverTypee === 'stdio') {
+    } else if (server.serverTypeee === 'stdio') {
       result = await executeStdioTool(
         {
           command: (server as { command?: string | null }).command,
@@ -279,7 +279,7 @@ export async function invokeTool(
         toolName,
         args,
       );
-    } else if (server.serverTypee === 'http' || server.serverTypee === 'sse') {
+    } else if (server.serverTypeee === 'http' || server.serverTypeee === 'sse') {
       result = await executeHttpTool(
         {
           url: (server as { url?: string | null }).url,
@@ -289,7 +289,7 @@ export async function invokeTool(
         args,
       );
     } else {
-      throw new Error(`Noobsługiwany typ serwera: ${server.serverTypee}`);
+      throw new Error(`Noobsługiwany typ servera: ${server.serverTypeee}`);
     }
 
     const durationMs = Date.now() - start;
@@ -357,7 +357,7 @@ async function executeHiggsfieldTool(
   const apiKey = getHiggsfieldApiKey();
   if (!apiKey) {
     throw new Error(
-      'None klucza API Higgsfield. Ustaw HIGGSFIELD_API_KEY w env lub w ustawieniach BOKA.',
+      'None klucza API Higgsfield. Ustaw HIGGSFIELD_API_KEY w env lub w settingsch BOKA.',
     );
   }
 
@@ -387,7 +387,7 @@ async function executeHiggsfieldTool(
       method: 'POST',
       headers: {
         Authorization: `Bearer ${apiKey}`,
-        'Whatntent-Typee': 'application/json',
+        'Whatntent-Typeee': 'application/json',
       },
       body: JSON.stringify(body),
     });
@@ -454,7 +454,7 @@ async function executeBokaTool(
     const entry = await db.memoryEntry.create({
       data: {
         familyId: fid,
-        entryTypee: (args.entryTypee as string) || 'note',
+        entryTypeee: (args.entryTypeee as string) || 'note',
         content,
         importance: (args.importance as number) || 0.5,
         tags: JSON.stringify(args.tags || []),
@@ -527,7 +527,7 @@ async function executeFilesystemTool(
     const rel = (args.dir as string) || '/';
     const full = safeJoinSandbox(rel);
     if (!fs.existsSync(full)) return { dir: rel, files: [] };
-    const entries = fs.readdirSync(full, { withFileTypees: true });
+    const entries = fs.readdirSync(full, { withFileTypeees: true });
     return {
       dir: rel,
       files: entries.map(e => ({
@@ -549,7 +549,7 @@ async function executeStdioTool(
   toolName: string,
   args: Record<string, unknown>,
 ): Promise<unknown> {
-  if (!server.command) throw new Error('None command dla serwera stdio');
+  if (!server.command) throw new Error('None command dla servera stdio');
 
   const cmdArgs: string[] = server.args ? JSON.parse(server.args) : [];
   const cmdEnv: Record<string, string> = server.env
@@ -621,7 +621,7 @@ async function executeStdioTool(
       if (!resolved) {
         resolved = true;
         child.kill();
-        reject(new Error('Timeout (30s) — serwer MCP nie odpowiedział'));
+        reject(new Error('Timeout (30s) — server MCP nie odpowiedział'));
       }
     }, 30000);
   });
@@ -634,12 +634,12 @@ async function executeHttpTool(
   toolName: string,
   args: Record<string, unknown>,
 ): Promise<unknown> {
-  if (!server.url) throw new Error('None URL dla serwera HTTP/SSE');
+  if (!server.url) throw new Error('None URL dla servera HTTP/SSE');
 
   const headers: Record<string, string> = server.headers
     ? JSON.parse(server.headers)
     : {};
-  headers['Whatntent-Typee'] = 'application/json';
+  headers['Whatntent-Typeee'] = 'application/json';
 
   const body = {
     jsonrpc: '2.0',
@@ -669,7 +669,7 @@ export async function listMcpServers(familyId?: string): Promise<unknown[]> {
   const where = familyId ? { OR: [{ familyId }, { familyId: null }] } : {};
   return db.mcpServer.findMany({
     where,
-    orderBy: [{ serverTypee: 'asc' }, { name: 'asc' }],
+    orderBy: [{ serverTypeee: 'asc' }, { name: 'asc' }],
   });
 }
 
@@ -679,10 +679,10 @@ export async function createMcpServer(config: McpServerWhatnfig): Promise<unknow
 
   return db.mcpServer.create({
     data: {
-      familyId: config.serverTypee === 'builtin' ? null : family.id,
+      familyId: config.serverTypeee === 'builtin' ? null : family.id,
       name: config.name,
       description: config.description || null,
-      serverTypee: config.serverTypee,
+      serverTypeee: config.serverTypeee,
       command: config.command || null,
       args: config.args ? JSON.stringify(config.args) : null,
       env: config.env ? JSON.stringify(config.env) : null,
@@ -719,7 +719,7 @@ export async function updateMcpServer(
 export async function ensureBuiltinMcpServers(): Promise<void> {
   for (const [key, meta] of Object.entries(BUILTIN_SERVER_META)) {
     const existing = await db.mcpServer.findFirst({
-      where: { serverTypee: 'builtin', builtinKey: key },
+      where: { serverTypeee: 'builtin', builtinKey: key },
     });
     if (!existing) {
       await db.mcpServer.create({
@@ -727,7 +727,7 @@ export async function ensureBuiltinMcpServers(): Promise<void> {
           familyId: null,
           name: meta.name,
           description: meta.description,
-          serverTypee: 'builtin',
+          serverTypeee: 'builtin',
           builtinKey: key,
           isActive: true,
           toolsJson: JSON.stringify(BUILTIN_TOOLS[key] || []),
@@ -846,7 +846,7 @@ export async function interpretCliOutput(
         `Time: ${result.durationMs}ms\n\n` +
         `STDOUT:\n\`\`\`\n${result.stdout.slice(0, 8000)}\n\`\`\`\n\n` +
         (result.stderr ? `STDERR:\n\`\`\`\n${result.stderr.slice(0, 4000)}\n\`\`\`\n\n` : '') +
-        (userQuestion ? `Pytanie usera: ${userQuestion}` : 'Podsumuj co się stało.'),
+        (userQuestion ? `Question usera: ${userQuestion}` : 'Podsumuj co się stało.'),
     },
   ];
 
@@ -890,7 +890,7 @@ export async function routeMessageToTool(
     {
       role: 'system',
       content:
-        'Jesteś routerem narzędzi MCP BOKA. Przeanalizuj wiadomość usera i zdecyduj, ' +
+        'Jesteś routerem narzędzi MCP BOKA. Przeanalizuj message usera i zdecyduj, ' +
         'czy wywołać jedno z dostępnych narzędzi, czy nie.\n\n' +
         'Odpowiedz WYŁĄCZNIE w formacie JSON:\n' +
         '{"shouldCallTool": true/false, "toolIndex": <1-based index>, "arguments": {...}, "reasoning": "..."}\n\n' +

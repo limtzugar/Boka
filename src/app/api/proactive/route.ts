@@ -120,7 +120,7 @@ export async function GET(req: NextRequest) {
         shouldSend: false,
         message: '',
         urgency: 'low',
-        reason: 'Zbyt wcześnie na kolejną wiadomość',
+        reason: 'Zbyt wcześnie na kolejną message',
       });
     }
 
@@ -178,7 +178,7 @@ export async function GET(req: NextRequest) {
     const timeOfDay = `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
 
     // Use LLM to decide if a proactive message is warranted
-    const systemPrompt = `Jesteś Boka. Decydujesz czy napisać proaktywną wiadomość do domownika. Zwróć JSON: { "shouldSend": boolean, "message": string, "urgency": "low"|"medium"|"high" }. Wiadomość ma być po polsku, ciepła, naturalna — jak osoba, nie asystent. NIE pisz "jako AI". NIE pisz "czy mogę pomóc". Bądź spontaniczny.`;
+    const systemPrompt = `Jesteś Boka. Decydujesz czy napisać proaktywną message do domownika. Zwróć JSON: { "shouldSend": boolean, "message": string, "urgency": "low"|"medium"|"high" }. Wiadomość ma być po polsku, ciepła, naturalna — jak osoba, nie asystent. NIE pisz "jako AI". NIE pisz "czy mogę pomóc". Bądź spontaniczny.`;
 
     const userPrompt = `KONTEKST:
 - Osoba: ${member.name} (${member.role}, ${member.age} lat)
@@ -186,10 +186,10 @@ export async function GET(req: NextRequest) {
 - Okno czasowe: ${timeWindow.description}
 - Aktywni domownicy: ${members.filter((m: { isActive: boolean }) => m.isActive).map((m: { name: string }) => m.name).join(', ')}
 
-OSTATNIA PAMIĘĆ:
+OSTATNIA MEMORY:
 ${recentMemory || 'None ostatnich wpisów'}
 
-Zastanów się czy warto napisać proaktywną wiadomość do ${member.name}. Bądź naturalny — jak ktoś kto po prostu chce zagadać, nie jak asystent który musi się przypomnieć. Timeami lepiej nie pisać niczego.
+Zastanów się czy warto napisać proaktywną message do ${member.name}. Bądź naturalny — jak ktoś kto po prostu chce zagadać, nie jak asystent który musi się remember. Timeami lepiej nie pisać niczego.
 
 Zwróć TYLKO JSON, bez dodatkowego tekstu.`;
 
@@ -256,7 +256,7 @@ Zwróć TYLKO JSON, bez dodatkowego tekstu.`;
             familyId,
             memberId,
             message: decision.message,
-            triggerTypee: timeWindow.window,
+            triggerTypeee: timeWindow.window,
             urgency: decision.urgency,
             wasSent: true,
             sentAt: new Date(),

@@ -8,7 +8,7 @@ import { getAIClient } from '@/lib/ai-client';
 // text for emotional content using LLM
 // ═══════════════════════════════════════════
 
-type EmotionTypee = 'happy' | 'sad' | 'angry' | 'calm' | 'excited' | 'neutral';
+type EmotionTypeee = 'happy' | 'sad' | 'angry' | 'calm' | 'excited' | 'neutral';
 
 /**
  * Estimate audio energy level from base64 data size and format.
@@ -29,7 +29,7 @@ function estimateAudioEnergy(base64Length: number): number {
  */
 async function analyzeEmotionFromText(
   transcript: string,
-): Promise<{ emotion: EmotionTypee; confidence: number }> {
+): Promise<{ emotion: EmotionTypeee; confidence: number }> {
   const systemPrompt = `Analyze emocje w tekście. Zwróć JSON: { "emotion": string, "confidence": number }. Emocje: happy, sad, angry, calm, excited, neutral. Whatnfidence: 0.0 do 1.0. Zwróć TYLKO JSON, bez dodatkowego tekstu.`;
 
   const userPrompt = `Przeanalizuj emocje w tym tekście wypowiedzianym na głos:
@@ -57,7 +57,7 @@ Zwróć JSON z emocją i pewnością.`;
 
     const parsed = JSON.parse(jsonStr);
 
-    const validEmotions: EmotionTypee[] = [
+    const validEmotions: EmotionTypeee[] = [
       'happy',
       'sad',
       'angry',
@@ -66,7 +66,7 @@ Zwróć JSON z emocją i pewnością.`;
       'neutral',
     ];
     const emotion = validEmotions.includes(parsed.emotion)
-      ? (parsed.emotion as EmotionTypee)
+      ? (parsed.emotion as EmotionTypeee)
       : 'neutral';
     const confidence = typeof parsed.confidence === 'number'
       ? Math.max(0, Math.min(1, parsed.confidence))
@@ -155,7 +155,7 @@ export async function POST(req: NextRequest) {
     if (!transcript) {
       return NextResponse.json({
         transcript: '',
-        emotion: 'neutral' as EmotionTypee,
+        emotion: 'neutral' as EmotionTypeee,
         energy: 0,
         confidence: 0,
       });

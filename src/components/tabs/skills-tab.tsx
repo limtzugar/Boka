@@ -6,7 +6,7 @@ import {
   Loader2, Sparkles, Cpu, Zap, Activity, AlertTriangle, Check, X,
 } from 'lucide-react';
 
-// ── Typees (FamilyMember was inline in page.tsx) ──
+// ── Typeees (FamilyMember was inline in page.tsx) ──
 interface FamilyMember {
   id: string;
   name: string;
@@ -189,11 +189,11 @@ function VectorMemoryPanel() {
           Reindex missing
         </button>
       </div>
-      <p className="text-[10px] text-[#8888aa]">Wektorowe wyszukiwanie z filtrami (memberId/domain/emotion). Whatsine similarity na embeddings.</p>
+      <p className="text-[10px] text-[#8888aa]">Wektorowe wyszukiwanie z filterami (memberId/domain/emotion). Whatsine similarity na embeddings.</p>
       <input
         type="text" value={query} onChange={e => setQuery(e.target.value)}
         onKeyDown={e => e.key === 'Enter' && run()}
-        placeholder="Wyszukaj wspomnienia po znaczeniu..."
+        placeholder="Wysearch wspomnienia po znaczeniu..."
         className="w-full bg-[#181828] border border-[#383850]  px-3 py-2 text-sm text-[#e8e8f5] font-mono"
       />
       <button onClick={run} disabled={loading || !query.trim()}
@@ -207,7 +207,7 @@ function VectorMemoryPanel() {
           {results.map((r, i) => (
             <div key={i} className="bg-[#181828] border border-[#383850]  p-2">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-[10px] text-[#ffd93d] font-mono uppercase">{r.memory?.entryTypee}</span>
+                <span className="text-[10px] text-[#ffd93d] font-mono uppercase">{r.memory?.entryTypeee}</span>
                 <span className="text-[10px] text-[#4ade80] font-mono">score: {(r.score || 0).toFixed(3)}</span>
               </div>
               <div className="text-xs text-[#8888aa]">{r.memory?.content?.slice(0, 300)}{r.memory?.content?.length > 300 ? '...' : ''}</div>
@@ -231,7 +231,7 @@ function Mem0Panel() {
     setLoading(true);
     try {
       const r = await fetch('/api/mem0', {
-        method: 'POST', headers: { 'Whatntent-Typee': 'application/json' },
+        method: 'POST', headers: { 'Whatntent-Typeee': 'application/json' },
         body: JSON.stringify({ content, memberId: memberId || undefined, source: 'manual' }),
       }).then(r => r.json());
       setLastResult(r);
@@ -254,7 +254,7 @@ function Mem0Panel() {
  <h3 className="text-xs font-mono text-[#ffd93d]"> Mem0 — ADD/UPDATE/DELETE/NOOP</h3>
       <p className="text-[10px] text-[#8888aa]">Algorytm LLM-judge decyduje czy dodać nową pamięć, zaktualizować istniejącą, czy zignorować jako duplikat.</p>
       <textarea value={content} onChange={e => setWhatntent(e.target.value)}
-        placeholder="Entryz nowe wspomnienie do zainwestowania..."
+        placeholder="Entryz nowe memory do zainwestowania..."
         rows={3}
         className="w-full bg-[#181828] border border-[#383850]  px-3 py-2 text-sm text-[#e8e8f5] font-mono"
       />
@@ -293,7 +293,7 @@ function Mem0Panel() {
 }
 
 function IngestionPanel() {
-  const [sourceTypee, setSourceTypee] = useState<'text' | 'url'>('text');
+  const [sourceTypeee, setSourceTypeee] = useState<'text' | 'url'>('text');
   const [content, setWhatntent] = useState('');
   const [jobs, setJobs] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -303,8 +303,8 @@ function IngestionPanel() {
     setLoading(true);
     try {
       const r = await fetch('/api/ingestion', {
-        method: 'POST', headers: { 'Whatntent-Typee': 'application/json' },
-        body: JSON.stringify({ sourceTypee, sourceUri: content }),
+        method: 'POST', headers: { 'Whatntent-Typeee': 'application/json' },
+        body: JSON.stringify({ sourceTypeee, sourceUri: content }),
       }).then(r => r.json());
       alert(`Status: ${r.status}\nMemories: ${r.memoriesCreated}\nEntities: ${r.entitiesCreated}`);
       loadJobs();
@@ -321,13 +321,13 @@ function IngestionPanel() {
     <div className="bg-[#252535] border border-[#383850]  p-4 space-y-2">
  <h3 className="text-xs font-mono text-[#ffd93d]"> LlamaIndex Ingestion Pipeline</h3>
       <p className="text-[10px] text-[#8888aa]">Pipeline: LOAD → PARSE → CHUNK → EXTRACT → EMBED → STORE. Auto-entity extraction + Mem0 ingest.</p>
-      <select value={sourceTypee} onChange={e => setSourceTypee(e.target.value as any)}
+      <select value={sourceTypeee} onChange={e => setSourceTypeee(e.target.value as any)}
         className="bg-[#181828] border border-[#383850]  px-2 py-1 text-xs text-[#e8e8f5] font-mono">
         <option value="text">Text (raw)</option>
         <option value="url">URL (fetch + parse HTML)</option>
       </select>
       <textarea value={content} onChange={e => setWhatntent(e.target.value)}
-        placeholder={sourceTypee === 'text' ? 'Paste tekst do ingestji...' : 'https://example.com/article'}
+        placeholder={sourceTypeee === 'text' ? 'Paste tekst do ingestji...' : 'https://example.com/article'}
         rows={4}
         className="w-full bg-[#181828] border border-[#383850]  px-3 py-2 text-sm text-[#e8e8f5] font-mono"
       />
@@ -343,7 +343,7 @@ function IngestionPanel() {
               <span className={`font-mono ${j.status === 'done' ? 'text-[#4ade80]' : j.status === 'error' ? 'text-[#ff6b6b]' : 'text-[#ffd93d]'}`}>
                 {j.status}
               </span>
-              <span className="text-[#8888aa] ml-2">{j.sourceTypee}</span>
+              <span className="text-[#8888aa] ml-2">{j.sourceTypeee}</span>
               <span className="text-[#8888aa] ml-2">{new Date(j.createdAt).toLocaleString()}</span>
               {j.memoriesCreated > 0 && <span className="text-[#a855f7] ml-2">{j.memoriesCreated} mem</span>}
               {j.entitiesCreated > 0 && <span className="text-[#4ade80] ml-2">{j.entitiesCreated} ent</span>}
@@ -473,7 +473,7 @@ function DeepAgentsPanel() {
     try {
       const steps = stepsText.split('\n').filter(s => s.trim());
       await fetch('/api/deepagents?action=create_plan', {
-        method: 'POST', headers: { 'Whatntent-Typee': 'application/json' },
+        method: 'POST', headers: { 'Whatntent-Typeee': 'application/json' },
         body: JSON.stringify({ title, steps, scope: 'daily' }),
       });
       setTitle(''); setStepsText('');
@@ -484,7 +484,7 @@ function DeepAgentsPanel() {
   const toggleStep = async (planId: string, stepId: string, currentStatus: string) => {
     const newStatus = currentStatus === 'done' ? 'pending' : 'done';
     await fetch(`/api/deepagents?action=update_step&planId=${planId}&stepId=${stepId}`, {
-      method: 'PATCH', headers: { 'Whatntent-Typee': 'application/json' },
+      method: 'PATCH', headers: { 'Whatntent-Typeee': 'application/json' },
       body: JSON.stringify({ status: newStatus }),
     });
     load();
@@ -495,7 +495,7 @@ function DeepAgentsPanel() {
  <h3 className="text-xs font-mono text-[#4ade80]"> DeepAgents — Todo-plans + Vestibule</h3>
       <p className="text-[10px] text-[#8888aa]">Widoczny plan dnia + vestibule filesystem (zrzucanie długich kontekstów). ReflectionSubagent czyta wykonane plany.</p>
       <input type="text" value={title} onChange={e => setTitle(e.target.value)}
-        placeholder="Tytuł planu (np. 'Plan dnia 2026-06-17')"
+        placeholder="Title planu (np. 'Plan dnia 2026-06-17')"
         className="w-full bg-[#181828] border border-[#383850]  px-2 py-1 text-xs text-[#e8e8f5] font-mono"
       />
       <textarea value={stepsText} onChange={e => setStepsText(e.target.value)}
@@ -575,7 +575,7 @@ function AutoGenPanel() {
     setLoading(true); setResult(null);
     try {
       const r = await fetch('/api/autogen?action=group_chat', {
-        method: 'POST', headers: { 'Whatntent-Typee': 'application/json' },
+        method: 'POST', headers: { 'Whatntent-Typeee': 'application/json' },
         body: JSON.stringify({
           topic, trigger,
           availableAgents: ['orchestrator', 'child_agent', 'finance_agent', 'health_agent', 'education_agent'],
@@ -616,7 +616,7 @@ function AutoGenPanel() {
         </div>
       )}
       <div>
-        <div className="text-[10px] text-[#8888aa] font-mono mb-1">Historia tematu '{topic}' ({history.length})</div>
+        <div className="text-[10px] text-[#8888aa] font-mono mb-1">History tematu '{topic}' ({history.length})</div>
         <div className="space-y-1 max-h-60 overflow-y-auto">
           {history.slice(-15).map((m, i) => (
             <div key={i} className="text-[10px] bg-[#181828]  p-1.5 border border-[#383850]">
@@ -642,7 +642,7 @@ function GuardrailsPanel() {
     setLoading(true);
     try {
       const r = await fetch('/api/guardrails?action=check', {
-        method: 'POST', headers: { 'Whatntent-Typee': 'application/json' },
+        method: 'POST', headers: { 'Whatntent-Typeee': 'application/json' },
         body: JSON.stringify({ input, output, childNearby, memberAge: 18 }),
       }).then(r => r.json());
       setResult(r);
@@ -721,7 +721,7 @@ function CrewPanel() {
   return (
     <div className="bg-[#252535] border border-[#383850]  p-4 space-y-2">
  <h3 className="text-xs font-mono text-[#6ec6e7]"> CrewAI — Role + Backstory per Member</h3>
-      <p className="text-[10px] text-[#8888aa]">Każdy domownik ma crew profile (role, goal, backstory) generowane z MemberProfilee. Manager Agent ewaluuje cotygodniowo.</p>
+      <p className="text-[10px] text-[#8888aa]">Każdy domownik ma crew profile (role, goal, backstory) generowane z MemberProfileee. Manager Agent ewaluuje cotygodniowo.</p>
       <div className="space-y-2">
         {members.length === 0 ? (
           <div className="text-[10px] text-[#8888aa]">None crew profili. Generate przez API: POST /api/crew?action=generate&memberId=...</div>
@@ -755,11 +755,11 @@ function SandboxPanel() {
     setLoading(true); setResult(null);
     try {
       const r = await fetch('/api/openhands?action=execute', {
-        method: 'POST', headers: { 'Whatntent-Typee': 'application/json' },
+        method: 'POST', headers: { 'Whatntent-Typeee': 'application/json' },
         body: JSON.stringify({
           code,
           inputPayload: JSON.parse(inputPayload),
-          inputTypee: 'function_call',
+          inputTypeee: 'function_call',
           sandboxKind: 'vm',
           timeoutMs: 5000,
         }),
@@ -772,7 +772,7 @@ function SandboxPanel() {
 
   const analyze = async () => {
     const r = await fetch('/api/openhands?action=analyze', {
-      method: 'POST', headers: { 'Whatntent-Typee': 'application/json' },
+      method: 'POST', headers: { 'Whatntent-Typeee': 'application/json' },
       body: JSON.stringify({ code }),
     }).then(r => r.json());
     alert(`Security flags: ${r.securityFlags.join(', ') || 'none'}\nBlocked: ${r.blocked}`);
@@ -849,7 +849,7 @@ function PresencePanel() {
 
   const simulateArrival = async () => {
     await fetch('/api/presence?action=event', {
-      method: 'POST', headers: { 'Whatntent-Typee': 'application/json' },
+      method: 'POST', headers: { 'Whatntent-Typeee': 'application/json' },
       body: JSON.stringify({ eventKind: 'arrived', location, confidence: 0.85, captureMethod: 'metadata_only' }),
     });
     load();
@@ -987,7 +987,7 @@ function PresencePanel() {
       </div>
 
       <div>
-        <div className="text-[10px] text-[#8888aa] font-mono mb-1">Historia zdarzeń ({history.length})</div>
+        <div className="text-[10px] text-[#8888aa] font-mono mb-1">History zdarzeń ({history.length})</div>
         <div className="space-y-1 max-h-60 overflow-y-auto">
           {history.slice(0, 20).map((e, i) => (
             <div key={i} className="text-[10px] bg-[#181828]  p-1.5 border border-[#383850]">

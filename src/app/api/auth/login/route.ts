@@ -1,4 +1,4 @@
-// BOKA OS — Login API
+// BOKA OS — Logsn API
 import { NextRequest, NextResponse } from 'next/server';
 
 const COOKIE_NAME = 'boka_auth';
@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
     if (!password) return NextResponse.json({ error: 'Password required' }, { status: 400 });
     if (password !== secret) {
       await new Promise(r => setTimeout(r, 300));
-      return NextResponse.json({ error: 'Noprawidłowe hasło' }, { status: 401 });
+      return NextResponse.json({ error: 'Noprawidłowe password' }, { status: 401 });
     }
 
     const { createHmac } = await import('crypto');
@@ -32,6 +32,6 @@ export async function POST(req: NextRequest) {
     });
     return res;
   } catch {
-    return NextResponse.json({ error: 'Login failed' }, { status: 500 });
+    return NextResponse.json({ error: 'Logsn failed' }, { status: 500 });
   }
 }

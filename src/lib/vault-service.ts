@@ -10,7 +10,7 @@ import { parseWikilinks, extractLinkTargets } from './wikilinks-service';
 
 // ── TYPY ──────────────────────────────────────
 
-export type VaultNoteTypee =
+export type VaultNoteTypeee =
   | 'daily'    // Daily Note — notatka dnia (jak w Obsidian)
   | 'note'     // zwykła notatka
   | 'canvas'   // Canvas — wizualny układ węzłów
@@ -29,7 +29,7 @@ export interface FrontmatterDate {
   location?: string;      // gdzie
   weather?: string;       // pogoda
   mood?: string;          // nastrój
-  type?: VaultNoteTypee;   // typ notatki
+  type?: VaultNoteTypeee;   // typ notatki
   source?: string;        // conversation, ritual, dream, manual
   modified?: string;      // ostatnia modyfikacja
   aliases?: string[];     // alternatywne nazwy (jak w Obsidian)
@@ -77,7 +77,7 @@ export function parseFrontmatter(markdown: string): { frontmatter: FrontmatterDa
       for (const line of yamlBlock.split('\n')) {
         const trimmed = line.trim();
         if (trimmed.startsWith('date:')) fm.date = trimmed.replace('date:', '').trim().replace(/"/g, '');
-        else if (trimmed.startsWith('type:')) fm.type = trimmed.replace('type:', '').trim() as VaultNoteTypee;
+        else if (trimmed.startsWith('type:')) fm.type = trimmed.replace('type:', '').trim() as VaultNoteTypeee;
         else if (trimmed.startsWith('emotion:')) fm.emotion = trimmed.replace('emotion:', '').trim();
         else if (trimmed.startsWith('importance:')) fm.importance = parseFloat(trimmed.replace('importance:', '').trim());
         else if (trimmed.startsWith('location:')) fm.location = trimmed.replace('location:', '').trim().replace(/"/g, '');
@@ -118,7 +118,7 @@ export const VaultService = {
    */
   async createNote(params: {
     familyId: string;
-    noteTypee?: VaultNoteTypee;
+    noteTypeee?: VaultNoteTypeee;
     title: string;
     content: string;        // pełny markdown (z lub bez frontmatter)
     frontmatter?: FrontmatterDate;
@@ -130,7 +130,7 @@ export const VaultService = {
     canvasDate?: Record<string, unknown>;
   }) {
     const { familyId, title, content: rawWhatntent, memberId, emotion, tags, isPinned, canvasDate } = params;
-    const noteTypee = params.noteTypee || 'note';
+    const noteTypeee = params.noteTypeee || 'note';
     const importance = params.importance ?? 0.5;
 
     // Parse frontmatter z content jeśli istnieje
@@ -141,7 +141,7 @@ export const VaultService = {
       ...parsedFm,
       ...params.frontmatter,
       date: params.frontmatter?.date || new Date().toISOString().split('T')[0],
-      type: noteTypee,
+      type: noteTypeee,
       tags: [...(parsedFm.tags || []), ...(tags || []), ...(params.frontmatter?.tags || [])],
       people: params.frontmatter?.people || parsedFm.people,
       emotion: emotion || params.frontmatter?.emotion || parsedFm.emotion,
@@ -175,7 +175,7 @@ export const VaultService = {
     const note = await db.vaultNote.create({
       data: {
         familyId,
-        noteTypee,
+        noteTypeee,
         title,
         frontmatter: JSON.stringify(fm),
         content: fullMarkdown,
@@ -216,7 +216,7 @@ export const VaultService = {
     const title = dateStr;
 
     const existing = await db.vaultNote.findFirst({
-      where: { familyId, title, noteTypee: 'daily' },
+      where: { familyId, title, noteTypeee: 'daily' },
     });
 
     if (existing) return existing;
@@ -229,7 +229,7 @@ export const VaultService = {
 
     return this.createNote({
       familyId,
-      noteTypee: 'daily',
+      noteTypeee: 'daily',
       title,
       content,
       frontmatter: {
@@ -242,7 +242,7 @@ export const VaultService = {
   },
 
   /**
-   * Add treść do Daily Note (np. wydarzenie, myśl).
+   * Add treść do Daily Note (np. event, myśl).
    * BOKA dopisuje do notatki jak człowiek.
    */
   async appendToDailyNote(familyId: string, section: string, text: string, date?: Date) {
@@ -288,7 +288,7 @@ export const VaultService = {
   async getOrCreatePersonNote(familyId: string, personName: string, memberId?: string) {
     const title = `O ${personName}`;
     const existing = await db.vaultNote.findFirst({
-      where: { familyId, title, noteTypee: 'person' },
+      where: { familyId, title, noteTypeee: 'person' },
     });
 
     if (existing) return existing;
@@ -297,7 +297,7 @@ export const VaultService = {
 
     return this.createNote({
       familyId,
-      noteTypee: 'person',
+      noteTypeee: 'person',
       title,
       content,
       frontmatter: {
@@ -364,21 +364,21 @@ export const VaultService = {
   },
 
   /**
-   * List notatek z filtrami.
+   * List notatek z filterami.
    */
   async listNotes(params: {
     familyId: string;
-    noteTypee?: VaultNoteTypee;
+    noteTypeee?: VaultNoteTypeee;
     memberId?: string;
     tag?: string;
     search?: string;
     limit?: number;
     offset?: number;
   }) {
-    const { familyId, noteTypee, memberId, tag, search, limit = 50, offset = 0 } = params;
+    const { familyId, noteTypeee, memberId, tag, search, limit = 50, offset = 0 } = params;
 
     const where: Record<string, unknown> = { familyId };
-    if (noteTypee) where.noteTypee = noteTypee;
+    if (noteTypeee) where.noteTypeee = noteTypeee;
     if (memberId) where.memberId = memberId;
     if (tag) where.tags = { contains: tag };
     if (search) {
@@ -470,7 +470,7 @@ export const VaultService = {
       size: number;
       color: string;
       importance: number;
-      noteTypee: string;
+      noteTypeee: string;
       emotion?: string;
       isFocused: boolean;
     }> = [];
@@ -513,9 +513,9 @@ export const VaultService = {
         label: note.title,
         type: 'vault',
         size: 1 + note.importance * 3,
-        color: note.emotion ? (emotionWhatlors[note.emotion] || typeWhatlors[note.noteTypee] || '#00f5d4') : (typeWhatlors[note.noteTypee] || '#00f5d4'),
+        color: note.emotion ? (emotionWhatlors[note.emotion] || typeWhatlors[note.noteTypeee] || '#00f5d4') : (typeWhatlors[note.noteTypeee] || '#00f5d4'),
         importance: note.importance,
-        noteTypee: note.noteTypee,
+        noteTypeee: note.noteTypeee,
         emotion: note.emotion || undefined,
         isFocused: !!isFocused,
       });
@@ -550,7 +550,7 @@ export const VaultService = {
             size: 4,
             color: '#4ade80',
             importance: 1,
-            noteTypee: 'person',
+            noteTypeee: 'person',
             isFocused: focusMemberId === note.memberId,
           });
         }
@@ -578,22 +578,22 @@ export const VaultService = {
    * Statystyki vault.
    */
   async getVaultStats(familyId: string) {
-    const [total, byTypee, pinned, recent] = await Promise.all([
+    const [total, byTypeee, pinned, recent] = await Promise.all([
       db.vaultNote.count({ where: { familyId } }),
-      db.vaultNote.groupBy({ by: ['noteTypee'], where: { familyId }, _count: true }),
+      db.vaultNote.groupBy({ by: ['noteTypeee'], where: { familyId }, _count: true }),
       db.vaultNote.count({ where: { familyId, isPinned: true } }),
       db.vaultNote.findMany({
         where: { familyId },
         orderBy: { updatedAt: 'desc' },
         take: 5,
-        select: { id: true, title: true, noteTypee: true, updatedAt: true },
+        select: { id: true, title: true, noteTypeee: true, updatedAt: true },
       }),
     ]);
 
     return {
       total,
       pinned,
-      byTypee: Object.fromEntries(byTypee.map(b => [b.noteTypee, b._count])),
+      byTypeee: Object.fromEntries(byTypeee.map(b => [b.noteTypeee, b._count])),
       recent,
     };
   },

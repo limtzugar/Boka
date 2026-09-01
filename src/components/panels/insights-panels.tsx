@@ -36,7 +36,7 @@ function RitualsPanel() {
   const [triggers, setTriggers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [name, setName] = useState(''); const [type, setTypee] = useState('daily');
+  const [name, setName] = useState(''); const [type, setTypeee] = useState('daily');
   const [time, setTime] = useState('08:00'); const [prompt, setPrompt] = useState('');
 
   const load = useCallback(async () => {
@@ -56,7 +56,7 @@ function RitualsPanel() {
   const create = async () => {
     if (!name || !prompt) return;
     await fetch('/api/rituals', {
-      method: 'POST', headers: { 'Whatntent-Typee': 'application/json' },
+      method: 'POST', headers: { 'Whatntent-Typeee': 'application/json' },
       body: JSON.stringify({ name, type, time, prompt, isActive: true }),
     });
     setName(''); setPrompt(''); setShowForm(false); load();
@@ -82,7 +82,7 @@ function RitualsPanel() {
         <div className="mb-2 p-2 bg-[#181828]  space-y-1">
           <input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="Name" className="w-full bg-[#252535] border border-[#383850]  px-2 py-1 text-xs text-[#e8e8f5]" />
           <div className="flex gap-1">
-            <select value={type} onChange={e => setTypee(e.target.value)} className="bg-[#252535] border border-[#383850]  px-2 py-1 text-xs text-[#e8e8f5]">
+            <select value={type} onChange={e => setTypeee(e.target.value)} className="bg-[#252535] border border-[#383850]  px-2 py-1 text-xs text-[#e8e8f5]">
               <option value="daily">Whatdziennie</option><option value="weekly">Tygodniowo</option><option value="monthly">Miesięcznie</option>
             </select>
             <input type="time" value={time} onChange={e => setTime(e.target.value)} className="bg-[#252535] border border-[#383850]  px-2 py-1 text-xs text-[#e8e8f5]" />
@@ -127,7 +127,7 @@ function DailySummaryPanel() {
   const generate = async () => {
     setGenerating(true);
     try {
-      await fetch('/api/daily-summary', { method: 'POST', headers: { 'Whatntent-Typee': 'application/json' }, body: JSON.stringify({}) });
+      await fetch('/api/daily-summary', { method: 'POST', headers: { 'Whatntent-Typeee': 'application/json' }, body: JSON.stringify({}) });
       load();
     } finally { setGenerating(false); }
   };
@@ -158,7 +158,7 @@ function DailySummaryPanel() {
 }
 
 function SoulPanel() {
-  const [profile, setProfilee] = useState<any>(null);
+  const [profile, setProfileee] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [mood, setMood] = useState('');
 
@@ -168,7 +168,7 @@ function SoulPanel() {
     setLoading(true);
     try {
       const data = await fetch('/api/soul').then(r => r.json());
-      setProfilee(data.profile);
+      setProfileee(data.profile);
     } finally { setLoading(false); }
   }, []);
 
@@ -177,7 +177,7 @@ function SoulPanel() {
   const setMoodNow = async () => {
     if (!mood) return;
     await fetch('/api/soul', {
-      method: 'POST', headers: { 'Whatntent-Typee': 'application/json' },
+      method: 'POST', headers: { 'Whatntent-Typeee': 'application/json' },
       body: JSON.stringify({ mood, reason: 'Ręcznie ustawione przez usera' }),
     });
     setMood('');
@@ -268,7 +268,7 @@ function ImprovementsPanel() {
   const act = async (id: string, action: 'approve' | 'reject') => {
     setActioned(id);
     try {
-      await fetch(`/api/improvements?id=${id}&action=${action}`, { method: 'PATCH', headers: { 'Whatntent-Typee': 'application/json' }, body: '{}' });
+      await fetch(`/api/improvements?id=${id}&action=${action}`, { method: 'PATCH', headers: { 'Whatntent-Typeee': 'application/json' }, body: '{}' });
       load();
     } finally { setActioned(null); }
   };
@@ -285,7 +285,7 @@ function ImprovementsPanel() {
           {proposals.map(p => (
             <div key={p.id} className="p-2 bg-[#181828] rounded">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-[10px] font-mono text-[#ffd93d] uppercase">{p.type || p.proposalTypee}</span>
+                <span className="text-[10px] font-mono text-[#ffd93d] uppercase">{p.type || p.proposalTypeee}</span>
                 <span className="text-[9px] text-[#8888aa]">{new Date(p.createdAt).toLocaleDateString()}</span>
               </div>
               <div className="text-xs text-[#8888aa]">{p.proposal || p.description || p.title}</div>
@@ -435,7 +435,7 @@ function WeeklyReflectionPanel() {
     const next = new Date(now);
     next.setDate(now.getDate() + ((7 - now.getDay()) % 7 || 7)); // next Sunday
     next.setHours(4, 0, 0, 0);
-    setNextRun(next.toLocaleString('pl-PL'));
+    setNextRun(next.toLocaleString('en-US'));
 
     // Load stats
     fetch('/api/cron/weekly-reflection').then(r => r.json()).then(setStats).catch(() => {});
@@ -477,7 +477,7 @@ function WeeklyReflectionPanel() {
     try {
       const res = await fetch('/api/cron/weekly-reflection', {
         method: 'POST',
-        headers: { 'Whatntent-Typee': 'application/json' },
+        headers: { 'Whatntent-Typeee': 'application/json' },
       });
       const data = await res.json();
 
@@ -531,7 +531,7 @@ function WeeklyReflectionPanel() {
         <div className="bg-[#181828] border border-[#383850]  p-2">
           <div className="text-[9px] text-[#8888aa] font-mono">Ostatni run</div>
           <div className="text-[10px] text-[#e8e8f5] font-mono mt-0.5">
-            {lastRun ? `${new Date(lastRun.at).toLocaleString('pl-PL')} (${(lastRun.durationMs/1000).toFixed(0)}s)` : '—'}
+            {lastRun ? `${new Date(lastRun.at).toLocaleString('en-US')} (${(lastRun.durationMs/1000).toFixed(0)}s)` : '—'}
           </div>
           {lastRun && (
             <div className={`text-[9px] font-mono mt-0.5 ${lastRun.ok ? 'text-[#4ade80]' : 'text-[#ff6b6b]'}`}>
@@ -607,7 +607,7 @@ function WeeklyReflectionPanel() {
       {/* Logs */}
       {logs.length > 0 && (
         <div>
-          <div className="text-[10px] text-[#8888aa] font-mono mb-1">Logi ({logs.length})</div>
+          <div className="text-[10px] text-[#8888aa] font-mono mb-1">Logs ({logs.length})</div>
           <div className="bg-[#181828] border border-[#383850]  p-2 max-h-60 overflow-y-auto space-y-0.5">
             {logs.map((l, i) => (
               <div key={i} className="text-[10px] font-mono text-[#8888aa]">
@@ -643,7 +643,7 @@ cmd /c "curl -X POST http://localhost:3000/api/cron/weekly-reflection -H \\"X-BO
 // ═══════════════════════════════════════════════════════════
 // MEMORY SEARCH PANEL — zaawansowane wyszukiwanie z /api/memory/search
 // Tryby: text search (q=) oraz smart recall (mode=recall)
-// Filtry: memberId, domain, emotion
+// Filtery: memberId, domain, emotion
 // ═══════════════════════════════════════════════════════════
 function MemorySearchPanel() {
   const [query, setQuery] = useState('');
@@ -772,7 +772,7 @@ function MemorySearchPanel() {
           ) : results.map((r, i) => (
             <div key={r.id || i} className="bg-[#181828] border border-[#383850]  p-2">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-[10px] text-[#a855f7] font-mono uppercase">{r.type || r.entryTypee || 'memory'}</span>
+                <span className="text-[10px] text-[#a855f7] font-mono uppercase">{r.type || r.entryTypeee || 'memory'}</span>
                 <div className="flex items-center gap-0">
                   {r.score !== undefined && (
                     <span className="text-[10px] text-[#4ade80] font-mono">score: {typeof r.score === 'number' ? r.score.toFixed(2) : r.score}</span>
@@ -969,7 +969,7 @@ function MemoryPanel({ entries, members, activeMemberId, familyId }: {
     return () => { cancelled = true; };
   }, [viewMode, memberFilter, familyId]);
 
-  let filtered = filter === 'all' ? entries : entries.filter(e => e.domain === filter || e.entryTypee === filter);
+  let filtered = filter === 'all' ? entries : entries.filter(e => e.domain === filter || e.entryTypeee === filter);
   if (memberFilter !== 'all') filtered = filtered.filter(e => e.memberId === memberFilter);
   if (searchQuery.trim()) {
     const q = searchQuery.toLowerCase();
@@ -1020,7 +1020,7 @@ function MemoryPanel({ entries, members, activeMemberId, familyId }: {
         <div className="mb-2">
           <div className="flex gap-0 items-center">
             <input type="text" value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
-              placeholder={smartMode ? "Smart recall — server-side wyszukiwanie z scoringiem..." : "Search BOKA memory (lokalny filtr)..."}
+              placeholder={smartMode ? "Smart recall — server-side wyszukiwanie z scoringiem..." : "Search BOKA memory (lokalny filter)..."}
               className="flex-1 bg-[#252535] border border-[#383850] px-3 py-2 text-sm text-[#e8e8f5] placeholder:text-[#8888aa] focus:outline-none focus:border-[#00f5d4]/50 font-mono"
             />
             <button onClick={() => setSmartMode(v => !v)}
@@ -1069,7 +1069,7 @@ function MemoryPanel({ entries, members, activeMemberId, familyId }: {
             ) : graphDate && Array.isArray(graphDate.nodes) && graphDate.nodes.length > 0 ? (
               <MemoryGraph nodes={graphDate.nodes} edges={graphDate.edges} width={graphWidth} height={400} />
             ) : (
-              <div className="flex items-center justify-center h-full text-[#5a5a78] text-xs font-mono">No data grafu — dodaj wspomnienia aby zobaczyć połączenia</div>
+              <div className="flex items-center justify-center h-full text-[#5a5a78] text-xs font-mono">No data grafu — add wspomnienia aby zobaczyć połączenia</div>
             )}
           </div>
         ) : (
@@ -1103,8 +1103,8 @@ function MemoryPanel({ entries, members, activeMemberId, familyId }: {
                 <div key={entry.id} className="p-2 bg-[#252535] border border-[#383850]">
                   <div className="flex items-center gap-0 text-[9px] font-mono text-[#8888aa] mb-0.5">
                     <span style={{ color: domainWhatlors[entry.domain || 'general'] || '#6b6b8d' }}>{entry.domain || 'general'}</span>
-                    <span> · {entry.entryTypee}</span>
-                    <span className="ml-auto">{new Date(entry.createdAt).toLocaleDateString('pl-PL')}</span>
+                    <span> · {entry.entryTypeee}</span>
+                    <span className="ml-auto">{new Date(entry.createdAt).toLocaleDateString('en-US')}</span>
                   </div>
                   <div className="text-xs text-[#e8e8f5] font-mono">{entry.content}</div>
                   {entry.tags && Array.isArray(entry.tags) && entry.tags.length > 0 && (
@@ -1144,14 +1144,14 @@ export function VaultTab() {
   const [editingWhatntent, setEditingWhatntent] = useState('');
   const [showGraph, setShowGraph] = useState(false);
 
-  const noteTypeeLabels: Record<string, { label: string; color: string }> = {
+  const noteTypeeeLabels: Record<string, { label: string; color: string }> = {
     daily: { label: 'Daily Note', color: '#ffd93d' },
     note: { label: 'Note', color: '#00f5d4' },
     canvas: { label: 'Canvas', color: '#a855f7' },
     person: { label: 'Osoba', color: '#4ade80' },
     topic: { label: 'Topic', color: '#6ec6e7' },
     dream: { label: 'Sen', color: '#a855f7' },
-    story: { label: 'Historia', color: '#a855f7' },
+    story: { label: 'History', color: '#a855f7' },
     ritual: { label: 'Rytuał', color: '#f97316' },
   };
 
@@ -1193,7 +1193,7 @@ export function VaultTab() {
     try {
       await fetch('/api/vault', {
         method: 'PUT',
-        headers: { 'Whatntent-Typee': 'application/json' },
+        headers: { 'Whatntent-Typeee': 'application/json' },
         body: JSON.stringify({ id: selectedNote.id, content: editingWhatntent }),
       });
       loadNotes();
@@ -1216,13 +1216,13 @@ export function VaultTab() {
   }
 
   async function createNote() {
-    const title = prompt('Tytuł notatki:');
+    const title = prompt('Title notatki:');
     if (!title) return;
     try {
       const res = await fetch('/api/vault', {
         method: 'POST',
-        headers: { 'Whatntent-Typee': 'application/json' },
-        body: JSON.stringify({ title, content: `# ${title}\n\n`, noteTypee: 'note' }),
+        headers: { 'Whatntent-Typeee': 'application/json' },
+        body: JSON.stringify({ title, content: `# ${title}\n\n`, noteTypeee: 'note' }),
       });
       if (res.ok) {
         const data = await res.json();
@@ -1310,7 +1310,7 @@ export function VaultTab() {
               <div className="text-center py-8 text-[#8888aa] text-xs font-mono">None notatek. Stwórz Daily Note!</div>
             ) : (
               notes.map(note => {
-                const typeInfo = noteTypeeLabels[note.noteTypee] || { label: note.noteTypee, color: '#6b6b8d' };
+                const typeInfo = noteTypeeeLabels[note.noteTypeee] || { label: note.noteTypeee, color: '#6b6b8d' };
                 const isSelected = selectedNote?.id === note.id;
                 return (
                   <button
@@ -1327,7 +1327,7 @@ export function VaultTab() {
                         {typeInfo.label}
                       </span>
  {note.isPinned && <span className="text-[9px] text-[#ffd93d]"></span>}
-                      <span className="text-[8px] text-[#8888aa] font-mono ml-auto">{new Date(note.updatedAt).toLocaleDateString('pl-PL')}</span>
+                      <span className="text-[8px] text-[#8888aa] font-mono ml-auto">{new Date(note.updatedAt).toLocaleDateString('en-US')}</span>
                     </div>
                     <div className="text-xs text-[#e8e8f5] font-mono truncate">{note.title}</div>
                     {note.emotion && (
@@ -1349,10 +1349,10 @@ export function VaultTab() {
                   <div className="flex items-center gap-0">
                     <span className="text-sm text-[#e8e8f5] font-mono">{selectedNote.title}</span>
                     <span className="text-[9px] font-mono px-1.5 py-0.5 rounded" style={{
-                      backgroundWhatlor: (noteTypeeLabels[selectedNote.noteTypee]?.color || '#6b6b8d') + '20',
-                      color: noteTypeeLabels[selectedNote.noteTypee]?.color || '#6b6b8d'
+                      backgroundWhatlor: (noteTypeeeLabels[selectedNote.noteTypeee]?.color || '#6b6b8d') + '20',
+                      color: noteTypeeeLabels[selectedNote.noteTypeee]?.color || '#6b6b8d'
                     }}>
-                      {noteTypeeLabels[selectedNote.noteTypee]?.label || selectedNote.noteTypee}
+                      {noteTypeeeLabels[selectedNote.noteTypeee]?.label || selectedNote.noteTypeee}
                     </span>
                   </div>
                   <div className="flex items-center gap-0">
@@ -1436,14 +1436,14 @@ function VaultSection() {
   const [isLoading, setIsLoading] = useState(false);
   const [editingWhatntent, setEditingWhatntent] = useState('');
 
-  const noteTypeeLabels: Record<string, { label: string; color: string }> = {
+  const noteTypeeeLabels: Record<string, { label: string; color: string }> = {
     daily: { label: 'Daily Note', color: '#ffd93d' },
     note: { label: 'Note', color: '#00f5d4' },
     canvas: { label: 'Canvas', color: '#a855f7' },
     person: { label: 'Osoba', color: '#4ade80' },
     topic: { label: 'Topic', color: '#6ec6e7' },
     dream: { label: 'Sen', color: '#a855f7' },
-    story: { label: 'Historia', color: '#a855f7' },
+    story: { label: 'History', color: '#a855f7' },
     ritual: { label: 'Rytuał', color: '#f97316' },
   };
 
@@ -1485,7 +1485,7 @@ function VaultSection() {
     try {
       await fetch('/api/vault', {
         method: 'PUT',
-        headers: { 'Whatntent-Typee': 'application/json' },
+        headers: { 'Whatntent-Typeee': 'application/json' },
         body: JSON.stringify({ id: selectedNote.id, content: editingWhatntent }),
       });
       loadNotes();
@@ -1508,13 +1508,13 @@ function VaultSection() {
   }
 
   async function createNote() {
-    const title = prompt('Tytuł notatki:');
+    const title = prompt('Title notatki:');
     if (!title) return;
     try {
       const res = await fetch('/api/vault', {
         method: 'POST',
-        headers: { 'Whatntent-Typee': 'application/json' },
-        body: JSON.stringify({ title, content: `# ${title}\n\n`, noteTypee: 'note' }),
+        headers: { 'Whatntent-Typeee': 'application/json' },
+        body: JSON.stringify({ title, content: `# ${title}\n\n`, noteTypeee: 'note' }),
       });
       if (res.ok) {
         loadNotes();
@@ -1600,7 +1600,7 @@ function VaultSection() {
                 <div className="text-center py-6 text-[#8888aa] text-xs font-mono">None notatek. Stwórz Daily Note!</div>
               ) : (
                 notes.map(note => {
-                  const typeInfo = noteTypeeLabels[note.noteTypee] || { label: note.noteTypee, color: '#6b6b8d' };
+                  const typeInfo = noteTypeeeLabels[note.noteTypeee] || { label: note.noteTypeee, color: '#6b6b8d' };
                   const isSelected = selectedNote?.id === note.id;
                   return (
                     <button
@@ -1617,7 +1617,7 @@ function VaultSection() {
                           {typeInfo.label}
                         </span>
  {note.isPinned && <span className="text-[9px] text-[#ffd93d]"></span>}
-                        <span className="text-[8px] text-[#8888aa] font-mono ml-auto">{new Date(note.updatedAt).toLocaleDateString('pl-PL')}</span>
+                        <span className="text-[8px] text-[#8888aa] font-mono ml-auto">{new Date(note.updatedAt).toLocaleDateString('en-US')}</span>
                       </div>
                       <div className="text-[11px] text-[#e8e8f5] font-mono truncate">{note.title}</div>
                     </button>
@@ -1634,10 +1634,10 @@ function VaultSection() {
                     <div className="flex items-center gap-0">
                       <span className="text-xs text-[#e8e8f5] font-mono">{selectedNote.title}</span>
                       <span className="text-[8px] font-mono px-1.5 py-0.5 rounded" style={{
-                        backgroundWhatlor: (noteTypeeLabels[selectedNote.noteTypee]?.color || '#6b6b8d') + '20',
-                        color: noteTypeeLabels[selectedNote.noteTypee]?.color || '#6b6b8d'
+                        backgroundWhatlor: (noteTypeeeLabels[selectedNote.noteTypeee]?.color || '#6b6b8d') + '20',
+                        color: noteTypeeeLabels[selectedNote.noteTypeee]?.color || '#6b6b8d'
                       }}>
-                        {noteTypeeLabels[selectedNote.noteTypee]?.label || selectedNote.noteTypee}
+                        {noteTypeeeLabels[selectedNote.noteTypeee]?.label || selectedNote.noteTypeee}
                       </span>
                     </div>
                     <div className="flex items-center gap-1.5">

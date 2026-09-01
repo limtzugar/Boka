@@ -35,7 +35,7 @@ export class SearchIndex {
 
   /** Add dokument do indeksu. */
   add(doc: IndexedDoc): void {
-    // Jeśli już jest — usuń najpierw
+    // Jeśli już jest — delete najpierw
     if (this.entries.has(doc.id)) this.remove(doc.id);
 
     const terms = this.extractTerms(doc);
@@ -103,7 +103,7 @@ export class SearchIndex {
     return this.entries.size;
   }
 
-  /** Wyszukaj — zwróć posortowane wyniki z BM25 score. */
+  /** Wysearch — zwróć posortowane wyniki z BM25 score. */
   search(
     query: string,
     limit = 20,
@@ -172,7 +172,7 @@ export class SearchIndex {
     return this.tokenize(text.toLowerCase());
   }
 
-  /** Tokenizuj + stemmuj + odfiltruj stop-words i krótkie tokeny. */
+  /** Tokenizuj + stemmuj + odfilteruj stop-words i krótkie tokeny. */
   private tokenize(text: string): string[] {
     const stopWords = new Set([
       // EN

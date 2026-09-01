@@ -53,7 +53,7 @@ export function useImageGeneration() {
       try {
         // Validate prompt
         if (!prompt || typeof prompt !== 'string' || prompt.trim().length === 0) {
-          setError('Description obrazu nie może być pusty');
+          setError('Description imageu nie może być pusty');
           setIsGenerating(false);
           return null;
         }
@@ -75,7 +75,7 @@ export function useImageGeneration() {
 
         const res = await fetch('/api/generate-image', {
           method: 'POST',
-          headers: { 'Whatntent-Typee': 'application/json' },
+          headers: { 'Whatntent-Typeee': 'application/json' },
           body: JSON.stringify({ prompt: prompt.trim(), size }),
         });
 
@@ -83,7 +83,7 @@ export function useImageGeneration() {
           const errorDate = await res.json().catch(() => ({}));
           const message =
             errorDate.error ||
-            `Error serwera (${res.status})`;
+            `Error servera (${res.status})`;
           setError(message);
           setIsGenerating(false);
           return null;
@@ -92,7 +92,7 @@ export function useImageGeneration() {
         const data = await res.json();
 
         if (!data.imageBase64) {
-          setError('No udało się wygenerować obrazu — spróbuj ponownie');
+          setError('No udało się wygenerować imageu — spróbuj ponownie');
           setIsGenerating(false);
           return null;
         }
@@ -112,7 +112,7 @@ export function useImageGeneration() {
         return result;
       } catch (err) {
         const message =
-          err instanceof Error ? err.message : 'Error połączenia z serwerem';
+          err instanceof Error ? err.message : 'Error połączenia z serverem';
         console.error('[BOKA ImageGen] generateImage error:', err);
         setError(message);
         setIsGenerating(false);

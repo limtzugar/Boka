@@ -157,7 +157,7 @@ export function SettingsTab() {
     try {
       const res = await fetch('/api/ollama-models', {
         method: 'POST',
-        headers: { 'Whatntent-Typee': 'application/json' },
+        headers: { 'Whatntent-Typeee': 'application/json' },
         body: JSON.stringify({ url: settings.ollamaUrl, model: ollamaPullName.trim() }),
       });
       const data = await res.json();
@@ -194,7 +194,7 @@ export function SettingsTab() {
     try {
       const res = await fetch('/api/settings', {
         method: 'POST',
-        headers: { 'Whatntent-Typee': 'application/json' },
+        headers: { 'Whatntent-Typeee': 'application/json' },
         body: JSON.stringify({ settings }),
       });
       if (!res.ok) {
@@ -221,7 +221,7 @@ export function SettingsTab() {
     try {
       await fetch('/api/settings', {
         method: 'POST',
-        headers: { 'Whatntent-Typee': 'application/json' },
+        headers: { 'Whatntent-Typeee': 'application/json' },
         body: JSON.stringify({ settings }),
       });
       const res = await fetch('/api/settings', { method: 'PUT' });
@@ -247,7 +247,7 @@ export function SettingsTab() {
     { id: 'openrouter', label: 'OpenRouter', icon: <Globe size={16} />, desc: 'Dostęp do setek modeli: GPT, Claude, Llama, Mistral' },
     { id: 'ollama', label: 'Ollama (lokalny)', icon: <Cpu size={16} />, desc: 'Lokalne modele na Twoim komputerze. Darmowe, prywatne.' },
     { id: 'gguf', label: 'File GGUF (z dysku)', icon: <HardDrive size={16} />, desc: 'Wskaż dowolny plik .gguf — BOKA uruchomi go przez llama.cpp' },
-        { id: 'custom', label: 'Własny API', icon: <Server size={16} />, desc: 'LM Studio, vLLM — dowolny serwer OpenAI-compat' },
+        { id: 'custom', label: 'Własny API', icon: <Server size={16} />, desc: 'LM Studio, vLLM — dowolny server OpenAI-compat' },
   ];
 
   return (
@@ -308,7 +308,7 @@ export function SettingsTab() {
             <div className="mt-3 p-3 bg-[#252535] border border-[#383850] space-y-3">
               {/* Formula type */}
               <div>
-                <label className="text-xs font-mono text-[#8888aa] mb-1 block">Type wzoru</label>
+                <label className="text-xs font-mono text-[#8888aa] mb-1 block">Typee wzoru</label>
                 <div className="grid grid-cols-4 gap-0">
                   {FORMULA_TYPES.map(ft => (
                     <button key={ft.id} onClick={() => setFormulaSettings({ type: ft.id })}
@@ -464,7 +464,7 @@ export function SettingsTab() {
         <div className="mb-6">
           <div className="flex items-center gap-0 mb-2">
             <Server size={16} className="text-[#00f5d4]" />
-            <span className="text-sm font-mono text-[#e8e8f5]">Dostawca AI</span>
+            <span className="text-sm font-mono text-[#e8e8f5]">Provider AI</span>
           </div>
           <div className="grid gap-0 md:grid-cols-2">
             {providers.map(p => (
@@ -530,7 +530,7 @@ export function SettingsTab() {
 
             {/* Server URL + status */}
             <div>
-              <label className="text-xs font-mono text-[#8888aa] mb-1 block">URL serwera Ollama</label>
+              <label className="text-xs font-mono text-[#8888aa] mb-1 block">URL servera Ollama</label>
               <div className="flex gap-0">
                 <input type="text" value={settings.ollamaUrl} onChange={e => update('ollamaUrl', e.target.value)} placeholder="http://localhost:11434" className="flex-1 bg-[#252535] border border-[#383850]  px-3 py-2 text-sm text-[#e8e8f5] placeholder:text-[#8888aa] focus:outline-none focus:border-[#00f5d4]/50 font-mono" />
                 <button onClick={() => fetchOllamaModels()} disabled={ollamaLoading} className="px-3 py-2  bg-[#252535] border border-[#383850] text-[#8888aa] hover:border-[#00f5d4]/30 text-xs font-mono disabled:opacity-50">
@@ -620,7 +620,7 @@ export function SettingsTab() {
                 <div className="bg-[#252535] border border-[#383850]  p-2">
                   <input type="text" value={settings.ollamaModel} onChange={e => update('ollamaModel', e.target.value)} placeholder="llama3" className="w-full bg-[#0f0f17] border border-[#383850]  px-3 py-2 text-sm text-[#e8e8f5] placeholder:text-[#8888aa] focus:outline-none focus:border-[#00f5d4]/50 font-mono mb-2" />
                   <div className="text-[10px] text-[#8888aa] font-mono">
-                    No wykryto modeli. Run Ollamę i pobierz model poniżej, albo w terminalu: <code className="text-[#4ade80]">ollama pull llama3</code>
+                    No wykryto modeli. Run Ollamę i download model poniżej, albo w terminalu: <code className="text-[#4ade80]">ollama pull llama3</code>
                   </div>
                 </div>
               )}
@@ -688,7 +688,7 @@ export function SettingsTab() {
           <div className="mb-6 space-y-2">
             <div className="flex items-center gap-0 mb-2">
               <Server size={16} className="text-[#a855f7]" />
-              <span className="text-sm font-mono text-[#e8e8f5]">Własny serwer API</span>
+              <span className="text-sm font-mono text-[#e8e8f5]">Własny server API</span>
             </div>
             <div>
               <label className="text-xs font-mono text-[#8888aa] mb-1 block">URL endpoint</label>
@@ -829,7 +829,7 @@ export function SettingsTab() {
           <div className="grid gap-0 md:grid-cols-3">
             {([
               { id: 'auto' as const, label: 'Auto', desc: 'Whisper lokalny jeśli dostępny, inaczej chmura', icon: <Zap size={14} /> },
-              { id: 'whisper' as const, label: 'Whisper (lokalny)', desc: 'Najlepsza jakość PL, wymaga serwera na :5100', icon: <Mic size={14} /> },
+              { id: 'whisper' as const, label: 'Whisper (lokalny)', desc: 'Najlepsza jakość PL, wymaga servera na :5100', icon: <Mic size={14} /> },
                           ]).map(e => (
               <button
                 key={e.id}
@@ -896,7 +896,7 @@ export function SettingsTab() {
 }
 
 // ═══════════════════════════════════════════
-// GGUF SETTINGS — wybór pliku .gguf z dysku
+// GGUF SETTINGS — wybór file .gguf z dysku
 // ═══════════════════════════════════════════
 function GgufSettings({ settings, update }: {
   settings: SettingsState;
@@ -943,7 +943,7 @@ function GgufSettings({ settings, update }: {
       // Save settings first so server reads latest config
       await fetch('/api/settings', {
         method: 'POST',
-        headers: { 'Whatntent-Typee': 'application/json' },
+        headers: { 'Whatntent-Typeee': 'application/json' },
         body: JSON.stringify({ settings }),
       });
       const res = await fetch('/api/gguf-server', { method: 'POST' });
@@ -1045,7 +1045,7 @@ function GgufSettings({ settings, update }: {
           disabled={scanning}
           className="text-[11px] font-mono text-[#ffd93d] hover:underline disabled:opacity-50"
         >
- {scanning ?' Skanuję...' :' Skanuj dysk w poszukiwaniu plików .gguf'}
+ {scanning ?' Skanuję...' :' Skanuj dysk w poszukiwaniu files .gguf'}
         </button>
         {detectedModels.length > 0 && (
           <div className="mt-2 space-y-1 max-h-40 overflow-y-auto">
@@ -1137,7 +1137,7 @@ function GgufSettings({ settings, update }: {
         </div>
       </div>
 
-      {/* Sterowanie serwerem */}
+      {/* Sterowanie serverem */}
       <div className="flex items-center gap-0 pt-2">
         {ggufStatus?.running ? (
           <button
@@ -1145,7 +1145,7 @@ function GgufSettings({ settings, update }: {
             disabled={ggufBusy !== null}
             className="px-4 py-2  bg-[#ff6b6b]/10 border border-[#ff6b6b]/40 text-[#ff6b6b] hover:bg-[#ff6b6b]/20 text-xs font-mono flex items-center gap-0 disabled:opacity-50"
           >
-            <Square size={14} /> {ggufBusy === 'stop' ? 'Zatrzymuję...' : 'Stop serwer'}
+            <Square size={14} /> {ggufBusy === 'stop' ? 'Zatrzymuję...' : 'Stop server'}
           </button>
         ) : (
           <button
@@ -1153,7 +1153,7 @@ function GgufSettings({ settings, update }: {
             disabled={ggufBusy !== null || !settings.ggufFilePath}
             className="px-4 py-2  bg-[#4ade80]/10 border border-[#4ade80]/40 text-[#4ade80] hover:bg-[#4ade80]/20 text-xs font-mono flex items-center gap-0 disabled:opacity-50"
           >
-            <Play size={14} /> {ggufBusy === 'start' ? 'Uruchamiam (do 60s)...' : 'Run serwer'}
+            <Play size={14} /> {ggufBusy === 'start' ? 'Uruchamiam (do 60s)...' : 'Run server'}
           </button>
         )}
         <button
@@ -1164,7 +1164,7 @@ function GgufSettings({ settings, update }: {
         </button>
       </div>
 
-      {/* Status serwera */}
+      {/* Status servera */}
       {ggufStatus && (
         <div className={`text-[11px] font-mono px-3 py-2  border ${
           ggufStatus.running
@@ -1200,7 +1200,7 @@ function GgufSettings({ settings, update }: {
           <div>   lub <code className="text-[#ffd93d]">llama-bXXXX-bin-win-avx2.zip</code> (dla CPU)</div>
           <div>3. Rozpakuj np. do <code className="text-[#ffd93d]">C:\llama.cpp\</code></div>
           <div>4. Wskaż <code className="text-[#ffd93d]">llama-server.exe</code> w polu powyżej</div>
-          <div>5. Wskaż plik <code className="text-[#ffd93d]">.gguf</code> i kliknij „Run serwer”</div>
+          <div>5. Wskaż plik <code className="text-[#ffd93d]">.gguf</code> i kliknij „Run server”</div>
         </div>
       )}
     </div>
@@ -1328,7 +1328,7 @@ export function AgentsTab() {
           {(['all', 'connected', 'community'] as const).map(f => (
             <button key={f} onClick={() => setFilter(f)}
               className={`flex-1 px-2 py-1 text-[9px] font-mono border transition-all ${filter === f ? 'bg-[#00f5d4]/10 text-[#00f5d4] border-[#00f5d4]/50' : 'bg-transparent text-[#8888aa] border-[#383850] hover:text-[#e8e8f5]'}`}>
-              {f === 'all' ? 'Wszyscy' : f === 'connected' ? 'Połączeni' : 'Społeczność'}
+              {f === 'all' ? 'Wszyscy' : f === 'connected' ? 'Connecteni' : 'Społeczność'}
             </button>
           ))}
         </div>
@@ -1392,7 +1392,7 @@ export function AgentsTab() {
             <h2 className="font-pixel text-sm text-[#00f5d4] mb-2">SPOŁECZNOŚĆ AGENTÓW</h2>
             <p className="text-xs text-[#8888aa] font-mono">
               Podłącz agentów AI do debat BOKA. Każdy agent ma swoją osobowość i specjalność.
-              Połączonych agentów możesz zaprosić do debaty — pojawią się jako orby po prawej stronie.
+              Connectonych agentów możesz zaprosić do debaty — pojawią się jako orby po prawej stronie.
             </p>
           </div>
 
@@ -1446,7 +1446,7 @@ export function AgentsTab() {
                           )}
                           <button onClick={() => startEdit(a)}
                             className="ml-auto p-1 text-[#5a5a78] hover:text-[#00f5d4] transition-colors"
-                            title="Edit imię">
+                            title="Edit name">
                             <Pencil size={11} />
                           </button>
                         </div>
@@ -1475,7 +1475,7 @@ export function AgentsTab() {
                         ? 'bg-[#ff6b6b]/10 text-[#ff6b6b] border-[#ff6b6b]/30 hover:bg-[#ff6b6b]/20'
                         : 'bg-[#4ade80]/10 text-[#4ade80] border-[#4ade80]/30 hover:bg-[#4ade80]/20'
                     }`}>
-                    {a.connected ? 'Odłącz' : 'Połącz'}
+                    {a.connected ? 'Odłącz' : 'Connect'}
                   </button>
                   {a.author === 'Ty' && (
                     <button onClick={() => removeAgent(a.id)}

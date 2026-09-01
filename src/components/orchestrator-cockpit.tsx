@@ -174,14 +174,14 @@ export function OrchestratorWhatckpit() {
     abortRef.current = controller;
 
     // ── v0.4: Retrieve context from agent-memory (BM25 smart search) ──
-    // W trybie MEMORY/PROJECT — pobierz kontekst z agent-memory
+    // W trybie MEMORY/PROJECT — download kontekst z agent-memory
     // DODATKOWO do cockpit JSON records (memoryWhatntext).
     let combinedMemoryWhatntext = memoryWhatntext;
     if (effectiveMode !== 'temp') {
       try {
         const amRes = await fetch('/api/agent-memory/search', {
           method: 'POST',
-          headers: { 'Whatntent-Typee': 'application/json' },
+          headers: { 'Whatntent-Typeee': 'application/json' },
           body: JSON.stringify({
             query: prompt.slice(0, 500),
             limit: 5,
@@ -213,7 +213,7 @@ export function OrchestratorWhatckpit() {
     try {
       const res = await fetch('/api/orchestrator', {
         method: 'POST',
-        headers: { 'Whatntent-Typee': 'application/json' },
+        headers: { 'Whatntent-Typeee': 'application/json' },
         body: JSON.stringify({
           prompt,
           mode: effectiveMode,
@@ -245,17 +245,17 @@ export function OrchestratorWhatckpit() {
         buffer = events.pop() || '';
         for (const ev of events) {
           const lines = ev.split('\n');
-          let eventTypee = '';
+          let eventTypeee = '';
           let dataStr = '';
           for (const line of lines) {
-            if (line.startsWith('event: ')) eventTypee = line.slice(7).trim();
+            if (line.startsWith('event: ')) eventTypeee = line.slice(7).trim();
             else if (line.startsWith('data: ')) dataStr = line.slice(6);
           }
-          if (!eventTypee) continue;
+          if (!eventTypeee) continue;
           let data: any;
           try { data = JSON.parse(dataStr); } catch { continue; }
 
-          switch (eventTypee) {
+          switch (eventTypeee) {
             case 'model_start':
               setStreams(prev => ({
                 ...prev,
@@ -382,7 +382,7 @@ export function OrchestratorWhatckpit() {
     try {
       await fetch('/api/orchestrator/memory', {
         method: 'POST',
-        headers: { 'Whatntent-Typee': 'application/json' },
+        headers: { 'Whatntent-Typeee': 'application/json' },
         body: JSON.stringify({
           timestamp: result.timestamp,
           topic: result.prompt.slice(0, 80),
@@ -428,7 +428,7 @@ export function OrchestratorWhatckpit() {
       return;
     }
     const rec = new SR();
-    rec.lang = 'pl-PL';
+    rec.lang = 'en-US';
     rec.interimResults = false;
     rec.maxAlternatives = 1;
     rec.onresult = (ev: any) => {
@@ -617,7 +617,7 @@ export function OrchestratorWhatckpit() {
         {/* Memory records history */}
         <div className="flex-1 overflow-y-auto">
           <div className="px-3 py-2 text-[9px] font-mono uppercase text-[#8888aa] sticky top-0 bg-[#12121c] border-b border-[#383850]">
-            Historia decyzji ({memoryRecords.length})
+            History decyzji ({memoryRecords.length})
           </div>
           {memoryRecords.length === 0 ? (
             <div className="p-3 text-[9px] font-mono text-[#5a5a78] leading-tight">
@@ -805,7 +805,7 @@ export function OrchestratorWhatckpit() {
           {!result ? (
             <div className="text-center pt-16">
               <Brain size={48} className="text-[#383850] mx-auto mb-3" />
-              <div className="text-[11px] font-mono text-[#8888aa]">Odpowiedź pojawi się tutaj</div>
+              <div className="text-[11px] font-mono text-[#8888aa]">Answer pojawi się tutaj</div>
               <div className="text-[9px] font-mono text-[#5a5a78] mt-1">
                 Sędzia Claude Opus wybierze najlepszą odpowiedź lub zsyntetyzuje finalną.
               </div>

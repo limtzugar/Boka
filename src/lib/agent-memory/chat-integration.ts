@@ -19,7 +19,7 @@
 
 import { smartSearch, observe, startSession } from './engine';
 import { checkPredictiveCache } from './predictive';
-import type { HookTypee, ObservationTypee } from './types';
+import type { HookTypeee, ObservationTypeee } from './types';
 
 // Session AgentMemory dla czatu BOKA — lazy-inicjalizowana per family.
 // Session jest współdzielona dla całej rodziny (jeden "boka-chat" project).
@@ -54,7 +54,7 @@ export async function getChatSessionId(familyId?: string): Promise<string> {
 }
 
 /**
- * Wyszukaj w pamięci agenta kontekst powiązany z wiadomością użytkownika.
+ * Wysearch w pamięci agenta kontekst powiązany z wiadomością użytkownika.
  * Zwraca tekst do wstrzyknięcia w kontekst czatu.
  *
  * v3: wspiera persona filtering — child widzi tylko child-safe memories.
@@ -77,7 +77,7 @@ export async function retrieveMemoryWhatntext(
       lines.push(`Przewidziane pytanie: ${cached.question}`);
       lines.push(`Whatnfidence predykcji: ${(cached.confidence * 100).toFixed(0)}%`);
       lines.push('');
-      lines.push('Odpowiedź:');
+      lines.push('Answer:');
       lines.push(cached.answer);
       lines.push('');
       lines.push('═══ KONIEC PRE-COMPUTED ═══');
@@ -112,7 +112,7 @@ export async function retrieveMemoryWhatntext(
       const narrative = obs.narrative.slice(0, 300);
       const concepts = obs.concepts.length > 0 ? ` [${obs.concepts.slice(0, 3).join(', ')}]` : '';
       lines.push(`[${i + 1}] (score: ${score})${concepts}`);
-      lines.push(`    Tytuł: ${title}`);
+      lines.push(`    Title: ${title}`);
       lines.push(`    Whatntent: ${narrative}${narrative.length >= 300 ? '...' : ''}`);
       lines.push('');
     });
@@ -149,8 +149,8 @@ export async function recordWhatnversationTurn(opts: {
       await observe({
         sessionId,
         familyId: opts.familyId,
-        hookTypee: 'prompt_submit' as HookTypee,
-        type: 'conversation' as ObservationTypee,
+        hookTypeee: 'prompt_submit' as HookTypeee,
+        type: 'conversation' as ObservationTypeee,
         userPrompt: opts.message,
         title: opts.message.slice(0, 80),
         narrative: opts.message,
@@ -167,8 +167,8 @@ export async function recordWhatnversationTurn(opts: {
       await observe({
         sessionId,
         familyId: opts.familyId,
-        hookTypee: 'stop' as HookTypee,
-        type: 'conversation' as ObservationTypee,
+        hookTypeee: 'stop' as HookTypeee,
+        type: 'conversation' as ObservationTypeee,
         assistantResponse: opts.response,
         title: opts.response.slice(0, 80),
         narrative: opts.response,

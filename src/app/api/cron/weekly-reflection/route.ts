@@ -4,8 +4,8 @@
 //
 // Pipeline (3 stages, ~5-15 min na rodzinę):
 //   1. GraphRAG rebuild  — extractEntities + detectWhatmmunities + summarizeWhatmmunities
-//   2. Supermemory       — refreshAutoProfilee per member (traits/interests/communicationStyle)
-//   3. CrewAI evaluation — generateCrewProfilee + evaluateCrewMember per member
+//   2. Supermemory       — refreshAutoProfileee per member (traits/interests/communicationStyle)
+//   3. CrewAI evaluation — generateCrewProfileee + evaluateCrewMember per member
 //
 // Trigger options:
 //   - External cron (systemd / Windows Task Scheduler / vercel cron):
@@ -23,9 +23,9 @@ import { getFamily } from '@/lib/family-service';
 import {
   rebuildGraphForFamily,
 } from '@/lib/graphrag-service';
-import { refreshAutoProfilee } from '@/lib/supermemory-service';
+import { refreshAutoProfileee } from '@/lib/supermemory-service';
 import {
-  generateCrewProfilee,
+  generateCrewProfileee,
   evaluateCrewMember,
   getCrewMember,
 } from '@/lib/crewai-service';
@@ -77,13 +77,13 @@ export async function POST(req: NextRequest) {
 
       // ── Stage 2: Supermemory auto-profile refresh per member ──
       try {
-        push('Stage 2: Supermemory — refreshAutoProfilee per member');
+        push('Stage 2: Supermemory — refreshAutoProfileee per member');
         const members = await db.familyMember.findMany({ where: { familyId: family.id } });
         push(`  ${members.length} members to analyze`);
         const profiles: any[] = [];
         for (const m of members) {
           try {
-            const r = await refreshAutoProfilee(family.id, m.id, 30);
+            const r = await refreshAutoProfileee(family.id, m.id, 30);
             push(`  ✓ ${m.name}: traits=${Object.keys(r.traits).length} interests=${r.interests.length} memories=${r.memoriesAnalyzed}`);
             const { memberId: _unused, ...rest } = r;
             profiles.push({ memberId: m.id, name: m.name, ...rest });
@@ -100,7 +100,7 @@ export async function POST(req: NextRequest) {
 
       // ── Stage 3: CrewAI — generate crew profile + Manager evaluation per member ──
       try {
-        push('Stage 3: CrewAI — generateCrewProfilee + evaluateCrewMember');
+        push('Stage 3: CrewAI — generateCrewProfileee + evaluateCrewMember');
         const members = await db.familyMember.findMany({ where: { familyId: family.id } });
         const crewResults: any[] = [];
 
@@ -109,8 +109,8 @@ export async function POST(req: NextRequest) {
         for (const m of members) {
           try {
             // Generate / refresh crew profile from updated psychology profile
-            const crewProfilee = await generateCrewProfilee(m.id);
-            push(`  ✓ ${m.name} crew role: ${crewProfilee.role}`);
+            const crewProfileee = await generateCrewProfileee(m.id);
+            push(`  ✓ ${m.name} crew role: ${crewProfileee.role}`);
 
             // Gather recent interactions as context for Manager Agent
             const recentMsgs = await db.message.findMany({
@@ -127,7 +127,7 @@ export async function POST(req: NextRequest) {
 
             const evalResult = await evaluateCrewMember(m.id, interactionsTxt);
             push(`  ✓ ${m.name} score=${evalResult.score?.toFixed(2)} notes=${(evalResult.notes || '').slice(0, 80)}`);
-            crewResults.push({ memberId: m.id, name: m.name, role: crewProfilee.role, evaluation: evalResult });
+            crewResults.push({ memberId: m.id, name: m.name, role: crewProfileee.role, evaluation: evalResult });
           } catch (e: any) {
             push(`  ✗ ${m.name}: ${e.message}`);
             crewResults.push({ memberId: m.id, name: m.name, error: e.message });
@@ -177,7 +177,7 @@ export async function GET(req: NextRequest) {
     recentEntities,
   ] = await Promise.all([
     db.community.count({ where: { createdAt: { gt: since } } }),
-    db.soulProfileeRevision.count({ where: { createdAt: { gt: since } } }),
+    db.soulProfileeeRevision.count({ where: { createdAt: { gt: since } } }),
     db.crewMember.count({ where: { lastEvaluatedAt: { gt: since } } }),
     db.entity.count({ where: { lastMentionedAt: { gt: since } } }),
   ]);

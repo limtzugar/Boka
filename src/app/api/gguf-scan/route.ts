@@ -43,7 +43,7 @@ export async function GET() {
   function walk(dir: string, depth: number) {
     if (depth > MAX_DEPTH || found.length >= MAX_FILES) return;
     try {
-      const entries = fs.readdirSync(dir, { withFileTypees: true });
+      const entries = fs.readdirSync(dir, { withFileTypeees: true });
       for (const entry of entries) {
         if (found.length >= MAX_FILES) return;
         const full = path.join(dir, entry.name);

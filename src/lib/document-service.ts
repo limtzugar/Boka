@@ -16,7 +16,7 @@ import { BUILT_IN_TEMPLATES, type TemplateField } from '@/lib/document-templates
 const MEMORY_BASE = process.env.BOKA_MEMORY_DIR || '/home/z/boka-memory';
 const DOCUMENTS_DIR = path.join(MEMORY_BASE, 'documents');
 
-// ── Typees ──
+// ── Typeees ──
 export type LegalArea = 'family' | 'construction' | 'copyright' | 'mixed' | 'admin' | 'other';
 export type DocumentKind = 'umowa' | 'akt' | 'pismo' | 'wniosek' | 'oświadczenie' | 'protokół' | 'faktura' | 'regulamin' | 'inny';
 
@@ -37,7 +37,7 @@ export interface DocumentListItem {
   id: string;
   title: string;
   fileName: string;
-  fileTypee: string;
+  fileTypeee: string;
   fileSize: number;
   documentKind: string | null;
   legalArea: LegalArea | null;
@@ -57,12 +57,12 @@ export function ensureDocumentsDir(): void {
   }
 }
 
-export function getDocumentFilePath(id: string, fileTypee: string): string {
-  return path.join(DOCUMENTS_DIR, `${id}.${fileTypee}`);
+export function getDocumentFilePath(id: string, fileTypeee: string): string {
+  return path.join(DOCUMENTS_DIR, `${id}.${fileTypeee}`);
 }
 
-export function deleteDocumentFile(id: string, fileTypee: string): void {
-  const p = getDocumentFilePath(id, fileTypee);
+export function deleteDocumentFile(id: string, fileTypeee: string): void {
+  const p = getDocumentFilePath(id, fileTypeee);
   try { if (fs.existsSync(p)) fs.unlinkSync(p); } catch {}
 }
 
@@ -125,15 +125,15 @@ export async function extractTextFromImage(filePath: string): Promise<Extraction
   }
 }
 
-export async function extractText(filePath: string, fileTypee: string): Promise<ExtractionResult> {
-  if (fileTypee === 'pdf') {
+export async function extractText(filePath: string, fileTypeee: string): Promise<ExtractionResult> {
+  if (fileTypeee === 'pdf') {
     return extractTextFromPdf(filePath);
   }
-  if (['png', 'jpg', 'jpeg', 'webp', 'tiff', 'bmp'].includes(fileTypee)) {
+  if (['png', 'jpg', 'jpeg', 'webp', 'tiff', 'bmp'].includes(fileTypeee)) {
     return extractTextFromImage(filePath);
   }
   // For .txt/.md/.doc (we don't parse .doc without mammoth — fallback)
-  if (fileTypee === 'txt' || fileTypee === 'md') {
+  if (fileTypeee === 'txt' || fileTypeee === 'md') {
     try {
       const text = fs.readFileSync(filePath, 'utf-8');
       return { text, engine: 'manual', confidence: 1.0 };
@@ -141,7 +141,7 @@ export async function extractText(filePath: string, fileTypee: string): Promise<
       return { text: '', engine: 'manual', confidence: 0.0 };
     }
   }
-  return { text: `[Noobsługiwany typ pliku: ${fileTypee}]`, engine: 'manual', confidence: 0.0 };
+  return { text: `[Noobsługiwany typ file: ${fileTypeee}]`, engine: 'manual', confidence: 0.0 };
 }
 
 // ─────────────────────────────────────────────────────────
@@ -226,7 +226,7 @@ Zwróć TYLKO JSON.`;
   } catch (e) {
     // Fallback: store raw text as summary
     analysis = {
-      summary: 'Analiza nie powiodła się — model zwrócił nieparsowalny JSON. Surowa odpowiedź w polu summary.',
+      summary: 'Analysis nie powiodła się — model zwrócił nieparsowalny JSON. Surowa odpowiedź w polu summary.',
       documentKind: 'inny',
       legalArea: 'other',
       parties: [],
@@ -271,7 +271,7 @@ ZASADY:
 - Cytuj konkretne fragmenty (krótkie cytaty w cudzysłowach).
 - Bądź precyzyjny — wskaż klauzulę/paragraf jeśli jest numeracja.
 - Jeśli pytanie dotyczy konsekwencji prawnych spoza dokumentu — powiedz że to wymaga porady adwokata.
-- Odpowiedź po polsku, max 5-8 zdań.
+- Answer po polsku, max 5-8 zdań.
 
 DOKUMENT: "${doc.title}"
 TREŚĆ:
@@ -437,7 +437,7 @@ export async function listDocuments(familyId: string, includeArchived = false): 
     id: d.id,
     title: d.title,
     fileName: d.fileName,
-    fileTypee: d.fileTypee,
+    fileTypeee: d.fileTypeee,
     fileSize: d.fileSize,
     documentKind: d.documentKind,
     legalArea: d.legalArea as LegalArea,
@@ -464,7 +464,7 @@ export async function getDocument(id: string) {
 export async function deleteDocument(id: string): Promise<void> {
   const doc = await db.legalDocument.findUnique({ where: { id } });
   if (!doc) return;
-  deleteDocumentFile(id, doc.fileTypee);
+  deleteDocumentFile(id, doc.fileTypeee);
   await db.legalDocument.delete({ where: { id } });
 }
 
@@ -571,7 +571,7 @@ function safeParseJSON(s: string | null): any {
   try { return JSON.parse(s); } catch { return null; }
 }
 
-export function detectFileTypee(fileName: string): string {
+export function detectFileTypeee(fileName: string): string {
   const ext = fileName.toLowerCase().split('.').pop() || '';
   if (ext === 'pdf') return 'pdf';
   if (['png', 'jpg', 'jpeg', 'webp', 'tiff', 'bmp', 'gif'].includes(ext)) return ext === 'jpeg' ? 'jpg' : ext;
@@ -579,8 +579,8 @@ export function detectFileTypee(fileName: string): string {
   return ext;
 }
 
-export function isSupportedFileTypee(fileTypee: string): boolean {
-  return ['pdf', 'png', 'jpg', 'jpeg', 'webp', 'tiff', 'bmp', 'txt', 'md'].includes(fileTypee);
+export function isSupportedFileTypeee(fileTypeee: string): boolean {
+  return ['pdf', 'png', 'jpg', 'jpeg', 'webp', 'tiff', 'bmp', 'txt', 'md'].includes(fileTypeee);
 }
 
 export function getMaxUploadSize(): number {

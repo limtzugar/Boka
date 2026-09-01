@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
     const family = await getFamily();
     const action = req.nextUrl.searchParams.get('action');
     const noteId = req.nextUrl.searchParams.get('id');
-    const noteTypee = req.nextUrl.searchParams.get('type') as 'daily' | 'note' | 'canvas' | 'person' | 'topic' | 'dream' | 'story' | 'ritual' | null;
+    const noteTypeee = req.nextUrl.searchParams.get('type') as 'daily' | 'note' | 'canvas' | 'person' | 'topic' | 'dream' | 'story' | 'ritual' | null;
     const memberId = req.nextUrl.searchParams.get('memberId');
     const tag = req.nextUrl.searchParams.get('tag');
     const search = req.nextUrl.searchParams.get('search');
@@ -91,7 +91,7 @@ export async function GET(req: NextRequest) {
     // Default: list notes
     const result = await VaultService.listNotes({
       familyId: family.id,
-      noteTypee: noteTypee || undefined,
+      noteTypeee: noteTypeee || undefined,
       memberId: memberId || undefined,
       tag: tag || undefined,
       search: search || undefined,
@@ -111,7 +111,7 @@ export async function POST(req: NextRequest) {
 
     const note = await VaultService.createNote({
       familyId: family.id,
-      noteTypee: body.noteTypee,
+      noteTypeee: body.noteTypeee,
       title: body.title,
       content: body.content,
       frontmatter: body.frontmatter,

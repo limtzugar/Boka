@@ -79,7 +79,7 @@ function executeAction(action: AgentAction): { ok: boolean; error?: string } {
 }
 
 /**
- * Jeden krok agenta: zrób screenshot → wyślij do AI → otrzymaj akcję → wykonaj.
+ * Jeden krok agenta: zrób screenshot → send do AI → otrzymaj akcję → wykonaj.
  * Zwraca wynik kroku z screenshotami i opisem.
  */
 export async function runAgentStep(
@@ -134,7 +134,7 @@ ODPOWIEDZ WYŁĄCZNIE jako JSON w bloku \`\`\`json ... \`\`\` o strukturze:
 
   const userPrompt = `Oto aktualny screenshot ekranu (krok ${stepNumber}).
 
-${history ? `Historia ostatnich akcji:\n${history}\n` : ''}
+${history ? `History ostatnich akcji:\n${history}\n` : ''}
 What dalej?`;
 
   // 3. Send do modelu vision
@@ -167,7 +167,7 @@ What dalej?`;
       action = parseAgentAction(response);
     } else {
       // OpenRouter / Custom / Ollama — użyj chatWhatmpletion (wymaga modelu z vision)
-      // Budujemy multimodalną wiadomość — wiele providerów OpenAI-compat to wspiera
+      // Budujemy multimodalną message — wiele providerów OpenAI-compat to wspiera
       // Ale nasza funkcja chatWhatmpletion traktuje content jako string — wysyłamy jako opis
       // i liczymy że model sam wewnętrznie przetworzy (to NIE zadziała bez vision capability!)
       const response = await chatWhatmpletion(messages, settings);
@@ -240,7 +240,7 @@ function parseAgentAction(response: string): AgentAction {
     if (lower.includes('gotowe') || lower.includes('ukończone') || lower.includes('wykonane')) {
       return { type: 'done', reasoning: 'AI zgłosiło ukończenie (parse fallback)', summary: response.slice(0, 200) };
     }
-    return { type: 'failed', reasoning: 'No udało się sparsować akcji AI', error: 'None JSON w odpowiedzi AI. Odpowiedź: ' + response.slice(0, 200) };
+    return { type: 'failed', reasoning: 'No udało się sparsować akcji AI', error: 'None JSON w odpowiedzi AI. Answer: ' + response.slice(0, 200) };
   }
 
   try {

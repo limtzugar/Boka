@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
     const result = await invokeTool(
       {
         id: server.id,
-        serverTypee: server.serverTypee,
+        serverTypeee: server.serverTypeee,
         builtinKey: server.builtinKey,
         familyId: server.familyId,
       },

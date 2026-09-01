@@ -74,7 +74,7 @@ export default function WidgetPage() {
           try {
             const res = await fetch('/api/asr', {
               method: 'POST',
-              headers: { 'Whatntent-Typee': 'application/json' },
+              headers: { 'Whatntent-Typeee': 'application/json' },
               body: JSON.stringify({ audio: base64Audio, format: 'audio/webm' }),
             });
             const data = await res.json();
@@ -124,7 +124,7 @@ export default function WidgetPage() {
     try {
       const res = await fetch('/api/chat', {
         method: 'POST',
-        headers: { 'Whatntent-Typee': 'application/json' },
+        headers: { 'Whatntent-Typeee': 'application/json' },
         body: JSON.stringify({ message: text.trim(), inputMode: isListening ? 'voice' : 'text' }),
       });
       const data = await res.json();
@@ -219,7 +219,7 @@ export default function WidgetPage() {
           <div className="px-3 py-1.5 bg-[#ff6b6b]/10 border-b border-[#ff6b6b]/20 flex items-center gap-2">
             <div className="w-1.5 h-1.5 bg-[#ff6b6b] rounded-full animate-pulse shrink-0" />
             <span className="text-[9px] text-[#ff6b6b] font-mono leading-tight">
-              Głos przeglądarki ({fallbackReason}) — Edge TTS niedostępny
+              Voice przeglądarki ({fallbackReason}) — Edge TTS niedostępny
             </span>
           </div>
         )}
@@ -285,7 +285,7 @@ export default function WidgetPage() {
                   Powiedz <span className="text-[#ffd93d] font-pixel text-[8px]">&quot;Hej Boka&quot;</span>
                 </div>
                 <div className="mt-2 text-[9px] text-[#6b6b8d]/60 font-mono">
-                  lub włącz nasłuchiwanie <Ear size={9} className="inline" />
+                  lub włącz listening <Ear size={9} className="inline" />
                 </div>
               </div>
             ) : (
@@ -320,7 +320,7 @@ export default function WidgetPage() {
           <div className="px-3 py-2 bg-[#a855f7]/5 border-t border-[#a855f7]/20">
             <div className="flex items-center gap-1.5 mb-1.5">
               <Palette size={10} className="text-[#a855f7]" />
-              <span className="text-[9px] text-[#a855f7] font-mono">Boka narysuje...</span>
+              <span className="text-[9px] text-[#a855f7] font-mono">BOKA is drawing...</span>
               <button type="button" onClick={() => setShowImageGen(false)} className="ml-auto text-[#6b6b8d] hover:text-[#e0e0f0]"><X size={10} /></button>
             </div>
             <div className="flex items-center gap-1.5">
@@ -328,7 +328,7 @@ export default function WidgetPage() {
                 type="text"
                 value={imageGenPrompt}
                 onChange={e => setImageGenPrompt(e.target.value)}
-                placeholder="Kot w kosmosie..."
+                placeholder="Cat in space..."
                 className="flex-1 bg-[#1e1e2e] border border-[#2a2a3a] rounded px-2 py-1 text-[10px] text-[#e0e0f0] placeholder:text-[#6b6b8d] focus:outline-none focus:border-[#a855f7]/50 font-mono"
                 onKeyDown={e => { if (e.key === 'Enter') handleGenerateImage(); }}
               />
@@ -338,7 +338,7 @@ export default function WidgetPage() {
                 disabled={imageGen.isGenerating || !imageGenPrompt.trim()}
                 className="px-2 py-1 rounded bg-[#a855f7] text-white text-[9px] font-mono disabled:opacity-30"
               >
-                {imageGen.isGenerating ? '...' : 'Rysuj'}
+                {imageGen.isGenerating ? '...' : 'Draw'}
               </button>
             </div>
           </div>
@@ -362,7 +362,7 @@ export default function WidgetPage() {
                   ? 'bg-[#4ade80]/20 text-[#4ade80] border border-[#4ade80]/50'
                   : 'bg-[#1e1e2e] text-[#6b6b8d] border border-[#2a2a3a] hover:border-[#4ade80]/30'
               }`}
-              title={vadMode ? 'Disable nasłuchiwanie' : 'Enable nasłuchiwanie (hands-free)'}
+              title={vadMode ? 'Disable listening' : 'Enable listening (hands-free)'}
             >
               <Ear size={14} />
             </button>
@@ -422,7 +422,7 @@ export default function WidgetPage() {
                   ? 'bg-[#a855f7]/20 text-[#a855f7] border border-[#a855f7]/50'
                   : 'bg-[#1e1e2e] text-[#6b6b8d] border border-[#2a2a3a] hover:border-[#a855f7]/30'
               }`}
-              title="Boka narysuje"
+              title="Boka draws"
             >
               <Palette size={14} />
             </button>

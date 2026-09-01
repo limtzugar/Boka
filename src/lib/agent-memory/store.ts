@@ -97,13 +97,13 @@ function sessionFromRow(row: any): Session {
 
 // ── Observation ──
 
-export async function createObservation(o: Omit<RawObservation, 'id'> & Partial<Omit<WhatmpressedObservation, 'id' | 'sessionId' | 'timestamp' | 'hookTypee'>>): Promise<WhatmpressedObservation> {
+export async function createObservation(o: Omit<RawObservation, 'id'> & Partial<Omit<WhatmpressedObservation, 'id' | 'sessionId' | 'timestamp' | 'hookTypeee'>>): Promise<WhatmpressedObservation> {
   const familyId = (o as { familyId?: string }).familyId;
   const row = await db.agentObservation.create({
     data: {
       sessionId: o.sessionId,
       familyId: familyId,
-      hookTypee: o.hookTypee,
+      hookTypeee: o.hookTypeee,
       type: (o as any).type ?? null,
       toolName: o.toolName ?? null,
       toolInput: o.toolInput ? JSON.stringify(o.toolInput) : null,

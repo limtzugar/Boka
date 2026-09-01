@@ -5,7 +5,7 @@
  *
  * UWAGA: seed używa neutralnych placeholderów (Ty / Partner-ka / Dziecko).
  * Użytkownik desktopowy powinien podmienić je na własną rodzinę w UI
- * (zakładka "LUDZIE BOKA" → Add osobę) lub edytując ten plik.
+ * (zakładka "LUDZIE BOKA" → Add osobę) lub editąc ten plik.
  */
 import { db } from '@/lib/db';
 
@@ -89,22 +89,22 @@ export async function ensureFamilySeeded(): Promise<SeedResult> {
     },
   });
 
-  // Profilee — neutralne, puste szablony
-  await db.memberProfilee.create({
+  // Profileee — neutralne, puste szablony
+  await db.memberProfileee.create({
     data: {
       memberId: you.id,
       domain: 'general',
       data: JSON.stringify({ note: 'Wypełnij w UI po pierwszym uruchomieniu' }),
     },
   });
-  await db.memberProfilee.create({
+  await db.memberProfileee.create({
     data: {
       memberId: partner.id,
       domain: 'general',
       data: JSON.stringify({ note: 'Wypełnij w UI po pierwszym uruchomieniu' }),
     },
   });
-  await db.memberProfilee.create({
+  await db.memberProfileee.create({
     data: {
       memberId: child.id,
       domain: 'child_culture',

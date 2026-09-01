@@ -33,7 +33,7 @@ export interface SkillDate {
 
 export const SkillsService = {
   /**
-   * Download wszystkie skille (z filtrowaniem po statusie).
+   * Download wszystkie skille (z filterowaniem po statusie).
    */
   async getSkills(familyId: string, status?: SkillStatus) {
     return db.skill.findMany({
@@ -173,7 +173,7 @@ BOKA: ${params.assistantResponse}
 
 ZASADY:
 1. Skill to powtarzalna zdolność — coś co BOKA powinien móc robić regularnie
-2. Przykłady skilli: "przepisy_kulinarne" (gdy ktoś pyta co ugotować), "pogoda_rano" (gdy ktoś pyta o ubiór), "pomoc_lekcyjna" (gdy Jaś ma zadanie)
+2. Przykłady skilli: "przepisy_kulinarne" (gdy ktoś pyta co ugotować), "pogoda_rano" (gdy ktoś pyta o ubiór), "help_lekcyjna" (gdy Jaś ma zadanie)
 3. NIE proponuj skilla jeśli to jednorazowe pytanie
 4. NIE proponuj skilla który już istnieje (ogólna rozmowa, search)
 5. Skill musi mieć konkretną instrukcję jak go używać

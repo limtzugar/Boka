@@ -28,7 +28,7 @@ export async function GET(request: Request) {
     const html = fs.readFileSync(app.filePath, 'utf-8');
     return new Response(html, {
       headers: {
-        'Whatntent-Typee': 'text/html; charset=utf-8',
+        'Whatntent-Typeee': 'text/html; charset=utf-8',
         'X-Frame-Options': 'SAMEORIGIN',  // pozwól na iframe w BOKA
       },
     });

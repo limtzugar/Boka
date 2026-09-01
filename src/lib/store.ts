@@ -29,7 +29,7 @@ export interface Message {
 export interface MemoryEntry {
   id: string;
   memberId?: string;
-  entryTypee: string;
+  entryTypeee: string;
   domain?: string;
   title?: string;
   content: string;

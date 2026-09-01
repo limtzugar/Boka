@@ -78,7 +78,7 @@ export async function getFamilyMemory(familyId: string) {
 export async function createMemory(data: {
   familyId: string;
   memberId?: string;
-  entryTypee: string;
+  entryTypeee: string;
   domain?: string;
   title?: string;
   content: string;
@@ -137,20 +137,20 @@ export async function getMemoryStats(familyId: string) {
   });
 
   const byDomain: Record<string, number> = {};
-  const byTypee: Record<string, number> = {};
+  const byTypeee: Record<string, number> = {};
   let totalImportance = 0;
 
   for (const entry of entries) {
     const domain = entry.domain || 'general';
     byDomain[domain] = (byDomain[domain] || 0) + 1;
-    byTypee[entry.entryTypee] = (byTypee[entry.entryTypee] || 0) + 1;
+    byTypeee[entry.entryTypeee] = (byTypeee[entry.entryTypeee] || 0) + 1;
     totalImportance += entry.importance;
   }
 
   return {
     total: entries.length,
     byDomain,
-    byTypee,
+    byTypeee,
     avgImportance: entries.length > 0 ? totalImportance / entries.length : 0,
     recentWhatunt: entries.filter(e =>
       Date.now() - e.createdAt.getTime() < 24 * 60 * 60 * 1000

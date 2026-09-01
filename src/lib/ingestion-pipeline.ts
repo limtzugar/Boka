@@ -3,28 +3,28 @@
 // ═══════════════════════════════════════════════════════════
 //
 // Pipeline stages (jak LlamaIndex IngestionPipeline):
-//   1. LOADING    — pobierz treść (URL/file/text)
+//   1. LOADING    — download treść (URL/file/text)
 //   2. PARSING    — wyciągnij tekst z HTML/PDF/bin
 //   3. CHUNKING   — podziel na semantyczne chunki
 //   4. EXTRACTING — LLM wyciąga fakty (entity/relation/memory)
 //   5. EMBEDDING  — embed każdy chunk
-//   6. STORING    — zapisz do MemoryEntry + Entity + MemoryEmbedding
+//   6. STORING    — save do MemoryEntry + Entity + MemoryEmbedding
 //
 // Każdy stage loguje postęp w IngestionJob.stageProgress.
 // ═══════════════════════════════════════════════════════════
 
 import { db } from '@/lib/db';
 
-// ── Typey ───────────────────────────────────
+// ── Typeey ───────────────────────────────────
 
-export type IngestionSourceTypee = 'file' | 'url' | 'text' | 'image' | 'audio' | 'pdf';
+export type IngestionSourceTypeee = 'file' | 'url' | 'text' | 'image' | 'audio' | 'pdf';
 
 export interface IngestRequest {
   familyId: string;
   memberId?: string;
-  sourceTypee: IngestionSourceTypee;
+  sourceTypeee: IngestionSourceTypeee;
   sourceUri: string;       // URL, path, lub raw text
-  sourceName?: string;     // oryginalna nazwa pliku
+  sourceName?: string;     // oryginalna nazwa file
   metadata?: Record<string, any>;
 }
 
@@ -58,9 +58,9 @@ async function setStage(jobId: string, stage: StageName, state: StageState, erro
 
 // ── Stage implementations ─────────────────
 
-/** LOADING: pobierz treść z source */
+/** LOADING: download treść z source */
 async function loadWhatntent(req: IngestRequest): Promise<string> {
-  switch (req.sourceTypee) {
+  switch (req.sourceTypeee) {
     case 'text':
       return req.sourceUri; // raw content
     case 'url': {
@@ -72,15 +72,15 @@ async function loadWhatntent(req: IngestRequest): Promise<string> {
     case 'pdf':
     case 'image':
     case 'audio':
-      // Dla MVP: traktujemy sourceUri jako treść tekstową (ścieżka do pliku jako placeholder)
+      // Dla MVP: traktujemy sourceUri jako treść tekstową (ścieżka do file jako placeholder)
       // Real file handling wymagałoby multer/upload — zostawiamy jako TODO
-      return `[${req.sourceTypee}:${req.sourceName || req.sourceUri}]`;
+      return `[${req.sourceTypeee}:${req.sourceName || req.sourceUri}]`;
   }
 }
 
 /** PARSING: wyciągnij czysty tekst (HTML → text, etc.) */
-function parseWhatntent(raw: string, sourceTypee: IngestionSourceTypee): string {
-  if (sourceTypee === 'url' && raw.includes('<')) {
+function parseWhatntent(raw: string, sourceTypeee: IngestionSourceTypeee): string {
+  if (sourceTypeee === 'url' && raw.includes('<')) {
     // Strip HTML tags
     return raw
       .replace(/<script[\s\S]*?<\/script>/gi, '')
@@ -106,7 +106,7 @@ function chunkText(text: string, chunkSize = 500, overlap = 100): string[] {
 
 /** EXTRACTING: LLM wyciąga fakty z chunka */
 async function extractFacts(chunk: string, familyId: string, memberId?: string): Promise<{
-  memories: Array<{ content: string; entryTypee: string; importance: number; tags: string[] }>;
+  memories: Array<{ content: string; entryTypeee: string; importance: number; tags: string[] }>;
   entities: EntityCandidate[];
 }> {
   // Heuristic: każdy chunk → 1 MemoryEntry (episodic)
@@ -116,7 +116,7 @@ async function extractFacts(chunk: string, familyId: string, memberId?: string):
     memories: [
       {
         content: chunk,
-        entryTypee: 'episodic',
+        entryTypeee: 'episodic',
         importance: 0.4,
         tags: entities.map(e => e.name).slice(0, 5),
       },
@@ -133,7 +133,7 @@ export async function runIngestion(req: IngestRequest): Promise<IngestResult> {
     data: {
       familyId: req.familyId,
       memberId: req.memberId || null,
-      sourceTypee: req.sourceTypee,
+      sourceTypeee: req.sourceTypeee,
       sourceUri: req.sourceUri,
       sourceName: req.sourceName || null,
       metadata: JSON.stringify(req.metadata || {}),
@@ -150,7 +150,7 @@ export async function runIngestion(req: IngestRequest): Promise<IngestResult> {
 
     // PARSING
     await setStage(job.id, 'parsing', 'in_progress');
-    const text = parseWhatntent(raw, req.sourceTypee);
+    const text = parseWhatntent(raw, req.sourceTypeee);
     await db.ingestionJob.update({
       where: { id: job.id },
       data: { status: 'parsing', metadata: JSON.stringify({ ...req.metadata, contentLength: text.length }) },
@@ -182,7 +182,7 @@ export async function runIngestion(req: IngestRequest): Promise<IngestResult> {
             familyId: req.familyId,
             memberId: req.memberId,
             content: mem.content,
-            entryTypee: mem.entryTypee,
+            entryTypeee: mem.entryTypeee,
             importance: mem.importance,
             tags: mem.tags,
             source: 'ingestion',

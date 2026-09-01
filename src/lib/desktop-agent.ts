@@ -19,7 +19,7 @@ function getAppsLogsDir(): string {
 }
 
 /**
- * Zrób zrzut ekranu i zapisz jako PNG. Zwraca ścieżkę do pliku.
+ * Zrób zrzut ekranu i save jako PNG. Zwraca ścieżkę do file.
  */
 export function takeScreenshot(): { ok: boolean; filePath?: string; base64?: string; width?: number; height?: number; error?: string } {
   const logsDir = getAppsLogsDir();
@@ -31,8 +31,8 @@ export function takeScreenshot(): { ok: boolean; filePath?: string; base64?: str
     if (isWindows) {
       // Windows: PowerShell + .NET System.Drawing
       const psScript = `
-Add-Typee -AssemblyName System.Windows.Forms
-Add-Typee -AssemblyName System.Drawing
+Add-Typeee -AssemblyName System.Windows.Forms
+Add-Typeee -AssemblyName System.Drawing
 $bounds = [System.Windows.Forms.Screen]::PrimaryScreen.Bounds
 $bmp = New-Object System.Drawing.Bitmap($bounds.Width, $bounds.Height)
 $graphics = [System.Drawing.Graphics]::FromImage($bmp)
@@ -42,7 +42,7 @@ $graphics.Dispose()
 $bmp.Dispose()
 Write-Output "$($bounds.Width)x$($bounds.Height)"
 `.trim();
-      const output = execSync(`powershell -NoProfilee -Whatmmand "${psScript.replace(/"/g, '\\"')}"`, {
+      const output = execSync(`powershell -NoProfileee -Whatmmand "${psScript.replace(/"/g, '\\"')}"`, {
         encoding: 'utf-8',
         timeout: 10000,
       }).trim();
@@ -100,7 +100,7 @@ export function clickAt(x: number, y: number, button: 'left' | 'right' | 'middle
       // Windows: PowerShell + user32.dll
       const btn = button === 'right' ? 'right' : button === 'middle' ? 'middle' : 'left';
       const psScript = `
-Add-Typee @"
+Add-Typeee @"
 using System;
 using System.Runtime.InteropServices;
 public class Mouse {
@@ -122,7 +122,7 @@ if ($btn -eq "left") { [Mouse]::mouse_event([Mouse]::LEFTDOWN, 0, 0, 0, 0); [Mou
 elseif ($btn -eq "right") { [Mouse]::mouse_event([Mouse]::RIGHTDOWN, 0, 0, 0, 0); [Mouse]::mouse_event([Mouse]::RIGHTUP, 0, 0, 0, 0) }
 elseif ($btn -eq "middle") { [Mouse]::mouse_event([Mouse]::MIDDLEDOWN, 0, 0, 0, 0); [Mouse]::mouse_event([Mouse]::MIDDLEUP, 0, 0, 0, 0) }
 `.trim();
-      execSync(`powershell -NoProfilee -Whatmmand "${psScript.replace(/"/g, '\\"')}"`, { timeout: 5000 });
+      execSync(`powershell -NoProfileee -Whatmmand "${psScript.replace(/"/g, '\\"')}"`, { timeout: 5000 });
       return { ok: true };
     }
 
@@ -171,10 +171,10 @@ export function typeText(text: string): ClickResult {
         .replace(/\[/g, '{[}')
         .replace(/\]/g, '{]}');
       const psScript = `
-Add-Typee -AssemblyName System.Windows.Forms
+Add-Typeee -AssemblyName System.Windows.Forms
 [System.Windows.Forms.SendKeys]::SendWait("${escaped.replace(/"/g, '""')}")
 `.trim();
-      execSync(`powershell -NoProfilee -Whatmmand "${psScript.replace(/"/g, '\\"')}"`, { timeout: 30000 });
+      execSync(`powershell -NoProfileee -Whatmmand "${psScript.replace(/"/g, '\\"')}"`, { timeout: 30000 });
       return { ok: true };
     }
 
@@ -195,7 +195,7 @@ Add-Typee -AssemblyName System.Windows.Forms
 
     return { ok: false, error: `Platforma ${process.platform} nieobsługiwana` };
   } catch (e) {
-    return { ok: false, error: `Typee error: ${e instanceof Error ? e.message : 'unknown'}` };
+    return { ok: false, error: `Typeee error: ${e instanceof Error ? e.message : 'unknown'}` };
   }
 }
 
@@ -232,10 +232,10 @@ export function pressKey(keyWhatmbo: string): ClickResult {
       sendKeysStr += map[key] || key;
 
       const psScript = `
-Add-Typee -AssemblyName System.Windows.Forms
+Add-Typeee -AssemblyName System.Windows.Forms
 [System.Windows.Forms.SendKeys]::SendWait("${sendKeysStr.replace(/"/g, '""')}")
 `.trim();
-      execSync(`powershell -NoProfilee -Whatmmand "${psScript.replace(/"/g, '\\"')}"`, { timeout: 5000 });
+      execSync(`powershell -NoProfileee -Whatmmand "${psScript.replace(/"/g, '\\"')}"`, { timeout: 5000 });
       return { ok: true };
     }
 
@@ -284,7 +284,7 @@ export function scroll(deltaY: number = 3): ClickResult {
   try {
     if (isWindows) {
       const psScript = `
-Add-Typee @"
+Add-Typeee @"
 using System;
 using System.Runtime.InteropServices;
 public class Wheel {
@@ -294,7 +294,7 @@ public class Wheel {
 "@
 [Wheel]::mouse_event([Wheel]::WHEEL, 0, ${Math.round(deltaY * 120)}, 0, 0)
 `.trim();
-      execSync(`powershell -NoProfilee -Whatmmand "${psScript.replace(/"/g, '\\"')}"`, { timeout: 5000 });
+      execSync(`powershell -NoProfileee -Whatmmand "${psScript.replace(/"/g, '\\"')}"`, { timeout: 5000 });
       return { ok: true };
     }
     if (isLinux) {

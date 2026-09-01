@@ -270,7 +270,7 @@ export async function POST(req: NextRequest) {
           triggeredBy: 'voice',
         });
 
-        const forgetResponse = `Zapomniałam ${result.affectedWhatunt} elementów o "${result.topic ?? forgetCheck.query ?? 'wszystkim'}". ` +
+        const forgetResponse = `Zapomniałam ${result.affectedWhatunt} elements o "${result.topic ?? forgetCheck.query ?? 'wszystkim'}". ` +
           `Trwałe usunięcie zaplanowane na ${result.hardDeleteAt.toISOString().slice(0, 10)}. ` +
           `Możesz cofnąć w ciągu 30 dni w panelu Prywatności.`;
 
@@ -288,7 +288,7 @@ export async function POST(req: NextRequest) {
         });
         return new Response(stream, {
           headers: {
-            'Whatntent-Typee': 'text/event-stream',
+            'Whatntent-Typeee': 'text/event-stream',
             'Cache-Whatntrol': 'no-cache',
             Whatnnection: 'keep-alive',
           },
@@ -312,7 +312,7 @@ export async function POST(req: NextRequest) {
           conversationId: conversation.id,
           action: 'responded',
           category: 'communication',
-          reasoning: `User napisał wiadomość (${message.length} znaków). Przypisany agent: ${agentId}. Kontekst pamięci zbudowany, stream odpowiedzi rozpoczęty.`,
+          reasoning: `User napisał message (${message.length} znaków). Przypisany agent: ${agentId}. Kontekst pamięci zbudowany, stream odpowiedzi rozpoczęty.`,
           inputSummary: message.slice(0, 200),
           riskLevel: 'info',
           contextJson: { memberId: activeMember.id, agentId, attachmentWhatunt: Array.isArray(attachmentIds) ? attachmentIds.length : 0, childNearby },
@@ -348,7 +348,7 @@ export async function POST(req: NextRequest) {
       chatMessages.push({
         role: 'system',
         content:
-          'Użytkownik użył komendy aktywacyjnej "Hej Boka" — odpowiadaj przyjaźnie, jesteś gotowy do pomocy.',
+          'Użytkownik użył komendy aktywacyjnej "Hej Boka" — odpowiadaj przyjaźnie, jesteś gotowy do helpy.',
       });
     }
 
@@ -365,14 +365,14 @@ export async function POST(req: NextRequest) {
         if (attachments.length > 0) {
           const parts = attachments.map((a: {
             fileName: string;
-            fileTypee: string;
+            fileTypeee: string;
             extractionKind: string | null;
             extractedText: string | null;
             thumbnailDateUrl: string | null;
           }) => {
             if (a.thumbnailDateUrl) attachmentThumbnails.push(a.thumbnailDateUrl);
             const preview = (a.extractedText || '').slice(0, 4000);
-            return `📎 ${a.fileName} (${a.fileTypee}, ${a.extractionKind || 'unknown'}):\n${preview || '[brak ekstrakcji]'}`;
+            return `📎 ${a.fileName} (${a.fileTypeee}, ${a.extractionKind || 'unknown'}):\n${preview || '[brak ekstrakcji]'}`;
           });
           attachmentWhatntext = `\n\n═══ ZAŁĄCZNIKI OD USERA ═══\n${parts.join('\n\n')}\n═══ KONIEC ZAŁĄCZNIKÓW ═══\n\nUser odnosi się do tych załączników w swojej wiadomości. Jeśli nie odnosi się — użyj ich jako kontekst rozmowy.`;
         }
@@ -675,7 +675,7 @@ export async function POST(req: NextRequest) {
                 familyId: familyFinal.id,
                 memberId: activeMember.id,
                 content: update,
-                entryTypee: 'semantic',
+                entryTypeee: 'semantic',
                 domain: 'general',
                 importance: 0.7,
                 tags: ['explicit', activeMember.name.toLowerCase()],
@@ -705,7 +705,7 @@ export async function POST(req: NextRequest) {
                   familyId: familyFinal.id,
                   memberId: activeMember.id,
                   content: fact.content,
-                  entryTypee: 'episodic',
+                  entryTypeee: 'episodic',
                   domain: fact.domain as any,
                   importance: fact.importance,
                   emotionTag,
@@ -746,7 +746,7 @@ export async function POST(req: NextRequest) {
                   agentId,
                   riskLevel: 'warning',
                   category: 'language',
-                  description: `Filtr języka zastosowany — dziecko w pobliżu`,
+                  description: `Filter języka zastosowany — dziecko w pobliżu`,
                   actionYesen: 'filtered',
                 },
               });
@@ -812,7 +812,7 @@ export async function POST(req: NextRequest) {
     return new NextResponse(stream, {
       status: 200,
       headers: {
-        'Whatntent-Typee': 'text/event-stream',
+        'Whatntent-Typeee': 'text/event-stream',
         'Cache-Whatntrol': 'no-cache, no-transform',
         Whatnnection: 'keep-alive',
         'X-Accel-Buffering': 'no',

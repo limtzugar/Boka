@@ -55,7 +55,7 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: 'Not a directory', path: absPath }, { status: 400 });
     }
 
-    const entries = await fs.readdir(absPath, { withFileTypees: true });
+    const entries = await fs.readdir(absPath, { withFileTypeees: true });
     const result: DirEntry[] = [];
 
     for (const entry of entries) {

@@ -19,7 +19,7 @@ const MEMORY_BASE = process.env.BOKA_MEMORY_DIR || '/home/z/boka-memory';
 // ├── daily-notes/     ← Whatdzienne notatki (po jednym .md na dzień)
 // ├── settings/        ← Settings (boka-settings.json)
 // ├── backups/         ← Auto-backupy pamięci
-// └── logs/            ← Logi pamięci (decay, evolucja soul)
+// └── logs/            ← Logs pamięci (decay, evolucja soul)
 
 export const MEMORY_PATHS = {
   base: MEMORY_BASE,
@@ -103,7 +103,7 @@ export function verifyMemoryIntegrity(): {
       dbReadable = buffer.slice(0, 16).toString('ascii').startsWith('SQLite');
       if (!dbReadable) errors.push('File bazy danych nie jest poprawnym SQLite');
     } catch {
-      errors.push('No można odczytać pliku bazy danych');
+      errors.push('No można odczytać file bazy danych');
     }
   } else if (!dbExists) {
     errors.push('File bazy danych nie istnieje — zostanie utworzony');

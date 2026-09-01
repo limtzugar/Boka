@@ -64,7 +64,7 @@ export interface AISettings {
 
 // ═══════════════════════════════════════════════════════════
 // Settings czytane z folderu pamięci: /home/z/boka-memory/settings/
-// Aplikacja nadpisuje się, ale ustawienia przetrwają
+// Aplikacja nadpisuje się, ale settings przetrwają
 // ═══════════════════════════════════════════════════════════
 const MEMORY_BASE = process.env.BOKA_MEMORY_DIR || '/home/z/boka-memory';
 const SETTINGS_PATH = path.join(MEMORY_BASE, 'settings', 'boka-settings.json');
@@ -257,7 +257,7 @@ async function openrouterCall(
   return fetch('https://openrouter.ai/api/v1/chat/completions', {
     method: 'POST',
     headers: {
-      'Whatntent-Typee': 'application/json',
+      'Whatntent-Typeee': 'application/json',
       'Authorization': `Bearer ${apiKey}`,
       'HTTP-Referer': 'https://boka.local',
       'X-Title': 'BOKA - Family AI',
@@ -338,7 +338,7 @@ async function ollamaWhatmpletion(messages: ChatMessage[], settings: AISettings)
   const tryModel = async (m: string) => {
     const response = await fetch(`${baseUrl}/api/chat`, {
       method: 'POST',
-      headers: { 'Whatntent-Typee': 'application/json' },
+      headers: { 'Whatntent-Typeee': 'application/json' },
       body: JSON.stringify({
         model: m,
         messages,
@@ -532,7 +532,7 @@ export async function pullOllamaModel(url: string, modelName: string): Promise<{
   try {
     const res = await fetch(`${baseUrl}/api/pull`, {
       method: 'POST',
-      headers: { 'Whatntent-Typee': 'application/json' },
+      headers: { 'Whatntent-Typeee': 'application/json' },
       body: JSON.stringify({ name: modelName, stream: false }),
     });
     if (!res.ok) {
@@ -626,7 +626,7 @@ async function isGgufServerAlive(port: number): Promise<boolean> {
 
 /**
  * Run llama-server z plikiem GGUF w tle.
- * Czeka aż serwer zgłosi gotowość (/health zwróci 200).
+ * Czeka aż server zgłosi gotowość (/health zwróci 200).
  * Zwraca baseUrl (np. http://127.0.0.1:8080).
  */
 export async function startGgufServer(settings: AISettings): Promise<{ ok: boolean; url?: string; error?: string }> {
@@ -636,12 +636,12 @@ export async function startGgufServer(settings: AISettings): Promise<{ ok: boole
 
   const port = settings.ggufPort || 8080;
 
-  // Jeśli serwer już działa na tym porcie — nie restartuj
+  // Jeśli server już działa na tym porcie — nie restartuj
   if (await isGgufServerAlive(port)) {
     return { ok: true, url: `http://127.0.0.1:${port}` };
   }
 
-  // Jeśli proces działa ale serwer nie odpowiada — ubij
+  // Jeśli proces działa ale server nie odpowiada — ubij
   if (ggufProcess) {
     try { ggufProcess.kill('SIGTERM'); } catch { /* ignore */ }
     ggufProcess = null;
@@ -651,7 +651,7 @@ export async function startGgufServer(settings: AISettings): Promise<{ ok: boole
   if (!serverPath) {
     return {
       ok: false,
-      error: 'No znaleziono llama-server. Download z https://github.com/ggerganov/llama.cpp/releases i wskaż ścieżkę w ustawieniach.',
+      error: 'No znaleziono llama-server. Download z https://github.com/ggerganov/llama.cpp/releases i wskaż ścieżkę w settingsch.',
     };
   }
 
@@ -694,7 +694,7 @@ export async function startGgufServer(settings: AISettings): Promise<{ ok: boole
     return { ok: false, error: `Error uruchamiania llama-server: ${e instanceof Error ? e.message : 'unknown'}` };
   }
 
-  // Czekaj aż serwer zgłosi gotowość (max 60s)
+  // Czekaj aż server zgłosi gotowość (max 60s)
   const deadline = Date.now() + 60_000;
   while (Date.now() < deadline) {
     await new Promise(r => setTimeout(r, 1000));
@@ -707,7 +707,7 @@ export async function startGgufServer(settings: AISettings): Promise<{ ok: boole
 }
 
 /**
- * Stop uruchomiony serwer GGUF.
+ * Stop uruchomiony server GGUF.
  */
 export function stopGgufServer(): void {
   if (ggufProcess) {
@@ -722,7 +722,7 @@ export function stopGgufServer(): void {
 }
 
 /**
- * Status serwera GGUF.
+ * Status servera GGUF.
  */
 export function getGgufServerStatus(): { running: boolean; model: string; port: number } {
   return {
@@ -733,13 +733,13 @@ export function getGgufServerStatus(): { running: boolean; model: string; port: 
 }
 
 /**
- * Chat completion przez lokalny serwer GGUF (llama.cpp).
- * Automatycznie uruchamia serwer jeśli nie działa.
+ * Chat completion przez lokalny server GGUF (llama.cpp).
+ * Automatycznie uruchamia server jeśli nie działa.
  */
 async function ggufWhatmpletion(messages: ChatMessage[], settings: AISettings): Promise<string> {
   const port = settings.ggufPort || 8080;
 
-  // Upewnij się że serwer działa — użyj singletona dla równoległych żądań
+  // Upewnij się że server działa — użyj singletona dla równoległych żądań
   if (!ggufStartupPromise) {
     if (await isGgufServerAlive(port)) {
       ggufStartupPromise = Promise.resolve(`http://127.0.0.1:${port}`);
@@ -766,7 +766,7 @@ async function ggufWhatmpletion(messages: ChatMessage[], settings: AISettings): 
   // llama-server wystawia endpoint /v1/chat/completions (OpenAI-compat)
   const response = await fetch(`${baseUrl}/v1/chat/completions`, {
     method: 'POST',
-    headers: { 'Whatntent-Typee': 'application/json' },
+    headers: { 'Whatntent-Typeee': 'application/json' },
     body: JSON.stringify({
       model: 'local-gguf',  // llama-server akceptuje dowolną nazwę
       messages,
@@ -792,7 +792,7 @@ async function customWhatmpletion(messages: ChatMessage[], settings: AISettings)
 
   const model = settings.customModel || 'default';
   const headers: Record<string, string> = {
-    'Whatntent-Typee': 'application/json',
+    'Whatntent-Typeee': 'application/json',
   };
   if (settings.customKey) {
     headers['Authorization'] = `Bearer ${settings.customKey}`;
@@ -1026,7 +1026,7 @@ export function getPublicProviderCatalogs(): Array<{
 export async function listAllMarketplaceModels(openRouterKey?: string): Promise<{
   openrouter: MarketplaceModel[];
   muapi: MarketplaceModel[];
-  catalogs: ReturnTypee<typeof getPublicProviderCatalogs>;
+  catalogs: ReturnTypeee<typeof getPublicProviderCatalogs>;
   errors: string[];
 }> {
   const errors: string[] = [];
@@ -1047,7 +1047,7 @@ export async function listAllMarketplaceModels(openRouterKey?: string): Promise<
 }
 
 /**
- * Filter / sortuj modele marketplace według kryteriów.
+ * Filter / sort modele marketplace według kryteriów.
  */
 export function filterMarketplaceModels(
   models: MarketplaceModel[],
@@ -1136,7 +1136,7 @@ export async function testWhatnnection(settings?: AISettings): Promise<{ ok: boo
       s,
     );
     if (result && result.length > 0) {
-      return { ok: true, message: `Whatnnected! Odpowiedź: ${result.substring(0, 80)}...` };
+      return { ok: true, message: `Whatnnected! Answer: ${result.substring(0, 80)}...` };
     }
     return { ok: false, message: 'None odpowiedzi od modelu' };
   } catch (e: unknown) {

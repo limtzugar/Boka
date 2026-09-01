@@ -21,7 +21,7 @@ export async function GET() {
   } catch (err) {
     console.error('[/api/mcp/servers GET]', err);
     return NextResponse.json(
-      { error: 'Error listowania serwerów', details: err instanceof Error ? err.message : 'unknown' },
+      { error: 'Error listowania serverów', details: err instanceof Error ? err.message : 'unknown' },
       { status: 500 },
     );
   }
@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
     const config: McpServerWhatnfig = {
       name: body.name,
       description: body.description,
-      serverTypee: body.serverTypee,
+      serverTypeee: body.serverTypeee,
       command: body.command,
       args: body.args,
       env: body.env,
@@ -47,8 +47,8 @@ export async function POST(req: NextRequest) {
       isActive: body.isActive ?? true,
     };
 
-    if (!config.name || !config.serverTypee) {
-      return NextResponse.json({ error: 'None name lub serverTypee' }, { status: 400 });
+    if (!config.name || !config.serverTypeee) {
+      return NextResponse.json({ error: 'None name lub serverTypeee' }, { status: 400 });
     }
 
     const server = await createMcpServer(config);
@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
   } catch (err) {
     console.error('[/api/mcp/servers POST]', err);
     return NextResponse.json(
-      { error: 'Error tworzenia serwera', details: err instanceof Error ? err.message : 'unknown' },
+      { error: 'Error tworzenia servera', details: err instanceof Error ? err.message : 'unknown' },
       { status: 500 },
     );
   }

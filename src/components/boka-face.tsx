@@ -48,7 +48,7 @@ export const EMOTION_LABELS: Record<BokaEmotion, string> = {
   neutral: 'Neutralny',
   happy: 'Radosny',
   angry: 'Zły',
-  thinking: 'Myśli...',
+  thinking: 'Thinking...',
   surprised: 'Zdziwiony',
   sleeping: 'Śpi',
   talking: 'Mówi',
@@ -1121,10 +1121,10 @@ interface ObsidianNode {
   phase: number;   // slow drift phase offset
   speed: number;   // slow drift speed
   memoryId?: string;  // ID prawdziwej pamięci (jeśli podłączona)
-  label?: string;     // etykieta (np. imię, tytuł)
+  label?: string;     // etykieta (np. name, tytuł)
   color?: string;     // kolor nadpisujący palette
   importance?: number;// 0-1 ważność pamięci
-  nodeTypee?: 'member' | 'memory' | 'domain' | 'tag' | 'emotion';
+  nodeTypeee?: 'member' | 'memory' | 'domain' | 'tag' | 'emotion';
 }
 
 // ── PRAWDZIWE DANE PAMIĘCI Z GRAPH API ──
@@ -1217,7 +1217,7 @@ export function convertGraphToObsidianNodes(
       label: n.label,
       color: n.color,
       importance: n.size / 5,
-      nodeTypee: n.type,
+      nodeTypeee: n.type,
     };
   });
 
@@ -1495,7 +1495,7 @@ function drawObsidianFrame(
     // Whatre nodes (center cluster) are brighter
     // Member nodes are even brighter
     // FOCUSED nodes are BRIGHTEST
-    const isMemberNode = node?.nodeTypee === 'member';
+    const isMemberNode = node?.nodeTypeee === 'member';
     const isWhatreNode = p.distFromCenter < 0.15 || isMemberNode;
     let dotAlpha: number;
     if (p.isFocused) {

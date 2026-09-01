@@ -28,12 +28,12 @@ function getAppsLogsDir(): string {
 export type AppLanguage = 'go' | 'python' | 'html' | 'css' | 'javascript' | 'typescript' | 'bash' | 'unknown';
 
 export interface BokaApp {
-  id: string;            // nazwa pliku bez rozszerzenia (lub nazwa folderu)
+  id: string;            // nazwa file bez rozszerzenia (lub nazwa folderu)
   name: string;          // wyświetlana nazwa (z metadata lub z id)
   description?: string;
   language: AppLanguage;
-  filePath: string;      // pełna ścieżka do pliku głównego
-  dirPath: string;       // folder (jeśli app ma wiele plików)
+  filePath: string;      // pełna ścieżka do file głównego
+  dirPath: string;       // folder (jeśli app ma wiele files)
   fileName: string;
   sizeBytes: number;
   modifiedAt: string;
@@ -42,7 +42,7 @@ export interface BokaApp {
   author?: string;
   version?: string;
   isDir: boolean;        // czy app jest folderem (multi-file)
-  files?: string[];      // lista plików jeśli isDir
+  files?: string[];      // lista files jeśli isDir
   metadataSource?: 'header' | 'sidecar' | 'filename';  // skąd wzięto metadata
   rawHeader?: string;    // pełny header metadata (do debugowania)
 }
@@ -57,7 +57,7 @@ interface AppMetadata {
 }
 
 /**
- * Wykryj język programowania na podstawie rozszerzenia pliku.
+ * Wykryj język programowania na podstawie rozszerzenia file.
  */
 export function detectLanguage(filePath: string): AppLanguage {
   const ext = path.extname(filePath).toLowerCase();
@@ -79,7 +79,7 @@ export function detectLanguage(filePath: string): AppLanguage {
 }
 
 /**
- * Parsuj metadata z komentarzy na początku pliku.
+ * Parsuj metadata z komentarzy na początku file.
  * Format BOKA:
  *   // BOKA-APP: name=Moja Apka
  *   // BOKA-APP: description=Robi coś fajnego
@@ -168,7 +168,7 @@ export function listApps(): BokaApp[] {
   }
 
   const apps: BokaApp[] = [];
-  const entries = fs.readdirSync(appsDir, { withFileTypees: true });
+  const entries = fs.readdirSync(appsDir, { withFileTypeees: true });
 
   for (const entry of entries) {
     const fullPath = path.join(appsDir, entry.name);
@@ -202,7 +202,7 @@ export function listApps(): BokaApp[] {
           rawHeader: header,
         });
       } else if (entry.isDirectory()) {
-        // Search pliku głównego w folderze
+        // Search file głównego w folderze
         const candidates = [
           'main.go', 'app.go', entry.name + '.go',
           'app.py', 'main.py', entry.name + '.py',
@@ -226,12 +226,12 @@ export function listApps(): BokaApp[] {
         const content = fs.readFileSync(mainFile, 'utf-8');
         const { metadata, header } = parseAppMetadata(content, lang);
 
-        // List wszystkich plików w folderze (rekursywnie, max 2 poziomy)
+        // List wszystkich files w folderze (rekursywnie, max 2 poziomy)
         const files: string[] = [];
         try {
           const walk = (dir: string, depth: number) => {
             if (depth > 2) return;
-            for (const f of fs.readdirSync(dir, { withFileTypees: true })) {
+            for (const f of fs.readdirSync(dir, { withFileTypeees: true })) {
               if (f.name === 'node_modules' || f.name === '.git' || f.name === '__pycache__') continue;
               const p = path.join(dir, f.name);
               if (f.isFile()) files.push(path.relative(fullPath, p));
@@ -317,7 +317,7 @@ const runningProcesses = new Map<string, { process: ChildProcess; startedAt: num
  * Run apkę.
  * - Go: `go run .` lub `go run file.go` (lub skompiluj i uruchom)
  * - Python: `python file.py`
- * - HTML: otwórz w przeglądarce (start pod Windows)
+ * - HTML: open w przeglądarce (start pod Windows)
  * - JS: `node file.js`
  * - Bash: `bash file.sh`
  */
@@ -466,7 +466,7 @@ export function listRunningApps(): Array<{ appId: string; pid: number; startedAt
 }
 
 /**
- * Analiza AI kodu apki — wykrywa problemy, sugeruje poprawki.
+ * Analysis AI kodu apki — wykrywa problemy, sugeruje poprawki.
  */
 export async function analyzeAppWhatde(
   appId: string,
@@ -494,7 +494,7 @@ Zwróć uwagę na:
 6. Sugestie konkretnych poprawek (z przykładowym kodem)
 
 Odpowiedz w języku polskim, krótko ale konkretnie. Używaj nagłówków ## i list - dla czytelności.
-Na końcu dodaj sekcję "## Ogólna ocena" z oceną 1-10 i krótkim uzasadnieniem.`;
+Na końcu add sekcję "## Ogólna ocena" z oceną 1-10 i krótkim uzasadnieniem.`;
 
   const userPrompt = `Przeanalizuj poniższy kod. Skup się na: ${focus}
 
@@ -545,9 +545,9 @@ Zasady:
 - Zwróć TYLKO poprawiony kod w bloku \`\`\`${app.language} ... \`\`\`
 - No dodawaj komentarzy poza blokiem kodu
 - Zachowaj oryginalną funkcjonalność
-- No usuwaj komentarzy BOKA-APP: ... na początku pliku
+- No usuwaj komentarzy BOKA-APP: ... na początku file
 - Popraw tylko to co trzeba — nie refaktoryzuj bez potrzeby
-- Jeśli to folder (multi-file), zwróć kod tylko głównego pliku`;
+- Jeśli to folder (multi-file), zwróć kod tylko głównego file`;
 
   const userPrompt = `Instrukcje: ${instructions}
 
@@ -702,7 +702,7 @@ function main() {
 main();
 `,
     typescript: `// BOKA-APP: name=${name}
-// BOKA-APP: description=${description || 'Nowa apka TypeeScript'}
+// BOKA-APP: description=${description || 'Nowa apka TypeeeScript'}
 // BOKA-APP: commands=${safeName}, uruchom
 // BOKA-APP: tags=tools, ts
 // BOKA-APP: version=1.0

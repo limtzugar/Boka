@@ -12,7 +12,7 @@
 <p align="center">
   <a href="https://img.shields.io/badge/Node.js-18+-339933?logo=node.js&logoColor=white"><img src="https://img.shields.io/badge/Node.js-18+-339933?logo=node.js&logoColor=white" alt="Node.js"></a>
   <a href="https://img.shields.io/badge/Next.js-16-black?logo=next.js"><img src="https://img.shields.io/badge/Next.js-16-black?logo=next.js" alt="Next.js"></a>
-  <a href="https://img.shields.io/badge/TypeScript-5-blue?logo=typescript"><img src="https://img.shields.io/badge/TypeScript-5-blue?logo=typescript" alt="TypeScript"></a>
+  <a href="https://img.shields.io/badge/TypeeScript-5-blue?logo=typescript"><img src="https://img.shields.io/badge/TypeeScript-5-blue?logo=typescript" alt="TypeeScript"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-green" alt="License"></a>
 </p>
 
@@ -112,7 +112,7 @@ BOKA OS/
 | Layer | Technology |
 |-------|-----------|
 | GUI | Next.js 16, React 19, Tailwind CSS 4, shadcn/ui |
-| Database | Prisma 6, SQLite |
+| Datebase | Prisma 6, SQLite |
 | AI | OpenRouter, Ollama |
 | Voice | Web Speech API, Edge TTS, Whisper |
 | Privacy | Audit log, Forget API, consent management |

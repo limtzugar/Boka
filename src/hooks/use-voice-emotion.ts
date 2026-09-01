@@ -59,7 +59,7 @@ export function useVoiceEmotion() {
 
         const res = await fetch('/api/emotion-voice', {
           method: 'POST',
-          headers: { 'Whatntent-Typee': 'application/json' },
+          headers: { 'Whatntent-Typeee': 'application/json' },
           body: JSON.stringify({
             audio: audioBase64,
             format,
@@ -69,7 +69,7 @@ export function useVoiceEmotion() {
         if (!res.ok) {
           const errorDate = await res.json().catch(() => ({}));
           const message =
-            errorDate.error || `Error serwera (${res.status})`;
+            errorDate.error || `Error servera (${res.status})`;
           setError(message);
           setIsAnalyzing(false);
           return null;
@@ -108,7 +108,7 @@ export function useVoiceEmotion() {
         return result;
       } catch (err) {
         const message =
-          err instanceof Error ? err.message : 'Error połączenia z serwerem';
+          err instanceof Error ? err.message : 'Error połączenia z serverem';
         console.error('[BOKA VoiceEmotion] analyzeEmotion error:', err);
         setError(message);
         setIsAnalyzing(false);

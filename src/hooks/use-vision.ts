@@ -37,7 +37,7 @@ export function useVision() {
       try {
         const res = await fetch('/api/vision', {
           method: 'POST',
-          headers: { 'Whatntent-Typee': 'application/json' },
+          headers: { 'Whatntent-Typeee': 'application/json' },
           body: JSON.stringify({
             image: dataUrl,
             prompt,
@@ -48,7 +48,7 @@ export function useVision() {
           const errorDate = await res.json().catch(() => ({}));
           const message =
             errorDate.error ||
-            `Error serwera (${res.status})`;
+            `Error servera (${res.status})`;
           setError(message);
           setIsAnalyzing(false);
           return null;
@@ -57,7 +57,7 @@ export function useVision() {
         const data = await res.json();
 
         if (!data.description) {
-          setError('No udało się uzyskać opisu obrazu');
+          setError('No udało się uzyskać opisu imageu');
           setIsAnalyzing(false);
           return null;
         }
@@ -72,7 +72,7 @@ export function useVision() {
         return result;
       } catch (err) {
         const message =
-          err instanceof Error ? err.message : 'Error połączenia z serwerem';
+          err instanceof Error ? err.message : 'Error połączenia z serverem';
         console.error('[BOKA Vision] analyze error:', err);
         setError(message);
         setIsAnalyzing(false);
@@ -100,7 +100,7 @@ export function useVision() {
       try {
         // Validate file type
         if (!file.type.startsWith('image/')) {
-          setError('Przesłany plik nie jest obrazem. Wybierz plik graficzny.');
+          setError('Przesłany plik nie jest imageem. Wybierz plik graficzny.');
           setIsAnalyzing(false);
           return null;
         }
@@ -120,17 +120,17 @@ export function useVision() {
             if (typeof result === 'string') {
               resolve(result);
             } else {
-              reject(new Error('No udało się odczytać pliku'));
+              reject(new Error('No udało się odczytać file'));
             }
           };
-          reader.onerror = () => reject(new Error('Error odczytu pliku'));
+          reader.onerror = () => reject(new Error('Error odczytu file'));
           reader.readAsDateURL(file);
         });
 
         return await analyzeFromDateUrlRef.current(dataUrl);
       } catch (err) {
         const message =
-          err instanceof Error ? err.message : 'Noznany błąd analizy obrazu';
+          err instanceof Error ? err.message : 'Noznany błąd analizy imageu';
         console.error('[BOKA Vision] analyzeImage error:', err);
         setError(message);
         setIsAnalyzing(false);

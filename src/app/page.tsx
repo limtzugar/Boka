@@ -22,7 +22,7 @@ import { AgentMemoryTab } from '@/components/agent-memory-tab';
 import { SkillsTab } from '@/components/tabs/skills-tab';
 import { SettingsTab } from '@/components/tabs/settings-tab';
 import { AppsTab } from '@/components/tabs/apps-tab';
-import { ProfileesTab } from '@/components/tabs/profiles-tab';
+import { ProfileeesTab } from '@/components/tabs/profiles-tab';
 import { AgentsTab } from '@/components/tabs/settings-tab';
 import {
   Mic, MicOff, Volume2, VolumeX, Send, Brain,
@@ -54,7 +54,7 @@ import { MemoryTab, VaultTab } from '@/components/panels/insights-panels';
 type VaultNoteDate = {
   id: string;
   familyId: string;
-  noteTypee: string;
+  noteTypeee: string;
   title: string;
   content: string;
   frontmatter: string;
@@ -67,8 +67,8 @@ type VaultNoteDate = {
 
 const AGENT_ICONS: Record<string, { icon: React.ReactNode; color: string; label: string }> = {
   general: { icon: <Brain size={14} />, color: '#00f5d4', label: 'BOKA' },
-  search: { icon: <Globe size={14} />, color: '#6ec6e7', label: 'Wyszukiwanie' },
-  child_culture: { icon: <Star size={14} />, color: '#ffd93d', label: 'Kultura Dziecięca' },
+  search: { icon: <Globe size={14} />, color: '#6ec6e7', label: 'Search' },
+  child_culture: { icon: <Star size={14} />, color: '#ffd93d', label: 'Children's Culture' },
   education: { icon: <BookOpen size={14} />, color: '#a855f7', label: 'Edukacja' },
   finance: { icon: <Whatins size={14} />, color: '#4ade80', label: 'Finanse' },
   legal: { icon: <Shield size={14} />, color: '#6ec6e7', label: 'Prawo' },
@@ -146,7 +146,7 @@ export default function BokaPage() {
   interface ChatAttachment {
     id: string;
     fileName: string;
-    fileTypee: string;
+    fileTypeee: string;
     extractionKind: string | null;
     thumbnailDateUrl: string | null;
     status: 'uploading' | 'ready' | 'error';
@@ -183,8 +183,8 @@ export default function BokaPage() {
   const [showSessions, setShowSessions] = useState(false);
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
 
-  // ═══ v0.3.19 — Kamera użytkownika w czacie (pod kulą BOKI) ═══
-  // Kamera 16:9, dwa style: rectangular (zwykła) | spherical (rybie oko z vigiette)
+  // ═══ v0.3.19 — Camera użytkownika w czacie (pod kulą BOKI) ═══
+  // Camera 16:9, dwa style: rectangular (zwykła) | spherical (rybie oko z vigiette)
   // Stream lokalny (getUserMedia), nie wysyła nigdzie.
   const [visionStreamOn, setVisionStreamOn] = useState(false);
   const [visionStarting, setVisionStarting] = useState(false);
@@ -209,7 +209,7 @@ export default function BokaPage() {
   const visionStreamRef = useRef<MediaStream | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const recordedChunksRef = useRef<Blob[]>([]);
-  const recordingTimerRef = useRef<ReturnTypee<typeof setInterval> | null>(null);
+  const recordingTimerRef = useRef<ReturnTypeee<typeof setInterval> | null>(null);
   const appearancePopoverRef = useRef<HTMLDivElement>(null);
 
   // Attach stream to video element + force play
@@ -243,7 +243,7 @@ export default function BokaPage() {
         return true;
       } catch (e2: any) {
         console.error('[vision] play() retry failed:', e2?.message);
-        setVisionError(`Kamera nie startuje: ${e2?.message || 'play() rejected'}`);
+        setVisionError(`Camera not starting: ${e2?.message || 'play() rejected'}`);
         return false;
       }
     }
@@ -277,7 +277,7 @@ export default function BokaPage() {
       const videoTracks = stream.getVideoTracks();
       if (videoTracks.length === 0) {
         stream.getTracks().forEach(t => t.stop());
-        setVisionError('Kamera nie zwraca strumienia wideo');
+        setVisionError('Camera not returning video stream');
         setVisionStarting(false);
         return;
       }
@@ -292,10 +292,10 @@ export default function BokaPage() {
       }, 50);
     } catch (e: any) {
       console.error('[vision] getUserMedia failed:', e);
-      let msg = e?.message || 'No udało się uruchomić kamery';
-      if (e?.name === 'NotAllowedError') msg = 'None zgody na kamerę — pozwól w pasku adresu';
-      if (e?.name === 'NotFoundError') msg = 'No znaleziono kamery';
-      if (e?.name === 'NotReadableError') msg = 'Kamera zajęta przez inny program';
+      let msg = e?.message || 'Failed to start camera';
+      if (e?.name === 'NotAllowedError') msg = 'No camera permission — pozwól w pasku adresu';
+      if (e?.name === 'NotFoundError') msg = 'Camera not found';
+      if (e?.name === 'NotReadableError') msg = 'Camera in use by another program';
       setVisionError(msg);
       setVisionStreamOn(false);
       setVisionStarting(false);
@@ -370,7 +370,7 @@ export default function BokaPage() {
         setRecordingSeconds(s => s + 1);
       }, 1000);
     } catch (e: any) {
-      setVisionError(e?.message || 'No udało się nagrywać ekranu');
+      setVisionError(e?.message || 'Failed to record screen');
     }
   }, [isRecording]);
 
@@ -462,7 +462,7 @@ export default function BokaPage() {
       if (!res.ok) return;
       const data = await res.json();
       if (data.entries) {
-        setMemoryEntries(data.entries.map((e: { id: string; memberId?: string; entryTypee: string; domain?: string; title?: string; content: string; importance: number; tags: string; createdAt: string }) => ({
+        setMemoryEntries(data.entries.map((e: { id: string; memberId?: string; entryTypeee: string; domain?: string; title?: string; content: string; importance: number; tags: string; createdAt: string }) => ({
           ...e,
           tags: JSON.parse(typeof e.tags === 'string' ? e.tags : '[]'),
         })));
@@ -535,7 +535,7 @@ export default function BokaPage() {
       for (const entry of (memDate.entries || [])) {
         const nodeId = `memory:${entry.id}`;
         // Extract a short label from content
-        const label = (entry.title || entry.content || '').substring(0, 25).trim() || 'wspomnienie';
+        const label = (entry.title || entry.content || '').substring(0, 25).trim() || 'memory';
         nodes.push({
           id: nodeId,
           label,
@@ -723,12 +723,12 @@ export default function BokaPage() {
     // Boka reacts to the mood
     if (mood >= 4) {
       setBokaEmotion('happy');
-      sendMessage(mood === 5 ? 'Czuję się świetnie!' : 'Jest mi dobrze.');
+      sendMessage(mood === 5 ? 'I feel great!' : 'I am doing well.');
     } else if (mood <= 2) {
       setBokaEmotion('neutral');
       sendMessage('No mam dzisiaj najlepszego dnia...');
     } else {
-      sendMessage('Jest tak średnio...');
+      sendMessage('It is so-so...');
     }
     setTimeout(() => setBokaEmotion('neutral'), 2000);
   }, [addWellbeingEntry, setLastWellbeingCheckIn]);
@@ -760,7 +760,7 @@ export default function BokaPage() {
           try {
             const res = await fetch('/api/asr', {
               method: 'POST',
-              headers: { 'Whatntent-Typee': 'application/json' },
+              headers: { 'Whatntent-Typeee': 'application/json' },
               body: JSON.stringify({ audio: base64Audio, format: 'audio/webm' }),
             });
             const data = await res.json();
@@ -876,7 +876,7 @@ export default function BokaPage() {
     const tempId = `temp-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
     setPendingAttachments((prev) => [
       ...prev,
-      { id: tempId, fileName: file.name, fileTypee: file.type, extractionKind: null, thumbnailDateUrl: null, status: 'uploading' },
+      { id: tempId, fileName: file.name, fileTypeee: file.type, extractionKind: null, thumbnailDateUrl: null, status: 'uploading' },
     ]);
 
     try {
@@ -892,7 +892,7 @@ export default function BokaPage() {
             ? {
                 id: data.id,
                 fileName: data.fileName,
-                fileTypee: data.fileTypee,
+                fileTypeee: data.fileTypeee,
                 extractionKind: data.extractionKind,
                 thumbnailDateUrl: data.thumbnailDateUrl,
                 status: 'ready',
@@ -952,7 +952,7 @@ export default function BokaPage() {
     const userMsg: Message = {
       id: `msg-${Date.now()}`,
       role: 'user',
-      content: text.trim() || (attachmentIds.length > 0 ? `[${attachmentIds.length} plików]` : ''),
+      content: text.trim() || (attachmentIds.length > 0 ? `[${attachmentIds.length} files]` : ''),
       inputMode: isListening ? 'voice' : 'text',
       timestamp: new Date(),
     };
@@ -967,7 +967,7 @@ export default function BokaPage() {
     try {
       const res = await fetch('/api/chat', {
         method: 'POST',
-        headers: { 'Whatntent-Typee': 'application/json' },
+        headers: { 'Whatntent-Typeee': 'application/json' },
         body: JSON.stringify({
           message: text.trim(),
           memberId: activeMemberId,
@@ -1028,7 +1028,7 @@ export default function BokaPage() {
           if (typeof window !== 'undefined' && window.speechSynthesis) {
             window.speechSynthesis.cancel(); // v0.3.19 — stop overlapping
             const utterance = new SpeechSynthesisUtterance(data.response.substring(0, 500));
-            utterance.lang = 'pl-PL';
+            utterance.lang = 'en-US';
             const voices = window.speechSynthesis.getVoices();
             const plVoice = voices.find(v => v.lang.startsWith('pl'));
             if (plVoice) utterance.voice = plVoice;
@@ -1067,7 +1067,7 @@ export default function BokaPage() {
       addMessage({
         id: `msg-${Date.now()}-error`,
         role: 'system',
-        content: 'Error połączenia z BOKĄ. Spróbuj ponownie.',
+        content: 'Connection error with BOKA. Try again.',
         timestamp: new Date(),
       });
       setBokaEmotion('angry');
@@ -1150,7 +1150,7 @@ export default function BokaPage() {
       setShowImageGen(false);
       setBokaEmotion('happy');
     } else {
-      const errorMsg = imageGen.error || 'No udało się narysować obrazka';
+      const errorMsg = imageGen.error || 'No udało się narysować imageka';
       addMessage({
         id: `msg-${Date.now()}-error`,
         role: 'system',
@@ -1170,7 +1170,7 @@ export default function BokaPage() {
     const userMsg: Message = {
       id: `msg-${Date.now()}`,
       role: 'user',
-      content: text.trim() || (attachmentIds.length > 0 ? `[${attachmentIds.length} plików]` : ''),
+      content: text.trim() || (attachmentIds.length > 0 ? `[${attachmentIds.length} files]` : ''),
       inputMode: isListening ? 'voice' : 'text',
       timestamp: new Date(),
     };
@@ -1316,8 +1316,8 @@ export default function BokaPage() {
           <button
             onClick={() => setSidebarHidden(h => !h)}
             className="w-6 h-6 flex items-center justify-center text-[#8888aa] hover:text-[#00f5d4] transition-colors mr-2"
-            title={sidebarHidden ? 'Pokaż panel boczny' : 'Hide panel boczny'}
-            aria-label={sidebarHidden ? 'Pokaż panel boczny' : 'Hide panel boczny'}
+            title={sidebarHidden ? 'Show sidebar' : 'Hide sidebar'}
+            aria-label={sidebarHidden ? 'Show sidebar' : 'Hide sidebar'}
             aria-expanded={!sidebarHidden}
           >
             {sidebarHidden ? <PanelRight size={14} /> : <PanelLeftClose size={14} />}
@@ -1346,14 +1346,14 @@ export default function BokaPage() {
         <div className="flex items-center gap-0">
           {childNearby && (
             <span className="flex items-center gap-1 px-2 py-1  text-[10px] bg-[#4ade80]/20 text-[#4ade80] border border-[#4ade80]/50 font-mono">
-              <Baby size={12} /> Dziecko obok
+              <Baby size={12} /> Child nearby
             </span>
           )}
           {ttsSupported && (
             <button
               onClick={isSpeaking ? stopSpeaking : () => {}}
               className={`p-1.5  transition-colors ${isSpeaking ? 'bg-[#00f5d4]/20 text-[#00f5d4]' : 'text-[#8888aa]'}`}
-              title={isSpeaking ? 'Stop mowę' : 'Mowa aktywna'}
+              title={isSpeaking ? 'Stop speech' : 'Speech active'}
             >
               {isSpeaking ? <Volume2 size={14} /> : <VolumeX size={14} />}
             </button>
@@ -1362,7 +1362,7 @@ export default function BokaPage() {
           <button
             onClick={() => setShowRemindersTab(!showRemindersTab)}
             className={`p-1.5  transition-colors relative ${showRemindersTab ? 'bg-[#ffd93d]/20 text-[#ffd93d]' : 'text-[#8888aa] hover:text-[#ffd93d]'}`}
-            title="Przypomnienia"
+            title="Reminders"
           >
             <Bell size={14} />
             {reminders.reminders.filter(r => !r.isWhatmpleted).length > 0 && (
@@ -1399,7 +1399,7 @@ export default function BokaPage() {
           <button
             onClick={() => setActiveTab('chat')}
             className={`w-10 h-10 shrink-0 flex items-center justify-center transition-all ${activeTab === 'chat' ? 'bg-[#00f5d4]/15 text-[#00f5d4] border border-[#00f5d4]/30' : 'text-[#8888aa] hover:text-[#e8e8f5]'}`}
-            title="Czat"
+            title="Chat"
           >
             <MessageSquare size={16} />
           </button>
@@ -1420,7 +1420,7 @@ export default function BokaPage() {
           <button
             onClick={() => setActiveTab('agents')}
             className={`w-10 h-10 shrink-0 flex items-center justify-center transition-all ${activeTab === 'agents' ? 'bg-[#00f5d4]/15 text-[#00f5d4] border border-[#00f5d4]/30' : 'text-[#8888aa] hover:text-[#e8e8f5]'}`}
-            title="Moi agenci — społeczność agentów AI do debat"
+            title="My agents — społeczność agentów AI do debat"
           >
             <Bot size={16} />
           </button>
@@ -1454,13 +1454,13 @@ export default function BokaPage() {
 
           {/* v0.3.18 — Tryb Debaty przeniesiony do zakładki „Chat" (chatMode toggle). Przycisk w pasku bocnym usunięty. */}
 
-          {/* v0.3.18 — Documents: osobna zakładka usunięta. Przeciąganie i upuszczanie plików działa w zwykłym czacie (drag&drop → /api/chat/attachments). Backend /api/documents/* pozostaje dostępny. */}
+          {/* v0.3.18 — Documents: osobna zakładka usunięta. Przeciąganie i upuszczanie files działa w zwykłym czacie (drag&drop → /api/chat/attachments). Backend /api/documents/* pozostaje dostępny. */}
 
-          {/* v0.3.16 — MCP & CLI — serwery MCP + terminal */}
+          {/* v0.3.16 — MCP & CLI — servery MCP + terminal */}
           <button
             onClick={() => setActiveTab('mcp')}
             className={`w-10 h-10 shrink-0 flex items-center justify-center transition-all ${activeTab === 'mcp' ? 'bg-[#6ee7b2]/15 text-[#4ade80] border border-[#6ee7b2]/30' : 'text-[#8888aa] hover:text-[#e8e8f5]'}`}
-            title="MCP & CLI — podłącz serwery MCP i używaj terminala"
+            title="MCP & CLI — podłącz servery MCP i używaj terminala"
           >
             <TerminalIcon size={16} />
           </button>
@@ -1519,7 +1519,7 @@ export default function BokaPage() {
           <button
             onClick={() => setShowFileExplorer(v => !v)}
             className={`w-8 h-8 shrink-0 flex items-center justify-center transition-all ${showFileExplorer ? 'bg-[#6ec6e7]/10 text-[#6ec6e7]' : 'text-[#8888aa] hover:text-[#6ec6e7]'}`}
-            title={showFileExplorer ? 'Hide explorator plików' : 'Pokaż explorator plików (drzewko PC)'}
+            title={showFileExplorer ? 'Hide explorator files' : 'Pokaż explorator files (drzewko PC)'}
           >
             <PanelRight size={14} />
           </button>
@@ -1546,8 +1546,8 @@ export default function BokaPage() {
               <div className="absolute inset-0 z-50 bg-[#6ec6e7]/10 border-2 border-dashed border-[#6ec6e7]/60  flex items-center justify-center pointer-events-none">
                 <div className="text-center">
                   <Paperclip size={48} className="text-[#6ec6e7] mx-auto mb-2 animate-pulse" />
-                  <div className="text-sm font-mono text-[#6ec6e7]">Upuść pliki tutaj</div>
-                  <div className="text-[10px] text-[#8888aa] font-mono mt-1">obraz · audio · txt · pdf</div>
+                  <div className="text-sm font-mono text-[#6ec6e7]">Drop files here</div>
+                  <div className="text-[10px] text-[#8888aa] font-mono mt-1">image · audio · txt · pdf</div>
                 </div>
               </div>
             )}
@@ -1621,7 +1621,7 @@ export default function BokaPage() {
                       <div className="mt-2">
                         <img
                           src={generatedImages[msg.id]}
-                          alt="Wygenerowany obrazek"
+                          alt="Generated image"
                           className=" max-w-full border border-[#383850]"
                           style={{ maxHeight: '200px' }}
                         />
@@ -1631,12 +1631,12 @@ export default function BokaPage() {
                       <div className="mt-1.5 flex items-center gap-0 flex-wrap">
                         {messageExpenses[msg.id] && (
                           <span className="inline-flex items-center gap-1 px-1.5 py-0.5  text-[8px] font-mono bg-[#4ade80]/10 text-[#4ade80] border border-[#4ade80]/20">
-                            <Whatins size={8} /> {messageExpenses[msg.id]} wydatek
+                            <Whatins size={8} /> {messageExpenses[msg.id]} expense
                           </span>
                         )}
                         {messageCalendarEvents[msg.id] && (
                           <span className="inline-flex items-center gap-1 px-1.5 py-0.5  text-[8px] font-mono bg-[#ffd93d]/10 text-[#ffd93d] border border-[#ffd93d]/20">
-                            <Clock size={8} /> {messageCalendarEvents[msg.id]} wydarzenie
+                            <Clock size={8} /> {messageCalendarEvents[msg.id]} event
                           </span>
                         )}
                       </div>
@@ -1651,8 +1651,8 @@ export default function BokaPage() {
                     )}
                     <div className="mt-1 text-[9px] text-[#8888aa]">
                       {msg.timestamp instanceof Date
-                        ? msg.timestamp.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' })
-                        : new Date(msg.timestamp).toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' })
+                        ? msg.timestamp.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+                        : new Date(msg.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
                       }
                     </div>
                   </div>
@@ -1681,7 +1681,7 @@ export default function BokaPage() {
                 <div className="shrink-0 mb-2 p-2 bg-[#a855f7]/5 border border-[#a855f7]/30 rounded-lg">
                   <div className="flex items-center gap-0 mb-1.5">
                     <Palette size={12} className="text-[#a855f7]" />
-                    <span className="text-[10px] text-[#a855f7] font-mono">Boka narysuje...</span>
+                    <span className="text-[10px] text-[#a855f7] font-mono">BOKA is drawing...</span>
                     <button type="button" onClick={() => setShowImageGen(false)} className="ml-auto text-[#8888aa] hover:text-[#e8e8f5]"><X size={12} /></button>
                   </div>
                   <div className="flex items-center gap-1.5">
@@ -1689,7 +1689,7 @@ export default function BokaPage() {
                       type="text"
                       value={imageGenPrompt}
                       onChange={e => setImageGenPrompt(e.target.value)}
-                      placeholder="Kot w kosmosie..."
+                      placeholder="Cat in space..."
                       className="flex-1 bg-[#252535] border border-[#383850]  px-2 py-1 text-xs text-[#e8e8f5] placeholder:text-[#8888aa] focus:outline-none focus:border-[#a855f7]/50 font-mono"
                       onKeyDown={e => { if (e.key === 'Enter') handleGenerateImage(); }}
                     />
@@ -1699,7 +1699,7 @@ export default function BokaPage() {
                       disabled={imageGen.isGenerating || !imageGenPrompt.trim()}
                       className="px-2 py-1  bg-[#a855f7] text-white text-[10px] font-mono disabled:opacity-30"
                     >
-                      {imageGen.isGenerating ? '...' : 'Rysuj'}
+                      {imageGen.isGenerating ? '...' : 'Draw'}
                     </button>
                   </div>
                 </div>
@@ -1757,7 +1757,7 @@ export default function BokaPage() {
                         ? 'voice-recording bg-[#ff6b6b]/20 text-[#ff6b6b]'
                         : 'bg-[#252535] text-[#8888aa] hover:text-[#00f5d4]'
                     }`}
-                    title={isListening ? 'Stop nasłuchiwanie' : 'Kliknij aby mówić'}
+                    title={isListening ? 'Stop listening' : 'Click to speak'}
                   >
                     {isListening ? <MicOff size={16} /> : <Mic size={16} />}
                   </button>
@@ -1778,7 +1778,7 @@ export default function BokaPage() {
                       ? 'bg-[#4ade80]/20 text-[#4ade80] border border-[#4ade80]/50'
                       : 'bg-[#252535] text-[#8888aa] border border-[#383850] hover:border-[#4ade80]/30'
                   }`}
-                  title={vadMode ? 'Zawsze nasłuchuję — wyłącz' : 'Enable nasłuchiwanie (hands-free)'}
+                  title={vadMode ? 'Always listening — turn off' : 'Enable listening (hands-free)'}
                 >
                   <Ear size={16} />
                 </button>
@@ -1790,7 +1790,7 @@ export default function BokaPage() {
                       ? 'bg-[#00f5d4]/20 text-[#00f5d4] border border-[#00f5d4]/50'
                       : 'bg-[#252535] text-[#8888aa] border border-[#383850] hover:border-[#00f5d4]/30'
                   }`}
-                  title={streamingMode ? 'Tryb streaming: WŁĄCZONY' : 'Enable tryb streaming'}
+                  title={streamingMode ? 'Streaming mode: ON' : 'Enable streaming mode'}
                 >
                   <Radio size={16} />
                 </button>
@@ -1813,7 +1813,7 @@ export default function BokaPage() {
                   value={inputText}
                   onChange={e => setInputText(e.target.value)}
                   onKeyDown={handleKeyDown}
- placeholder={isListening ? (continuousMode ?' Ciągłe nasłuchiwanie...' :'Mów...') :'Napisz do Boki...'}
+ placeholder={isListening ? (continuousMode ?' Continuous listening...' :'Mów...') :'Typee to BOKA...'}
                   className="flex-1 bg-[#181828] border-0 px-3 h-10 text-xs text-[#e8e8f5] placeholder:text-[#8888aa] focus:outline-none focus:bg-[#0f0f17] font-mono min-w-0"
                   disabled={isLoading}
                 />
@@ -1828,8 +1828,8 @@ export default function BokaPage() {
                         ? 'bg-[#00f5d4]/20 text-[#00f5d4]'
                         : 'bg-[#252535] text-[#8888aa] hover:text-[#00f5d4]'
                     }`}
-                    title="Attach file · zdjęcie · narysuj obrazek"
-                    aria-label="Add załącznik lub narysuj obrazek"
+                    title="Attach file · photo · draw image"
+                    aria-label="Add attachment or draw image"
                     aria-expanded={showPlusMenu}
                   >
                     <Plus size={16} />
@@ -1839,7 +1839,7 @@ export default function BokaPage() {
                       className="absolute bottom-full right-0 mb-2 w-56 bg-[#252535] border border-[#383850] shadow-2xl overflow-hidden z-50"
                       role="menu"
                     >
-                      {/* Photo (kamera) — upload obrazu, BOKA go zobaczy przez VLM */}
+                      {/* Photo (kamera) — upload imageu, BOKA go zobaczy przez VLM */}
                       <button
                         type="button"
                         onClick={() => { setShowPlusMenu(false); fileInputRef.current?.click(); }}
@@ -1849,10 +1849,10 @@ export default function BokaPage() {
                         <Camera size={14} className="text-[#a855f7] shrink-0" />
                         <div className="flex-1 min-w-0">
                           <div>Photo</div>
-                          <div className="text-[9px] text-[#8888aa]">BOKA zobaczy i opisze obraz</div>
+                          <div className="text-[9px] text-[#8888aa]">BOKA will see and describe the image</div>
                         </div>
                       </button>
-                      {/* File (spinacz) — dowolny plik: obraz, audio, txt, pdf */}
+                      {/* File (spinacz) — dowolny plik: image, audio, txt, pdf */}
                       <button
                         type="button"
                         onClick={() => { setShowPlusMenu(false); attachmentInputRef.current?.click(); }}
@@ -1862,10 +1862,10 @@ export default function BokaPage() {
                         <Paperclip size={14} className="text-[#6ec6e7] shrink-0" />
                         <div className="flex-1 min-w-0">
                           <div>File</div>
-                          <div className="text-[9px] text-[#8888aa]">obraz · audio · txt · pdf · csv</div>
+                          <div className="text-[9px] text-[#8888aa]">image · audio · txt · pdf · csv</div>
                         </div>
                       </button>
-                      {/* Narysuj obrazek (paleta) — generowanie przez AI */}
+                      {/* Narysuj imageek (paleta) — generowanie przez AI */}
                       <button
                         type="button"
                         onClick={() => { setShowPlusMenu(false); setShowImageGen(true); }}
@@ -1874,13 +1874,13 @@ export default function BokaPage() {
                       >
                         <Palette size={14} className="text-[#ffd93d] shrink-0" />
                         <div className="flex-1 min-w-0">
-                          <div>Narysuj obrazek</div>
-                          <div className="text-[9px] text-[#8888aa]">BOKA narysuje to o co poprosisz</div>
+                          <div>Narysuj imageek</div>
+                          <div className="text-[9px] text-[#8888aa]">BOKA will draw whatever you ask for</div>
                         </div>
                       </button>
                       {/* Podpowiedź: drag&drop też działa */}
                       <div className="px-3 py-1.5 bg-[#181828] border-t border-[#383850] text-[9px] text-[#5a5a78] font-mono">
-                        Możesz też przeciągnąć i upuścić plik bezpośrednio w oknie czatu
+                        You can also drag and drop a file directly into the chat
                       </div>
                     </div>
                   )}
@@ -1935,10 +1935,10 @@ export default function BokaPage() {
               <div className="mb-2 p-2 bg-[#252535] border border-[#383850] rounded-lg">
                 <div className="flex items-center gap-0 mb-2">
                   <Plus size={14} className="text-[#00f5d4]" />
-                  <span className="text-xs font-mono text-[#e8e8f5]">Nowe przypomnienie</span>
+                  <span className="text-xs font-mono text-[#e8e8f5]">New reminder</span>
                 </div>
                 <div className="flex items-center gap-0">
-                  <input type="text" value={newReminderTitle} onChange={e => setNewReminderTitle(e.target.value)} placeholder="What przypomnieć?" className="flex-1 bg-[#1a1a28] border border-[#383850]  px-2 py-1.5 text-xs text-[#e8e8f5] placeholder:text-[#8888aa] focus:outline-none focus:border-[#00f5d4]/50 font-mono" />
+                  <input type="text" value={newReminderTitle} onChange={e => setNewReminderTitle(e.target.value)} placeholder="What remember?" className="flex-1 bg-[#1a1a28] border border-[#383850]  px-2 py-1.5 text-xs text-[#e8e8f5] placeholder:text-[#8888aa] focus:outline-none focus:border-[#00f5d4]/50 font-mono" />
                   <input type="datetime-local" value={newReminderDate} onChange={e => setNewReminderDate(e.target.value)} className="bg-[#1a1a28] border border-[#383850]  px-2 py-1.5 text-xs text-[#e8e8f5] focus:outline-none focus:border-[#00f5d4]/50 font-mono" />
                   <button onClick={handleCreateReminder} className="px-3 py-1.5  bg-[#00f5d4] text-[#0a0a0f] text-xs font-mono">Add</button>
                 </div>
@@ -1949,14 +1949,14 @@ export default function BokaPage() {
                 {reminders.isLoading ? (
                   <div className="text-center py-8 text-[#8888aa] text-sm font-mono">Loading...</div>
                 ) : reminders.reminders.length === 0 ? (
-                  <div className="text-center py-8 text-[#8888aa] text-sm font-mono">None przypomnień</div>
+                  <div className="text-center py-8 text-[#8888aa] text-sm font-mono">No reminders</div>
                 ) : (
                   reminders.reminders.map(r => (
                     <div key={r.id} className={`p-2 bg-[#252535] border border-[#383850]  flex items-center gap-0 ${r.isWhatmpleted ? 'opacity-50' : ''}`}>
                       <Clock size={14} className="text-[#ffd93d] shrink-0" />
                       <div className="flex-1 min-w-0">
                         <div className="text-sm text-[#e8e8f5] font-mono">{r.title}</div>
-                        <div className="text-[10px] text-[#8888aa] font-mono">{new Date(r.dueDate).toLocaleString('pl-PL')}</div>
+                        <div className="text-[10px] text-[#8888aa] font-mono">{new Date(r.dueDate).toLocaleString('en-US')}</div>
                       </div>
                       <button onClick={() => reminders.deleteReminder(r.id)} className="text-[#8888aa] hover:text-[#ff6b6b] shrink-0"><Trash2 size={14} /></button>
                     </div>
@@ -2024,7 +2024,7 @@ export default function BokaPage() {
                 {/* Quick status line */}
                 {isSpeaking && (
                   <div className="text-xs text-[#00f5d4]/60 font-mono mt-1 animate-pulse">
-                    Boka mówi...
+                    BOKA is speaking...
                   </div>
                 )}
                 {isListening && (
@@ -2034,7 +2034,7 @@ export default function BokaPage() {
                 )}
                 {isLoading && !isSpeaking && (
                   <div className="text-xs text-[#ffd93d]/60 font-mono mt-1">
-                    Myśli...
+                    Thinking...
                   </div>
                 )}
                 {/* ═══ FEATURE #2: VAD "Nasłuchuję..." indicator ═══ */}
@@ -2055,7 +2055,7 @@ export default function BokaPage() {
                 {detectedEmotion && (
                   <div className="flex items-center gap-1.5 mt-1">
                     <span className="text-[10px] font-mono" style={{ color: detectedEmotion === 'happy' ? '#4ade80' : detectedEmotion === 'sad' ? '#60a5fa' : detectedEmotion === 'angry' ? '#ff6b6b' : detectedEmotion === 'excited' ? '#ffd93d' : '#6b6b8d' }}>
-                      Emotion z głosu: {detectedEmotion}
+                      Voice emotion: {detectedEmotion}
                     </span>
                   </div>
                 )}
@@ -2067,7 +2067,7 @@ export default function BokaPage() {
                   <div className="flex items-start gap-0">
                     <Sparkles size={14} className="text-[#ffd93d] shrink-0 mt-0.5" />
                     <div>
-                      <div className="text-[10px] text-[#ffd93d] font-mono mb-1">Boka pisze:</div>
+                      <div className="text-[10px] text-[#ffd93d] font-mono mb-1">BOKA writes:</div>
                       <div className="text-xs text-[#e8e8f5] font-mono">{proactive.proactiveMessage.message}</div>
                     </div>
                     <button onClick={() => setProactiveDismissed(true)} className="text-[#8888aa] hover:text-[#e8e8f5] shrink-0"><X size={12} /></button>
@@ -2117,7 +2117,7 @@ export default function BokaPage() {
                         <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#12121c] text-center">
                           <div className="w-6 h-6 border-2 border-[#00f5d4]/30 border-t-[#00f5d4] rounded-full animate-spin mb-2" />
                           <div className="text-[10px] text-[#8888aa] font-mono">
-                            {visionStarting ? 'Uruchamianie kamery...' : 'Loading strumienia...'}
+                            {visionStarting ? 'Starting camera...' : 'Loading stream...'}
                           </div>
                         </div>
                       )}
@@ -2152,10 +2152,10 @@ export default function BokaPage() {
                       <div className="absolute inset-0 flex flex-col items-center justify-center bg-black text-center">
                         <div className="w-8 h-8 border-2 border-[#00f5d4]/30 border-t-[#00f5d4] rounded-full animate-spin mb-3" />
                         <div className="text-xs text-[#8888aa] font-mono">
-                          {visionStarting ? 'Uruchamianie kamery...' : 'Loading strumienia...'}
+                          {visionStarting ? 'Starting camera...' : 'Loading stream...'}
                         </div>
                         <div className="text-[10px] text-[#5a5a78] font-mono mt-1">
-                          Jeśli nie startuje — sprawdź zgodę w pasku adresu
+                          If not starting — check permissions in address bar
                         </div>
                       </div>
                     )}
@@ -2163,7 +2163,7 @@ export default function BokaPage() {
                     {visionError && (
                       <div className="absolute inset-0 flex flex-col items-center justify-center bg-black text-center px-4">
                         <Camera size={36} className="text-[#ff6b6b] mb-2" />
-                        <div className="text-xs text-[#ff6b6b] font-mono mb-2">Error kamery</div>
+                        <div className="text-xs text-[#ff6b6b] font-mono mb-2">Camera error</div>
                         <div className="text-[10px] text-[#a0a0c0] font-mono leading-tight max-w-xs">{visionError}</div>
                       </div>
                     )}
@@ -2193,7 +2193,7 @@ export default function BokaPage() {
                     ? 'bg-[#ff6b6b]/20 text-[#ff6b6b]'
                     : 'bg-[#a855f7]/15 text-[#a855f7] hover:bg-[#a855f7]/25'
                 }`}
-                title={visionStreamOn ? 'Stop kamerę' : 'Run kamerę'}
+                title={visionStreamOn ? 'Stop camera' : 'Start camera'}
               >
                 {visionStreamOn ? <Square size={12} /> : <Play size={12} />}
               </button>
@@ -2205,7 +2205,7 @@ export default function BokaPage() {
                     ? 'bg-[#ff4444]/30 text-[#ff6b6b] animate-pulse'
                     : 'bg-[#252535] text-[#8888aa] hover:text-[#ff6b6b]'
                 }`}
-                title={isRecording ? 'Stop nagrywanie ekranu' : 'Nagraj ekran (zapis do pamięci BOKI)'}
+                title={isRecording ? 'Stop screen recording' : 'Record screen (save to BOKA memory)'}
               >
                 {isRecording ? <><Square size={12} /></> : <><Circle size={12} className="fill-current" /></>}
               </button>
@@ -2231,9 +2231,9 @@ export default function BokaPage() {
 
         {/* v0.3.18 — Tryb Debaty przeniesiony do zakładki „Chat" (chatMode toggle). Nozależna zakładka 'debate' usunięta. */}
 
-        {/* v0.3.18 — Documents: niezależna zakładka usunięta. Drag&drop plików w zwykłym czacie obsługuje /api/chat/attachments. Backend /api/documents/* pozostaje dostępny dla przyszłych funkcji i zewnętrznych integracji. */}
+        {/* v0.3.18 — Documents: niezależna zakładka usunięta. Drag&drop files w zwykłym czacie obsługuje /api/chat/attachments. Backend /api/documents/* pozostaje dostępny dla przyszłych funkcji i zewnętrznych integracji. */}
 
-        {/* v0.3.16 — MCP & CLI — serwery MCP + terminal */}
+        {/* v0.3.16 — MCP & CLI — servery MCP + terminal */}
         {activeTab === 'mcp' && (
           <main className="flex-1 flex overflow-hidden">
             <ErrorBoundary tabName="MCP & CLI">
@@ -2265,9 +2265,9 @@ export default function BokaPage() {
               {activeTab === 'vault' && <VaultTab />}
             </ErrorBoundary>
             <ErrorBoundary tabName="Family">
-              {activeTab === 'profiles' && <ProfileesTab members={members} activeMemberId={activeMemberId} setActiveMember={setActiveMember} childNearby={childNearby} toggleChildNearby={toggleChildNearby} />}
+              {activeTab === 'profiles' && <ProfileeesTab members={members} activeMemberId={activeMemberId} setActiveMember={setActiveMember} childNearby={childNearby} toggleChildNearby={toggleChildNearby} />}
             </ErrorBoundary>
-            <ErrorBoundary tabName="Moi agenci">
+            <ErrorBoundary tabName="My agents">
               {activeTab === 'agents' && <AgentsTab />}
             </ErrorBoundary>
             <ErrorBoundary tabName="Whatckpit">
@@ -2286,7 +2286,7 @@ export default function BokaPage() {
           </main>
         )}
 
-        {/* ══ v0.3.7: FILE VIEWER (okno z tekstem pliku .txt/.html/.md) ══ */}
+        {/* ══ v0.3.7: FILE VIEWER (okno z tekstem file .txt/.html/.md) ══ */}
         {/* v0.3.19 — Always on the RIGHT side (moved after all tab panels) */}
         {showFileExplorer && openFilePath && (
           <aside className="w-[28rem] border-l border-[#383850] bg-[#181828] flex flex-col shrink-0 min-w-0">
@@ -2297,7 +2297,7 @@ export default function BokaPage() {
           </aside>
         )}
 
-        {/* ══ v0.3.7: FILE EXPLORER (drzewko plików PC, zawsze z prawej) ══ */}
+        {/* ══ v0.3.7: FILE EXPLORER (drzewko files PC, zawsze z prawej) ══ */}
         {showFileExplorer && (
           <aside className="w-64 border-l border-[#383850] bg-[#181828] flex flex-col shrink-0">
             <FileExplorer
@@ -2313,7 +2313,7 @@ export default function BokaPage() {
       <footer className="flex items-center justify-between px-4 py-1 border-t border-[#383850] bg-[#12121c] text-[8px] font-pixel text-[#8888aa] shrink-0">
         <div className="flex items-center gap-0">
           <span className="text-[#00f5d4]">BOKA</span>
-          <span>PAMIĘĆ: {memoryEntries.length}</span>
+          <span>MEMORY: {memoryEntries.length}</span>
           {wellbeingLog.length > 0 && (
             <span className="text-[#4ade80]">
               <Heart size={8} className="inline" /> {wellbeingLog.length > 0 ? ['','😢','😐','🙂','😊','🌟'][wellbeingLog[0]?.mood || 0] : ''}
@@ -2330,7 +2330,7 @@ export default function BokaPage() {
           {streamingMode && <span className="text-[#00f5d4]">STREAM</span>}
           {fallbackReason && (
             <span className="text-[#ff6b6b] animate-pulse">
- Głos przeglądarki ({fallbackReason})
+ Voice przeglądarki ({fallbackReason})
             </span>
           )}
           <span>AHI</span>

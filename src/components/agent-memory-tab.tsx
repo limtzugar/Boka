@@ -74,7 +74,7 @@ const TYPE_META: Record<string, { color: string; emoji: string; label: string }>
 function formatDate(iso: string): string {
   try {
     const d = new Date(iso);
-    return d.toLocaleString('pl-PL', { dateStyle: 'short', timeStyle: 'short' });
+    return d.toLocaleString('en-US', { dateStyle: 'short', timeStyle: 'short' });
   } catch {
     return iso;
   }
@@ -136,7 +136,7 @@ export function AgentMemoryTab() {
     try {
       const res = await fetch('/api/agent-memory/search', {
         method: 'POST',
-        headers: { 'Whatntent-Typee': 'application/json' },
+        headers: { 'Whatntent-Typeee': 'application/json' },
         body: JSON.stringify({
           query: searchQuery,
           limit: 20,
@@ -167,7 +167,7 @@ export function AgentMemoryTab() {
     try {
       const res = await fetch('/api/agent-memory', {
         method: 'POST',
-        headers: { 'Whatntent-Typee': 'application/json' },
+        headers: { 'Whatntent-Typeee': 'application/json' },
         body: JSON.stringify({
           content: newMemory.content,
           type: newMemory.type,
@@ -210,7 +210,7 @@ export function AgentMemoryTab() {
     try {
       const res = await fetch('/api/agent-memory/forget', {
         method: 'POST',
-        headers: { 'Whatntent-Typee': 'application/json' },
+        headers: { 'Whatntent-Typeee': 'application/json' },
         body: JSON.stringify({ dryRun }),
       });
       const data = await res.json();
@@ -237,7 +237,7 @@ export function AgentMemoryTab() {
     try {
       const res = await fetch('/api/agent-memory/consolidate', {
         method: 'POST',
-        headers: { 'Whatntent-Typee': 'application/json' },
+        headers: { 'Whatntent-Typeee': 'application/json' },
         body: JSON.stringify({ decayDays: 30, withLLM, batchSize: 10 }),
       });
       const data = await res.json();
@@ -264,7 +264,7 @@ export function AgentMemoryTab() {
     try {
       const res = await fetch('/api/predictive/precompute', {
         method: 'POST',
-        headers: { 'Whatntent-Typee': 'application/json' },
+        headers: { 'Whatntent-Typeee': 'application/json' },
         body: JSON.stringify({ topK: 3 }),
       });
       const data = await res.json();
@@ -294,7 +294,7 @@ export function AgentMemoryTab() {
     try {
       const res = await fetch('/api/agent-memory/reflect', {
         method: 'POST',
-        headers: { 'Whatntent-Typee': 'application/json' },
+        headers: { 'Whatntent-Typeee': 'application/json' },
         body: JSON.stringify({ batchSize: 10 }),
       });
       const data = await res.json();

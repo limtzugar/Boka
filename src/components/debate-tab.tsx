@@ -18,7 +18,7 @@ import { ResizableSplit } from '@/components/resizable-split';
 // agents to speak, requests synthesis).
 // ═══════════════════════════════════════════════════════════
 
-// ── Typees ──
+// ── Typeees ──
 interface DebateAgent {
   id: string;
   name: string;
@@ -240,7 +240,7 @@ export function DebateTab({ onExit, chatMode, setChatMode }: { onExit?: () => vo
 
       const res = await fetch('/api/debate', {
         method: 'POST',
-        headers: { 'Whatntent-Typee': 'application/json' },
+        headers: { 'Whatntent-Typeee': 'application/json' },
         body: JSON.stringify({
           agentName: agent.name,
           agentRole: agent.role,
@@ -370,7 +370,7 @@ export function DebateTab({ onExit, chatMode, setChatMode }: { onExit?: () => vo
 
       const res = await fetch('/api/debate', {
         method: 'POST',
-        headers: { 'Whatntent-Typee': 'application/json' },
+        headers: { 'Whatntent-Typeee': 'application/json' },
         body: JSON.stringify({
           agentName: 'Synteza',
           agentRole: 'Summary debaty',
@@ -437,7 +437,7 @@ export function DebateTab({ onExit, chatMode, setChatMode }: { onExit?: () => vo
     if (typeof window === 'undefined' || !window.speechSynthesis) return;
     window.speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(text);
-    u.lang = 'pl-PL';
+    u.lang = 'en-US';
     u.rate = 1.0;
     u.pitch = agentName === 'Sage' ? 0.85 : agentName === 'Inżynier' ? 1.0 : agentName === 'Sceptyk' ? 0.95 : 1.1;
     window.speechSynthesis.speak(u);
@@ -645,7 +645,7 @@ export function DebateTab({ onExit, chatMode, setChatMode }: { onExit?: () => vo
                     try {
                       const res = await fetch('/api/agents/swarm-match', {
                         method: 'POST',
-                        headers: { 'Whatntent-Typee': 'application/json' },
+                        headers: { 'Whatntent-Typeee': 'application/json' },
                         body: JSON.stringify({
                           prompt: topic,
                           agents: agents.map(a => ({
@@ -699,7 +699,7 @@ export function DebateTab({ onExit, chatMode, setChatMode }: { onExit?: () => vo
                       <div className="w-12 h-12 rounded-full border border-dashed border-[#383850] flex items-center justify-center">
                         <Plus size={16} className="text-[#2a2a3a]" />
                       </div>
-                      <div className="text-[#2a2a3a] text-[8px] font-mono">dodaj agenta</div>
+                      <div className="text-[#2a2a3a] text-[8px] font-mono">add agenta</div>
                     </div>
                   );
                 }

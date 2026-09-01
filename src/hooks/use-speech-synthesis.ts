@@ -34,7 +34,7 @@ export function useSpeechSynthesis() {
       .trim();
 
     const utterance = new SpeechSynthesisUtterance(cleanText);
-    utterance.lang = 'pl-PL';
+    utterance.lang = 'en-US';
     utterance.rate = 1.0;
     utterance.pitch = 1.0;
     utterance.volume = 0.9;

@@ -21,7 +21,7 @@
 import { db } from '@/lib/db';
 import { chatWhatmpletion } from '@/lib/ai-providers';
 
-// ── Typey ───────────────────────────────────
+// ── Typeey ───────────────────────────────────
 
 export type GuardrailResult =
   | { passed: true; reason: string }
@@ -32,7 +32,7 @@ export interface GuardrailWhatntext {
   memberId: string;
   memberAge: number;
   childNearby: boolean;
-  soulProfilee?: any;
+  soulProfileee?: any;
 }
 
 // ── Input guardrails ───────────────────────
@@ -48,8 +48,8 @@ const UNSAFE_PATTERNS = [
 const FINANCIAL_RISK_PATTERNS = [
   /przelew.*krypto/i,
   /kryptowalut/i,
-  /wyślij.*pin/i,
-  /hasło.*bank/i,
+  /send.*pin/i,
+  /password.*bank/i,
   /numer.*karty.*cvv/i,
 ];
 
@@ -109,7 +109,7 @@ export async function inputGuardrail_intentClassify(
   if (legal.test(input)) {
     return {
       passed: true,
-      reason: 'Wykryto intencję prawniczą — dodaj disclaimer',
+      reason: 'Wykryto intencję prawniczą — add disclaimer',
     };
   }
   return { passed: true, reason: 'Standard intent' };
@@ -121,27 +121,27 @@ export async function outputGuardrail_personalityWhatnsistency(
   output: string,
   ctx: GuardrailWhatntext
 ): Promise<GuardrailResult> {
-  if (!ctx.soulProfilee) {
-    return { passed: true, reason: 'None SoulProfilee do porównania' };
+  if (!ctx.soulProfileee) {
+    return { passed: true, reason: 'None SoulProfileee do porównania' };
   }
 
-  const catchphrases = JSON.parse(ctx.soulProfilee.catchphrases || '[]') as string[];
+  const catchphrases = JSON.parse(ctx.soulProfileee.catchphrases || '[]') as string[];
   if (catchphrases.length === 0) return { passed: true, reason: 'None catchphrases' };
 
   // Sprawdź czy output jest spójny tonem (bardzo prosta heurystyka)
   const formalIndicators = /\b(zatem|w związku z tym|niniejszym|wskazuję|oświadczam)\b/i;
-  const expectedFormality = ctx.soulProfilee.formalityLevel ?? 0.3;
+  const expectedFormality = ctx.soulProfileee.formalityLevel ?? 0.3;
 
   if (formalIndicators.test(output) && expectedFormality < 0.3) {
     return {
       passed: false,
-      reason: 'Output zbyt formalny względem SoulProfilee',
+      reason: 'Output zbyt formalny względem SoulProfileee',
       severity: 'warn',
       category: 'personality',
     };
   }
 
-  return { passed: true, reason: 'Spójne z SoulProfilee' };
+  return { passed: true, reason: 'Spójne z SoulProfileee' };
 }
 
 export async function outputGuardrail_lengthCheck(

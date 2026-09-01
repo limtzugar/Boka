@@ -13,7 +13,7 @@ import { PixelAvatar, getCategoryLabel } from '@/components/pixel-avatar';
 // Family members + "other people" management
 // ═══════════════════════════════════════════════════════════
 
-export function ProfileesTab({ members, activeMemberId, setActiveMember, childNearby, toggleChildNearby }: {
+export function ProfileeesTab({ members, activeMemberId, setActiveMember, childNearby, toggleChildNearby }: {
   members: FamilyMember[]; activeMemberId: string | null;
   setActiveMember: (id: string) => void; childNearby: boolean; toggleChildNearby: () => void;
 }) {
@@ -111,7 +111,7 @@ export function ProfileesTab({ members, activeMemberId, setActiveMember, childNe
       if (editingMember) {
         const res = await fetch(`/api/family/update?id=${editingMember.id}`, {
           method: 'PATCH',
-          headers: { 'Whatntent-Typee': 'application/json' },
+          headers: { 'Whatntent-Typeee': 'application/json' },
           body: JSON.stringify({
             name: formName, role: formRole, age: formAge,
             avatarEmoji: formEmoji, category: formCategory,
@@ -122,7 +122,7 @@ export function ProfileesTab({ members, activeMemberId, setActiveMember, childNe
       } else {
         const res = await fetch('/api/family', {
           method: 'POST',
-          headers: { 'Whatntent-Typee': 'application/json' },
+          headers: { 'Whatntent-Typeee': 'application/json' },
           body: JSON.stringify({
             name: formName, role: formRole, age: formAge,
             avatarEmoji: formEmoji, category: formCategory,
@@ -308,7 +308,7 @@ export function ProfileesTab({ members, activeMemberId, setActiveMember, childNe
 
           {/* Preferences summary */}
           <div className="bg-[#181828] border border-[#383850] p-4 mb-4">
-            <div className="text-[10px] font-mono uppercase text-[#8888aa] mb-2">Profile</div>
+            <div className="text-[10px] font-mono uppercase text-[#8888aa] mb-2">Profilee</div>
             <div className="grid grid-cols-2 gap-3 text-xs font-mono">
               <div>
                 <div className="text-[#8888aa]">Category</div>
@@ -379,7 +379,7 @@ export function ProfileesTab({ members, activeMemberId, setActiveMember, childNe
               {childNearby ? 'Tryb: Dziecko' : 'Tryb: Standard'}
             </div>
             <div className="text-[9px] text-[#8888aa] font-mono">
-              {childNearby ? 'Filtr języka AKTYWNY' : 'Filtr języka OFF'}
+              {childNearby ? 'Filter języka AKTYWNY' : 'Filter języka OFF'}
             </div>
           </div>
           <div className={`w-2 h-2 rounded-full ${childNearby ? 'bg-[#4ade80]' : 'bg-[#6b6b8d]'}`} />
@@ -520,7 +520,7 @@ export function ProfileesTab({ members, activeMemberId, setActiveMember, childNe
                 />
               )}
               <div>
-                <div className="text-sm text-[#e8e8f5] font-bold">{formName || '(imię)'}</div>
+                <div className="text-sm text-[#e8e8f5] font-bold">{formName || '(name)'}</div>
                 <div className="text-[10px] text-[#8888aa] font-mono">
                   {getCategoryLabel(formCategory)} · {formRole}
                 </div>
@@ -631,10 +631,10 @@ export function ProfileesTab({ members, activeMemberId, setActiveMember, childNe
 // ═══════════════════════════════════════════
 // SETTINGS TAB — Provider, API Keys, Model
 // ═══════════════════════════════════════════
-type ProviderTypee = 'openrouter' | 'openrouter' | 'ollama' | 'gguf' | 'custom';
+type ProviderTypeee = 'openrouter' | 'openrouter' | 'ollama' | 'gguf' | 'custom';
 
 interface SettingsState {
-  provider: ProviderTypee;
+  provider: ProviderTypeee;
   openrouterKey: string;
   openrouterModel: string;
   ollamaUrl: string;
@@ -673,7 +673,7 @@ interface SettingsState {
 
 interface VaultNoteDate {
   id: string;
-  noteTypee: string;
+  noteTypeee: string;
   title: string;
   frontmatter: string;
   content: string;

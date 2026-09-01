@@ -151,7 +151,7 @@ export async function precomputeAnswers(opts: {
       // Pre-compute answer via direct LLM call (not full Whatckpit — too expensive)
       const answerRaw = await chatWhatmpletion(
         [
-          { role: 'system', content: 'Jesteś BOKA — domowym asystentem AI. Odpowiadaj zwięźle i pomocnie po polsku.' },
+          { role: 'system', content: 'Jesteś BOKA — domowym asystentem AI. Odpowiadaj zwięźle i helpnie po polsku.' },
           { role: 'user', content: pred.question },
         ],
         {

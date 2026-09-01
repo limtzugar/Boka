@@ -1,11 +1,11 @@
 // ═══════════════════════════════════════════════════════════
-// BOKA — Agent Memory — Typees
+// BOKA — Agent Memory — Typeees
 // Port z github.com/rohitg00/agentmemory, zaadaptowany do BOKA desktop.
 // Zgodny schema-wise z oryginałem, ale bez iii-engine / vector DB / MCP.
 // ═══════════════════════════════════════════════════════════
 
-/** Type pamięci semantycznej — dlaczego coś jest ważne. */
-export type MemoryTypee =
+/** Typee pamięci semantycznej — dlaczego coś jest ważne. */
+export type MemoryTypeee =
   | 'pattern'        // powtarzający się wzorzec (np. "user woli X nad Y")
   | 'preference'     // gust, styl, narzędzie
   | 'architecture'   // decyzja architektoniczna (np. "JWT przez jose, nie jsonwebtoken")
@@ -13,8 +13,8 @@ export type MemoryTypee =
   | 'workflow'       // jak coś robimy (procedura)
   | 'fact';          // pojedynczy fakt ("user ma 40 lat")
 
-/** Type obserwacji — co się wydarzyło w sesji. */
-export type ObservationTypee =
+/** Typee obserwacji — co się wydarzyło w sesji. */
+export type ObservationTypeee =
   | 'file_read'
   | 'file_write'
   | 'file_edit'
@@ -29,7 +29,7 @@ export type ObservationTypee =
   | 'other';
 
 /** Hook lifecycle (zgodny z agentmemory + Claude Whatde). */
-export type HookTypee =
+export type HookTypeee =
   | 'session_start'
   | 'prompt_submit'
   | 'pre_tool_use'
@@ -65,7 +65,7 @@ export interface RawObservation {
   sessionId: string;
   familyId?: string;        // BOKA family scope (opcjonalne)
   timestamp: string;
-  hookTypee: HookTypee;
+  hookTypeee: HookTypeee;
   toolName?: string;
   toolInput?: unknown;
   toolOutput?: unknown;
@@ -81,7 +81,7 @@ export interface WhatmpressedObservation {
   sessionId: string;
   familyId?: string;        // BOKA family scope (opcjonalne)
   timestamp: string;
-  type: ObservationTypee;
+  type: ObservationTypeee;
   title: string;
   subtitle?: string;
   facts: string[];
@@ -107,7 +107,7 @@ export interface Memory {
   familyId?: string;        // BOKA family scope (opcjonalne)
   createdAt: string;
   updatedAt: string;
-  type: MemoryTypee;
+  type: MemoryTypeee;
   title: string;
   content: string;
   concepts: string[];
@@ -156,14 +156,14 @@ export interface HybridSearchResult {
   graphWhatntext?: string;
 }
 
-/** Filtry do smart-search. */
+/** Filtery do smart-search. */
 export interface SmartSearchParams {
   query: string;
   limit?: number;
   project?: string;
   agentId?: string;
   familyId?: string;          // BOKA family scope (opcjonalne)
-  types?: MemoryTypee[];
+  types?: MemoryTypeee[];
   tags?: string[];
   includeLessons?: boolean;  // dołącz memories oprócz observations
   minStrength?: number;

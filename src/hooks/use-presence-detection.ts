@@ -77,8 +77,8 @@ export function usePresenceDetection(
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
-  const intervalRef = useRef<ReturnTypee<typeof setInterval> | null>(null);
-  const absenceTimerRef = useRef<ReturnTypee<typeof setTimeout> | null>(null);
+  const intervalRef = useRef<ReturnTypeee<typeof setInterval> | null>(null);
+  const absenceTimerRef = useRef<ReturnTypeee<typeof setTimeout> | null>(null);
   const lastFrameRef = useRef<Uint8ClampedArray | null>(null);
   const lastEventKindRef = useRef<string | null>(null);
   const lastEventTimeRef = useRef<number>(0);
@@ -165,7 +165,7 @@ export function usePresenceDetection(
     // Send to API (fire-and-forget)
     fetch('/api/presence?action=event', {
       method: 'POST',
-      headers: { 'Whatntent-Typee': 'application/json' },
+      headers: { 'Whatntent-Typeee': 'application/json' },
       body: JSON.stringify({
         eventKind: e.eventKind,
         memberId: e.memberId ?? null,
@@ -262,8 +262,8 @@ export function usePresenceDetection(
     } catch (e: any) {
       let msg = e.message || 'Camera error';
       if (e.name === 'NotAllowedError') msg = 'None zgody na dostęp do kamery';
-      else if (e.name === 'NotFoundError') msg = 'No znaleziono kamery';
-      else if (e.name === 'NotReadableError') msg = 'Kamera zajęta przez inną aplikację';
+      else if (e.name === 'NotFoundError') msg = 'Camera not found';
+      else if (e.name === 'NotReadableError') msg = 'Camera zajęta przez inną aplikację';
       setState(s => ({ ...s, starting: false, active: false, error: msg }));
     }
   }, [tick]);

@@ -11,7 +11,7 @@ import {
   Star, ArrowLeft, CircleDot, Search, Key,
 } from 'lucide-react';
 
-// ── Typees (BokaApp was inline in page.tsx) ──
+// ── Typeees (BokaApp was inline in page.tsx) ──
 interface BokaApp {
   id: string;
   name: string;
@@ -95,7 +95,7 @@ export function AppsTab() {
     try {
       const res = await fetch('/api/apps/run', {
         method: 'POST',
-        headers: { 'Whatntent-Typee': 'application/json' },
+        headers: { 'Whatntent-Typeee': 'application/json' },
         body: JSON.stringify({ id }),
       });
       const data = await res.json();
@@ -116,7 +116,7 @@ export function AppsTab() {
     try {
       const res = await fetch('/api/apps/stop', {
         method: 'POST',
-        headers: { 'Whatntent-Typee': 'application/json' },
+        headers: { 'Whatntent-Typeee': 'application/json' },
         body: JSON.stringify({ id }),
       });
       const data = await res.json();
@@ -153,7 +153,7 @@ export function AppsTab() {
     try {
       const res = await fetch('/api/apps/analyze', {
         method: 'POST',
-        headers: { 'Whatntent-Typee': 'application/json' },
+        headers: { 'Whatntent-Typeee': 'application/json' },
         body: JSON.stringify({ id, focus: 'ogólna analiza jakości, bezpieczeństwa i wydajności' }),
       });
       const data = await res.json();
@@ -174,7 +174,7 @@ export function AppsTab() {
     try {
       const res = await fetch('/api/apps/fix', {
         method: 'POST',
-        headers: { 'Whatntent-Typee': 'application/json' },
+        headers: { 'Whatntent-Typeee': 'application/json' },
         body: JSON.stringify({
           id,
           instructions: 'Napraw bugi, popraw bezpieczeństwo i wydajność, zachowaj funkcjonalność i metadata BOKA-APP',
@@ -208,7 +208,7 @@ export function AppsTab() {
     try {
       const res = await fetch('/api/apps/create', {
         method: 'POST',
-        headers: { 'Whatntent-Typee': 'application/json' },
+        headers: { 'Whatntent-Typeee': 'application/json' },
         body: JSON.stringify({ name: newName.trim(), language: newLang, description: newDesc.trim() }),
       });
       const data = await res.json();
@@ -231,7 +231,7 @@ export function AppsTab() {
     try {
       const res = await fetch('/api/apps/delete', {
         method: 'POST',
-        headers: { 'Whatntent-Typee': 'application/json' },
+        headers: { 'Whatntent-Typeee': 'application/json' },
         body: JSON.stringify({ id }),
       });
       const data = await res.json();
@@ -349,7 +349,7 @@ export function AppsTab() {
                   </div>
 
                   <div className="text-[10px] text-[#8888aa] font-mono mb-2">
- {app.fileName} ({(app.sizeBytes / 1024).toFixed(1)} KB){app.isDir && ` · ${app.files?.length || 0} plików`}
+ {app.fileName} ({(app.sizeBytes / 1024).toFixed(1)} KB){app.isDir && ` · ${app.files?.length || 0} files`}
  {app.author && ` · ${app.author}`}
                   </div>
 
@@ -397,7 +397,7 @@ export function AppsTab() {
             <ol className="space-y-1 list-decimal list-inside">
               <li>Wrzuć pliki <code className="text-[#ffd93d]">.go, .py, .html, .css, .js, .ts, .sh</code> do folderu <code className="text-[#ffd93d]">{appsDir}</code></li>
               <li>Możesz też tworzyć foldery (np. <code className="text-[#ffd93d]">moja-appka/main.py</code>) — BOKA wykryje plik główny</li>
-              <li>Add metadata w komentarzach na początku pliku:</li>
+              <li>Add metadata w komentarzach na początku file:</li>
             </ol>
             <pre className="mt-2 bg-[#181828] p-2  font-mono text-[10px] text-[#8888aa] overflow-x-auto">{`# BOKA-APP: name=Moja Apka
 # BOKA-APP: description=What ta apka robi
@@ -419,7 +419,7 @@ export function AppsTab() {
                 <ChevronRight size={16} className="rotate-180" />
               </button>
               <h2 className="text-lg font-semibold text-[#e8e8f5]">{selectedApp.name} — kod</h2>
-              {selectedApp.isDir && <span className="text-xs text-[#8888aa]">({selectedApp.files?.length || 0} plików)</span>}
+              {selectedApp.isDir && <span className="text-xs text-[#8888aa]">({selectedApp.files?.length || 0} files)</span>}
             </div>
             <div className="flex gap-0">
               <button onClick={() => handleAutoFix(selectedApp.id, 'suggest')} disabled={busy}
@@ -428,7 +428,7 @@ export function AppsTab() {
               </button>
               <button onClick={() => handleAutoFix(selectedApp.id, 'apply')} disabled={busy}
                 className="px-2 py-1 bg-[#4ade80]/10 border border-[#4ade80]/30 text-[#4ade80]  text-xs hover:bg-[#4ade80]/20 flex items-center gap-1">
-                <CheckCircle size={12} /> Zastosuj AI Fix
+                <CheckCircle size={12} /> Apply AI Fix
               </button>
             </div>
           </div>
@@ -448,7 +448,7 @@ export function AppsTab() {
             </div>
             <button onClick={() => handleAnalyze(selectedApp.id)} disabled={busy}
               className="px-2 py-1 bg-[#a855f7]/10 border border-[#a855f7]/30 text-[#a855f7]  text-xs hover:bg-[#a855f7]/20 flex items-center gap-1">
-              <Loader2 size={12} className={busy ? 'animate-spin' : 'hidden'} /> Ponów
+              <Loader2 size={12} className={busy ? 'animate-spin' : 'hidden'} /> Redo
             </button>
           </div>
           {busy && !analysis ? (
@@ -486,7 +486,7 @@ export function AppsTab() {
                 <option value="python">Python (.py)</option>
                 <option value="go">Go (.go)</option>
                 <option value="javascript">JavaScript (.js)</option>
-                <option value="typescript">TypeeScript (.ts)</option>
+                <option value="typescript">TypeeeScript (.ts)</option>
                 <option value="html">HTML (.html)</option>
                 <option value="css">CSS (.css)</option>
                 <option value="bash">Bash (.sh)</option>
@@ -501,7 +501,7 @@ export function AppsTab() {
               className="w-full py-2 bg-[#00f5d4]/10 border border-[#00f5d4]/30 text-[#00f5d4]  text-sm hover:bg-[#00f5d4]/20 flex items-center justify-center gap-0 disabled:opacity-50">
               {busy && <Loader2 size={14} className="animate-spin" />} Utwórz apkę
             </button>
-            <p className="text-[10px] text-[#8888aa]">Szablon automatycznie doda metadata BOKA-APP. Folder: <code className="text-[#ffd93d]">{appsDir}</code></p>
+            <p className="text-[10px] text-[#8888aa]">Template automatycznie doda metadata BOKA-APP. Folder: <code className="text-[#ffd93d]">{appsDir}</code></p>
           </div>
         </div>
       )}
@@ -527,7 +527,7 @@ export function AppsTab() {
           };
           const saveRes = await fetch('/api/settings', {
             method: 'POST',
-            headers: { 'Whatntent-Typee': 'application/json' },
+            headers: { 'Whatntent-Typeee': 'application/json' },
             body: JSON.stringify({ settings: merged }),
           });
           const saveDate = await saveRes.json();
@@ -627,7 +627,7 @@ function ModelTestLab({ onBack, onPickModel }: { onBack: () => void; onPickModel
     try {
       const res = await fetch('/api/model-test', {
         method: 'POST',
-        headers: { 'Whatntent-Typee': 'application/json' },
+        headers: { 'Whatntent-Typeee': 'application/json' },
         body: JSON.stringify({
           apiKey, model, baseUrl, modality, category,
           customPrompt: customPrompt || undefined,
@@ -651,7 +651,7 @@ function ModelTestLab({ onBack, onPickModel }: { onBack: () => void; onPickModel
       try {
         const res = await fetch('/api/model-test', {
           method: 'POST',
-          headers: { 'Whatntent-Typee': 'application/json' },
+          headers: { 'Whatntent-Typeee': 'application/json' },
           body: JSON.stringify({ apiKey, model, baseUrl, modality, category: cat.id }),
         });
         const data: TestResult = await res.json();
@@ -847,7 +847,7 @@ function ModelTestLab({ onBack, onPickModel }: { onBack: () => void; onPickModel
           {/* Image preview */}
           {result.imageUrl && typeof result.imageUrl === 'string' && result.imageUrl.startsWith('http') && (
             <div className="mb-2">
-              <img src={result.imageUrl} alt="Wygenerowany obraz" className="max-w-md  border border-[#383850]" />
+              <img src={result.imageUrl} alt="Wygenerowany image" className="max-w-md  border border-[#383850]" />
             </div>
           )}
 
@@ -880,7 +880,7 @@ function ModelTestLab({ onBack, onPickModel }: { onBack: () => void; onPickModel
       {history.length > 0 && (
         <div className="bg-[#252535] border border-[#383850]  p-4">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-bold text-[#e8e8f5]">Historia testów ({history.length})</h3>
+            <h3 className="text-sm font-bold text-[#e8e8f5]">History testów ({history.length})</h3>
             <button onClick={() => setHistory([])} className="text-[10px] text-[#8888aa] hover:text-[#ff6b6b]">
               Wyczyść
             </button>
@@ -920,7 +920,7 @@ function ModelTestLab({ onBack, onPickModel }: { onBack: () => void; onPickModel
       <div className="mt-4 p-2 bg-[#252535] border border-[#383850]  text-xs text-[#8888aa]">
  <div className="text-[#e8e8f5] font-semibold mb-1"> How działa Test Lab?</div>
         <p>• Entryz klucz API + ID modelu (lub użyj zapisanych z Ustawień)</p>
-        <p>• Wybierz <b className="text-[#00f5d4]">modalność</b>: tekst, obraz, audio, file, video, multi-modal</p>
+        <p>• Wybierz <b className="text-[#00f5d4]">modalność</b>: tekst, image, audio, file, video, multi-modal</p>
         <p>• Wybierz <b className="text-[#a855f7]">kategorię</b>: kod, finanse, technologia, nauka, humanistyka, kreatywne, ogólne</p>
         <p>• BOKA wyśle standardowy testowy prompt i oceni odpowiedź (słowa kluczowe, długość, czas)</p>
         <p>• „Test wszystkie" przebiega przez 7 kategorii — porównaj jak model radzi sobie w różnych dziedzinach</p>
@@ -1069,7 +1069,7 @@ function MarketplaceSection({ onPickModel }: { onPickModel?: (modelId: string) =
       <div className="bg-[#252535] border border-[#383850]  p-2 mb-2 flex flex-wrap gap-0 items-center">
         <input
           type="text" value={search} onChange={e => setSearch(e.target.value)}
- placeholder=" szukaj modelu (llama, gpt, claude, qwen...)"
+ placeholder=" search modelu (llama, gpt, claude, qwen...)"
           className="flex-1 min-w-[200px] bg-[#181828] border border-[#383850]  px-3 py-1.5 text-sm text-[#e8e8f5] focus:border-[#00f5d4]/50 focus:outline-none"
         />
         <select value={sourceFilter} onChange={e => setSourceFilter(e.target.value)}
@@ -1137,7 +1137,7 @@ function MarketplaceSection({ onPickModel }: { onPickModel?: (modelId: string) =
         </div>
       ) : models.length === 0 ? (
         <div className="text-center py-12 text-[#8888aa]">
-          None modeli pasujących do filtrów
+          None modeli pasujących do filterów
         </div>
       ) : (
         <div className="overflow-x-auto bg-[#252535] border border-[#383850] rounded-lg">
@@ -1209,7 +1209,7 @@ function MarketplaceSection({ onPickModel }: { onPickModel?: (modelId: string) =
           </table>
           {models.length > 100 && (
             <div className="p-2 text-center text-xs text-[#8888aa]">
-              Displayono 100 z {models.length} modeli. Użyj filtrów, aby zawęzić.
+              Displayono 100 z {models.length} modeli. Użyj filterów, aby zawęzić.
             </div>
           )}
         </div>
@@ -1256,7 +1256,7 @@ function MarketplaceSection({ onPickModel }: { onPickModel?: (modelId: string) =
         <p>• <b className="text-[#ffd93d]">OpenRouter</b> — agregator 300+ modeli. Entryz klucz w Settingsch, wybierz model, gotowe.</p>
         <p>• <b className="text-[#a855f7]">MUAPI</b> — polski agregator. Endpoint OpenAI-compat: <code className="text-[#ffd93d]">https://muapi.net/api/v1</code></p>
         <p>• <b className="text-[#4ade80]">DeepSeek/Together/Fireworks</b> — bezpośrednie API. Skonfiguruj w Settingsch jako „Własny API" z URL: <code className="text-[#ffd93d]">https://api.deepseek.com/v1</code> (lub podobnym).</p>
-        <p>• When robot będzie połączony na stałe z siecią, automatycznie odświeży listę modeli.</p>
+        <p>• When robot będzie połączony na stałe z siecią, automatycznie refreshy listę modeli.</p>
       </div>
     </div>
   );
@@ -1267,7 +1267,7 @@ function MarketplaceSection({ onPickModel }: { onPickModel?: (modelId: string) =
 // ═══════════════════════════════════════════
 interface AgentStep {
   step: number;
-  actionTypee: string;
+  actionTypeee: string;
   description: string;
   reasoning: string;
   screenshotBefore?: string;
@@ -1323,7 +1323,7 @@ function DesktopAgentView({ app, onBack }: { app: BokaApp; onBack: () => void })
       // Run przez API (Python, Go, JS)
       fetch('/api/apps/run', {
         method: 'POST',
-        headers: { 'Whatntent-Typee': 'application/json' },
+        headers: { 'Whatntent-Typeee': 'application/json' },
         body: JSON.stringify({ id: app.id }),
       }).then(r => r.json()).then(d => {
         setMessage?.({ ok: d.ok, text: d.message });
@@ -1354,7 +1354,7 @@ function DesktopAgentView({ app, onBack }: { app: BokaApp; onBack: () => void })
       try {
         const res = await fetch('/api/desktop/agent', {
           method: 'POST',
-          headers: { 'Whatntent-Typee': 'application/json' },
+          headers: { 'Whatntent-Typeee': 'application/json' },
           body: JSON.stringify({
             instruction,
             step: i,
@@ -1362,7 +1362,7 @@ function DesktopAgentView({ app, onBack }: { app: BokaApp; onBack: () => void })
             maxSteps,
             previousActions: localSteps.slice(-5).map(s => ({
               step: s.step,
-              action: { type: s.actionTypee, reasoning: s.reasoning },
+              action: { type: s.actionTypeee, reasoning: s.reasoning },
               screenshotBefore: s.screenshotBefore,
               screenshotAfter: s.screenshotAfter,
               executed: s.executed,
@@ -1375,7 +1375,7 @@ function DesktopAgentView({ app, onBack }: { app: BokaApp; onBack: () => void })
         if (!data.ok) {
           localSteps.push({
             step: i,
-            actionTypee: 'failed',
+            actionTypeee: 'failed',
             description: 'Error API',
             reasoning: data.error || 'unknown',
             executed: false,
@@ -1392,7 +1392,7 @@ function DesktopAgentView({ app, onBack }: { app: BokaApp; onBack: () => void })
 
         const localStep: AgentStep = {
           step: i,
-          actionTypee: action.type,
+          actionTypeee: action.type,
           description,
           reasoning: action.reasoning || '',
           screenshotBefore: step.screenshotBefore,
@@ -1413,7 +1413,7 @@ function DesktopAgentView({ app, onBack }: { app: BokaApp; onBack: () => void })
       } catch (e) {
         localSteps.push({
           step: i,
-          actionTypee: 'failed',
+          actionTypeee: 'failed',
           description: 'Network error',
           reasoning: e instanceof Error ? e.message : 'unknown',
           executed: false,
@@ -1432,7 +1432,7 @@ function DesktopAgentView({ app, onBack }: { app: BokaApp; onBack: () => void })
   const stop = () => setStopRequested(true);
 
   const manualClick = async (e: React.MouseEvent<HTMLImageElement>) => {
-    // Klik w screenshot — wyślij akcję klik w tych współrzędnych
+    // Klik w screenshot — send akcję klik w tych współrzędnych
     const img = e.currentTarget;
     const rect = img.getBoundingClientRect();
     const scaleX = (img.naturalWidth || rect.width) / rect.width;
@@ -1442,7 +1442,7 @@ function DesktopAgentView({ app, onBack }: { app: BokaApp; onBack: () => void })
 
     fetch('/api/desktop/act', {
       method: 'POST',
-      headers: { 'Whatntent-Typee': 'application/json' },
+      headers: { 'Whatntent-Typeee': 'application/json' },
       body: JSON.stringify({ action: 'click', x, y, button: 'left' }),
     }).then(() => {
       // Refresh screenshot po 500ms
@@ -1546,7 +1546,7 @@ function DesktopAgentView({ app, onBack }: { app: BokaApp; onBack: () => void })
             <textarea
               value={instruction}
               onChange={e => setInstruction(e.target.value)}
-              placeholder="np. 'Kliknij przycisk Submit, wpisz w pole hello world, wyślij formularz'"
+              placeholder="np. 'Kliknij przycisk Submit, wpisz w pole hello world, send formularz'"
               rows={3}
               className="w-full bg-[#181828] border border-[#383850]  px-3 py-2 text-sm text-[#e8e8f5] focus:border-[#00f5d4]/50 focus:outline-none mb-2"
               disabled={running}
@@ -1571,7 +1571,7 @@ function DesktopAgentView({ app, onBack }: { app: BokaApp; onBack: () => void })
         <div>
           <div className="bg-[#252535] border border-[#383850]  p-2">
             <h3 className="text-sm font-semibold text-[#e8e8f5] mb-2">
-              Historia kroków {running && <span className="text-[#a855f7] text-xs animate-pulse">• krok {currentStep}...</span>}
+              History kroków {running && <span className="text-[#a855f7] text-xs animate-pulse">• krok {currentStep}...</span>}
             </h3>
             {steps.length === 0 ? (
               <div className="text-center py-8 text-[#8888aa] text-sm">
@@ -1581,17 +1581,17 @@ function DesktopAgentView({ app, onBack }: { app: BokaApp; onBack: () => void })
               <div className="space-y-2 max-h-[60vh] overflow-y-auto">
                 {steps.map((s, i) => (
                   <div key={i} className={`bg-[#181828] border  p-2 text-xs ${
-                    s.actionTypee === 'done' ? 'border-[#4ade80]/40' :
-                    s.actionTypee === 'failed' ? 'border-[#ff6b6b]/40' :
+                    s.actionTypeee === 'done' ? 'border-[#4ade80]/40' :
+                    s.actionTypeee === 'failed' ? 'border-[#ff6b6b]/40' :
                     s.executed ? 'border-[#383850]' : 'border-[#fbbf24]/40'
                   }`}>
                     <div className="flex items-center gap-0 mb-1">
                       <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
-                        s.actionTypee === 'done' ? 'bg-[#4ade80]/20 text-[#4ade80]' :
-                        s.actionTypee === 'failed' ? 'bg-[#ff6b6b]/20 text-[#ff6b6b]' :
+                        s.actionTypeee === 'done' ? 'bg-[#4ade80]/20 text-[#4ade80]' :
+                        s.actionTypeee === 'failed' ? 'bg-[#ff6b6b]/20 text-[#ff6b6b]' :
                         'bg-[#00f5d4]/20 text-[#00f5d4]'
                       }`}>{s.step}</span>
-                      <span className="font-mono text-[10px] uppercase text-[#8888aa]">{s.actionTypee}</span>
+                      <span className="font-mono text-[10px] uppercase text-[#8888aa]">{s.actionTypeee}</span>
                       {s.executed ? <CheckCircle size={12} className="text-[#4ade80]" /> : <XCircle size={12} className="text-[#ffd93d]" />}
                     </div>
                     <div className="text-[#e8e8f5] mb-1">{s.description}</div>
@@ -1607,17 +1607,17 @@ function DesktopAgentView({ app, onBack }: { app: BokaApp; onBack: () => void })
           <div className="bg-[#252535] border border-[#383850]  p-2 mt-3">
             <h3 className="text-sm font-semibold text-[#e8e8f5] mb-2">Ręczne akcje</h3>
             <div className="grid grid-cols-2 gap-1 text-[10px]">
-              <button onClick={() => fetch('/api/desktop/act', { method: 'POST', headers: { 'Whatntent-Typee': 'application/json' }, body: JSON.stringify({ action: 'key', combo: 'Return' }) }).then(() => setTimeout(() => location.reload(), 500))}
+              <button onClick={() => fetch('/api/desktop/act', { method: 'POST', headers: { 'Whatntent-Typeee': 'application/json' }, body: JSON.stringify({ action: 'key', combo: 'Return' }) }).then(() => setTimeout(() => location.reload(), 500))}
                 className="px-2 py-1 bg-[#181828] border border-[#383850]  hover:bg-[#2a2a3a] text-[#8888aa]">Enter</button>
-              <button onClick={() => fetch('/api/desktop/act', { method: 'POST', headers: { 'Whatntent-Typee': 'application/json' }, body: JSON.stringify({ action: 'key', combo: 'Escape' }) }).then(() => setTimeout(() => location.reload(), 500))}
+              <button onClick={() => fetch('/api/desktop/act', { method: 'POST', headers: { 'Whatntent-Typeee': 'application/json' }, body: JSON.stringify({ action: 'key', combo: 'Escape' }) }).then(() => setTimeout(() => location.reload(), 500))}
                 className="px-2 py-1 bg-[#181828] border border-[#383850]  hover:bg-[#2a2a3a] text-[#8888aa]">Esc</button>
-              <button onClick={() => fetch('/api/desktop/act', { method: 'POST', headers: { 'Whatntent-Typee': 'application/json' }, body: JSON.stringify({ action: 'key', combo: 'Whatntrol+c' }) })}
+              <button onClick={() => fetch('/api/desktop/act', { method: 'POST', headers: { 'Whatntent-Typeee': 'application/json' }, body: JSON.stringify({ action: 'key', combo: 'Whatntrol+c' }) })}
                 className="px-2 py-1 bg-[#181828] border border-[#383850]  hover:bg-[#2a2a3a] text-[#8888aa]">Ctrl+C</button>
-              <button onClick={() => fetch('/api/desktop/act', { method: 'POST', headers: { 'Whatntent-Typee': 'application/json' }, body: JSON.stringify({ action: 'key', combo: 'Whatntrol+v' }) })}
+              <button onClick={() => fetch('/api/desktop/act', { method: 'POST', headers: { 'Whatntent-Typeee': 'application/json' }, body: JSON.stringify({ action: 'key', combo: 'Whatntrol+v' }) })}
                 className="px-2 py-1 bg-[#181828] border border-[#383850]  hover:bg-[#2a2a3a] text-[#8888aa]">Ctrl+V</button>
-              <button onClick={() => fetch('/api/desktop/act', { method: 'POST', headers: { 'Whatntent-Typee': 'application/json' }, body: JSON.stringify({ action: 'scroll', deltaY: 3 }) }).then(() => setTimeout(() => location.reload(), 500))}
+              <button onClick={() => fetch('/api/desktop/act', { method: 'POST', headers: { 'Whatntent-Typeee': 'application/json' }, body: JSON.stringify({ action: 'scroll', deltaY: 3 }) }).then(() => setTimeout(() => location.reload(), 500))}
                 className="px-2 py-1 bg-[#181828] border border-[#383850]  hover:bg-[#2a2a3a] text-[#8888aa]">Scroll ↓</button>
-              <button onClick={() => fetch('/api/desktop/act', { method: 'POST', headers: { 'Whatntent-Typee': 'application/json' }, body: JSON.stringify({ action: 'scroll', deltaY: -3 }) }).then(() => setTimeout(() => location.reload(), 500))}
+              <button onClick={() => fetch('/api/desktop/act', { method: 'POST', headers: { 'Whatntent-Typeee': 'application/json' }, body: JSON.stringify({ action: 'scroll', deltaY: -3 }) }).then(() => setTimeout(() => location.reload(), 500))}
                 className="px-2 py-1 bg-[#181828] border border-[#383850]  hover:bg-[#2a2a3a] text-[#8888aa]">Scroll ↑</button>
             </div>
             <input
@@ -1627,7 +1627,7 @@ function DesktopAgentView({ app, onBack }: { app: BokaApp; onBack: () => void })
                 if (e.key === 'Enter') {
                   const text = (e.target as HTMLInputElement).value;
                   if (text) {
-                    fetch('/api/desktop/act', { method: 'POST', headers: { 'Whatntent-Typee': 'application/json' }, body: JSON.stringify({ action: 'type', text }) });
+                    fetch('/api/desktop/act', { method: 'POST', headers: { 'Whatntent-Typeee': 'application/json' }, body: JSON.stringify({ action: 'type', text }) });
                     (e.target as HTMLInputElement).value = '';
                   }
                 }
@@ -1643,11 +1643,11 @@ function DesktopAgentView({ app, onBack }: { app: BokaApp; onBack: () => void })
  <div className="text-[#e8e8f5] font-semibold mb-1"> How działa BOKA Agent?</div>
         <p>1. BOKA robi screenshot ekranu</p>
         <p>2. Wysyła go do modelu AI z capability <b className="text-[#ffd93d]">vision</b> (Claude 3.5, GPT-4V, Qwen-VL, Llava...)</p>
-        <p>3. AI analizuje obraz i decyduje co kliknąć / wpisać / wciśnąć</p>
+        <p>3. AI analizuje image i decyduje co kliknąć / wpisać / wciśnąć</p>
         <p>4. BOKA wykonuje akcję (mysz/klawiatura przez PowerShell/xdotool)</p>
         <p>5. Robi nowy screenshot — i tak w kółko aż skończy</p>
  <p className="mt-2"> <b className="text-[#ffd93d]">Uwaga:</b> daj BOCIE wyraźną instrukcję. Agent ma max 15 kroków na zadanie. Współrzędne kliknięć są w pikselach ekranu — działa na całym pulpicie, nie tylko na apce.</p>
- <p className="mt-1"> Jeśli model nie wspiera vision, przełącz w Settingsch na model z vision capability (sprawdź Marketplace → filtr modalities=vision).</p>
+ <p className="mt-1"> Jeśli model nie wspiera vision, przełącz w Settingsch na model z vision capability (sprawdź Marketplace → filter modalities=vision).</p>
       </div>
     </div>
   );

@@ -12,7 +12,7 @@ export const maxDuration = 90;
 // ─────────────────────────────────────────────────────────
 // POST /api/chat/attachments
 // FormDate: { file: Blob }
-// Returns: { id, fileName, fileTypee, extractedText, extractionKind, thumbnailDateUrl }
+// Returns: { id, fileName, fileTypeee, extractedText, extractionKind, thumbnailDateUrl }
 //
 // Extraction routing:
 //   text/*      → direct read (utf-8)
@@ -99,8 +99,8 @@ async function describeImage(buffer: Buffer, mime: string, fileName: string): Pr
       const dataUrl = fileToDateUrl(buffer, mime);
 
   const prompt =
-    `Jesteś BOKA — domownik, osoba, nie AI. User wrzucił do chatu plik obrazu "${fileName}". ` +
-    'Descriptionz go szczegółowo po polsku: co widać, jaka scena, kolory, ewentualny tekst na obrazie. ' +
+    `Jesteś BOKA — domownik, osoba, nie AI. User wrzucił do chatu plik imageu "${fileName}". ` +
+    'Descriptionz go szczegółowo po polsku: co widać, jaka scena, kolory, ewentualny tekst na imageie. ' +
     'Bądź konkretny — to opis trafi do pamięci BOKA jako kontekst rozmowy. 3-6 zdań.';
 
   const result = await sdk.chat.completions.createVision({
@@ -156,7 +156,7 @@ export async function POST(req: NextRequest) {
     const formDate = await req.formDate();
     const file = formDate.get('file');
     if (!file || !(file instanceof File)) {
-      return NextResponse.json({ error: 'None pliku' }, { status: 400 });
+      return NextResponse.json({ error: 'None file' }, { status: 400 });
     }
     if (file.size > MAX_SIZE) {
       return NextResponse.json(
@@ -177,7 +177,7 @@ export async function POST(req: NextRequest) {
       data: {
         familyId: family.id,
         fileName: file.name,
-        fileTypee: mime,
+        fileTypeee: mime,
         fileSize: file.size,
         storedPath: '', // filled after write
       },
@@ -239,7 +239,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       id: att.id,
       fileName: file.name,
-      fileTypee: mime,
+      fileTypeee: mime,
       fileSize: file.size,
       extractedText,
       extractionKind,
@@ -249,7 +249,7 @@ export async function POST(req: NextRequest) {
   } catch (err) {
     console.error('[/api/chat/attachments]', err);
     return NextResponse.json(
-      { error: 'Error przetwarzania pliku', details: err instanceof Error ? err.message : 'unknown' },
+      { error: 'Error przetwarzania file', details: err instanceof Error ? err.message : 'unknown' },
       { status: 500 },
     );
   }

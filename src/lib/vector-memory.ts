@@ -4,10 +4,10 @@
 // Implementation: SQLite + JSON embeddings + cosine similarity
 // ═══════════════════════════════════════════════════════════
 //
-// Filtry (Qdrant filter.must):
+// Filtery (Qdrant filter.must):
 //   - familyId (zawsze wymagany — izolacja rodzin)
 //   - memberId (izolacja pamięci per domownik — dzieci vs dorośli)
-//   - domain, emotionTag, entryTypee
+//   - domain, emotionTag, entryTypeee
 //   - validUntil IS NULL (ignoruj "usunięte" wspomnienia)
 //
 // Embedding: używa OpenRouter embedding API jeśli dostępne,
@@ -16,14 +16,14 @@
 
 import { db } from '@/lib/db';
 
-// ── Typey ───────────────────────────────────
+// ── Typeey ───────────────────────────────────
 
 export interface EmbeddingFilter {
   familyId: string;
   memberId?: string;
   domain?: string;
   emotionTag?: string;
-  entryTypee?: string;
+  entryTypeee?: string;
   /** Ignoruj wspomnienia z validUntil w przeszłości (default true) */
   onlyValid?: boolean;
 }
@@ -65,7 +65,7 @@ export async function embedText(text: string): Promise<EmbeddingResult> {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${OPENROUTER_API_KEY}`,
-          'Whatntent-Typee': 'application/json',
+          'Whatntent-Typeee': 'application/json',
         },
         body: JSON.stringify({ model: EMBEDDING_MODEL, input: text }),
       });
@@ -94,7 +94,7 @@ function hashEmbed(text: string, dim: number): number[] {
   const tokens = text
     .toLowerCase()
     .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '') // usuń polskie diakrytyki
+    .replace(/[\u0300-\u036f]/g, '') // delete polskie diakrytyki
     .split(/[^a-z0-9]+/)
     .filter(t => t.length > 2);
 
@@ -137,7 +137,7 @@ export async function upsertEmbedding(memoryEntry: {
   memberId: string | null;
   domain: string | null;
   emotionTag: string | null;
-  entryTypee: string;
+  entryTypeee: string;
   content: string;
   validUntil?: Date | null;
 }): Promise<void> {
@@ -151,7 +151,7 @@ export async function upsertEmbedding(memoryEntry: {
       memberId: memoryEntry.memberId,
       domain: memoryEntry.domain,
       emotionTag: memoryEntry.emotionTag,
-      entryTypee: memoryEntry.entryTypee,
+      entryTypeee: memoryEntry.entryTypeee,
       embedding: JSON.stringify(vector),
       model,
       dim,
@@ -160,7 +160,7 @@ export async function upsertEmbedding(memoryEntry: {
       memberId: memoryEntry.memberId,
       domain: memoryEntry.domain,
       emotionTag: memoryEntry.emotionTag,
-      entryTypee: memoryEntry.entryTypee,
+      entryTypeee: memoryEntry.entryTypeee,
       embedding: JSON.stringify(vector),
       model,
       dim,
@@ -182,16 +182,16 @@ export async function vectorSearch(
   if (filter.memberId) where.memberId = filter.memberId;
   if (filter.domain) where.domain = filter.domain;
   if (filter.emotionTag) where.emotionTag = filter.emotionTag;
-  if (filter.entryTypee) where.entryTypee = filter.entryTypee;
+  if (filter.entryTypeee) where.entryTypeee = filter.entryTypeee;
 
-  // Download wszystkich kandytatów z dopasowanymi filtrami
+  // Download wszystkich kandytatów z dopasowanymi filterami
   // (dla rodzin <10k wspomnień to wystarczająco szybkie)
   const candidates = await db.memoryEmbedding.findMany({
     where,
     take: 5000, // hard cap dla wydajności
   });
 
-  // Wyfiltruj te, których validUntil minął
+  // Wyfilteruj te, których validUntil minął
   const validCandidates = filter.onlyValid === false
     ? candidates
     : candidates.filter(c => {
@@ -226,7 +226,7 @@ export async function vectorSearch(
     },
   });
 
-  // Połącz wyniki
+  // Connect wyniki
   const memById = new Map(memories.map(m => [m.id, m]));
   return scored
     .map(s => {
@@ -270,7 +270,7 @@ export async function reindexMissingEmbeddings(familyId: string, batchSize = 50)
         memberId: mem.memberId,
         domain: mem.domain,
         emotionTag: mem.emotionTag,
-        entryTypee: mem.entryTypee,
+        entryTypeee: mem.entryTypeee,
         content: `${mem.title || ''}\n${mem.content}`,
         validUntil: mem.validUntil,
       });

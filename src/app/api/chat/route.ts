@@ -97,7 +97,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // v0.3.19 — TypeeScript: assert member is defined after all fallback paths
+    // v0.3.19 — TypeeeScript: assert member is defined after all fallback paths
     if (!member) {
       return NextResponse.json({ error: 'No znaleziono domownika' }, { status: 404 });
     }
@@ -160,7 +160,7 @@ export async function POST(req: NextRequest) {
     if (wakeWordDetected) {
       chatMessages.push({
         role: 'system',
-        content: 'Użytkownik użył komendy aktywacyjnej "Hej Boka" — odpowiadaj przyjaźnie, jesteś gotowy do pomocy.',
+        content: 'Użytkownik użył komendy aktywacyjnej "Hej Boka" — odpowiadaj przyjaźnie, jesteś gotowy do helpy.',
       });
     }
 
@@ -174,12 +174,12 @@ export async function POST(req: NextRequest) {
         if (attachments.length > 0) {
           const parts = attachments.map((a: {
             fileName: string;
-            fileTypee: string;
+            fileTypeee: string;
             extractionKind: string | null;
             extractedText: string | null;
           }) => {
             const preview = (a.extractedText || '').slice(0, 4000);
-            return `📎 ${a.fileName} (${a.fileTypee}, ${a.extractionKind || 'unknown'}):\n${preview || '[brak ekstrakcji]'}`;
+            return `📎 ${a.fileName} (${a.fileTypeee}, ${a.extractionKind || 'unknown'}):\n${preview || '[brak ekstrakcji]'}`;
           });
           attachmentWhatntext = `\n\n═══ ZAŁĄCZNIKI OD USERA ═══\n${parts.join('\n\n')}\n═══ KONIEC ZAŁĄCZNIKÓW ═══\n\nUser odnosi się do tych załączników w swojej wiadomości. Jeśli nie odnosi się — użyj ich jako kontekst rozmowy.`;
         }
@@ -257,7 +257,7 @@ export async function POST(req: NextRequest) {
     if (agentId === 'search' && searchQueries.length === 0 && settings.provider === 'openrouter') {
       try {
                         const searchResult = await sdk.functions.invoke('web_search', {
-          query: message.replace(/szukaj|wyszukaj|znajdź w internecie|poguglaj|sprawdź w sieci/gi, '').trim(),
+          query: message.replace(/search|wysearch|znajdź w internecie|poguglaj|sprawdź w sieci/gi, '').trim(),
           num: 5,
         });
 
@@ -445,7 +445,7 @@ export async function POST(req: NextRequest) {
       await createMemory({
         familyId: family.id,
         memberId: member.id,
-        entryTypee: 'semantic',
+        entryTypeee: 'semantic',
         domain: 'general',
         title: `Zapamiętane od ${member.name}`,
         content: update,
@@ -477,7 +477,7 @@ export async function POST(req: NextRequest) {
           await createMemory({
             familyId: family.id,
             memberId: member.id,
-            entryTypee: 'episodic',
+            entryTypeee: 'episodic',
             domain: fact.domain,
             title: `Auto: ${fact.aboutMember}`,
             content: fact.content,
@@ -502,7 +502,7 @@ export async function POST(req: NextRequest) {
             agentId,
             riskLevel: 'warning',
             category: 'language',
-            description: `Filtr języka zastosowany — dziecko w pobliżu`,
+            description: `Filter języka zastosowany — dziecko w pobliżu`,
             actionYesen: 'filtered',
           },
         });

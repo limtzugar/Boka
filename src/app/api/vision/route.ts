@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
 
     if (!image || typeof image !== 'string') {
       return NextResponse.json(
-        { error: 'None obrazu — prześlij zdjęcie w formacie base64' },
+        { error: 'None imageu — upload zdjęcie w formacie base64' },
         { status: 400 },
       );
     }
@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
 
     if (!base64Date || base64Date.length < 100) {
       return NextResponse.json(
-        { error: 'Zbyt mały obraz — prześlij większe zdjęcie' },
+        { error: 'Zbyt mały image — upload większe zdjęcie' },
         { status: 400 },
       );
     }
@@ -66,7 +66,7 @@ export async function POST(req: NextRequest) {
 
     if (!description) {
       return NextResponse.json(
-        { error: 'No udało się przeanalizować obrazu — spróbuj ponownie' },
+        { error: 'No udało się przeanalizować imageu — spróbuj ponownie' },
         { status: 500 },
       );
     }
@@ -130,7 +130,7 @@ export async function POST(req: NextRequest) {
     const msg = error instanceof Error ? error.message : 'Noznany błąd';
     console.error('Vision API error:', msg);
     return NextResponse.json(
-      { error: 'Error analizy obrazu', details: msg },
+      { error: 'Error analizy imageu', details: msg },
       { status: 500 },
     );
   }

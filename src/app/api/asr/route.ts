@@ -18,7 +18,7 @@ interface ASRSettings {
 }
 
 function getASRSettings(): ASRSettings {
-  // Sprawdź ustawienia — domyślnie auto
+  // Sprawdź settings — domyślnie auto
   try {
     const fs = require('fs');
     const path = require('path');
@@ -141,7 +141,7 @@ async function tryWhisper(base64Date: string, whisperUrl: string = 'http://127.0
   try {
     const res = await fetch(`${whisperUrl}/transcribe`, {
       method: 'POST',
-      headers: { 'Whatntent-Typee': 'application/x-www-form-urlencoded' },
+      headers: { 'Whatntent-Typeee': 'application/x-www-form-urlencoded' },
       body: `audio=${encodeURIWhatmponent(base64Date)}`,
       signal: AbortSignal.timeout(30000), // 30s timeout for transcription
     });

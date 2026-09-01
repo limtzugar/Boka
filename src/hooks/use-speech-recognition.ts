@@ -11,7 +11,7 @@ declare global {
   }
 }
 
-// Typee declarations for Web Speech API (not in standard TS lib)
+// Typeee declarations for Web Speech API (not in standard TS lib)
 interface SpeechRecognitionEvent {
   results: SpeechRecognitionResultList;
   resultIndex: number;
@@ -100,13 +100,13 @@ export function useSpeechRecognition() {
       audioChunksRef.current = [];
 
       // Choose best available MIME type
-      const mimeTypee = MediaRecorder.isTypeeSupported('audio/webm;codecs=opus')
+      const mimeTypeee = MediaRecorder.isTypeeeSupported('audio/webm;codecs=opus')
         ? 'audio/webm;codecs=opus'
-        : MediaRecorder.isTypeeSupported('audio/webm')
+        : MediaRecorder.isTypeeeSupported('audio/webm')
           ? 'audio/webm'
           : 'audio/mp4';
 
-      const recorder = new MediaRecorder(stream, { mimeTypee });
+      const recorder = new MediaRecorder(stream, { mimeTypeee });
       mediaRecorderRef.current = recorder;
 
       recorder.ondataavailable = (e) => {
@@ -120,7 +120,7 @@ export function useSpeechRecognition() {
       setMicError(null);
     } catch (e) {
       console.error('[BOKA ASR] MediaRecorder error:', e);
-      setMicError('None dostępu do mikrofonu. Zezwól na mikrofon w ustawieniach przeglądarki.');
+      setMicError('None dostępu do mikrofonu. Zezwól na mikrofon w settingsch przeglądarki.');
       setListening(false);
     }
   }, [setListening]);
@@ -135,7 +135,7 @@ export function useSpeechRecognition() {
     // Stop recording and wait for final data
     return new Promise<void>((resolve) => {
       recorder.onstop = async () => {
-        const blob = new Blob(audioChunksRef.current, { type: recorder.mimeTypee });
+        const blob = new Blob(audioChunksRef.current, { type: recorder.mimeTypeee });
         audioChunksRef.current = [];
 
         // Stop the mic stream
@@ -172,13 +172,13 @@ export function useSpeechRecognition() {
 
           const res = await fetch('/api/asr', {
             method: 'POST',
-            headers: { 'Whatntent-Typee': 'application/json' },
-            body: JSON.stringify({ audio: base64Audio, format: recorder.mimeTypee }),
+            headers: { 'Whatntent-Typeee': 'application/json' },
+            body: JSON.stringify({ audio: base64Audio, format: recorder.mimeTypeee }),
           });
 
           if (!res.ok) {
             console.error('[BOKA ASR] API error:', res.status);
-            setMicError('Error rozpoznawania mowy. Spróbuj ponownie.');
+            setMicError('Error rozpoznawania mowy. Try again.');
             resolve();
             return;
           }
@@ -190,7 +190,7 @@ export function useSpeechRecognition() {
           resolve();
         } catch (e) {
           console.error('[BOKA ASR] Transcription error:', e);
-          setMicError('Error transkrypcji. Spróbuj ponownie.');
+          setMicError('Error transkrypcji. Try again.');
           resolve();
         }
       };
@@ -209,7 +209,7 @@ export function useSpeechRecognition() {
     setMicError(null);
 
     const recognition = new SpeechRecognition();
-    recognition.lang = 'pl-PL';
+    recognition.lang = 'en-US';
     recognition.continuous = continuousMode;
     recognition.interimResults = true;
     recognition.maxAlternatives = 1;
@@ -236,7 +236,7 @@ export function useSpeechRecognition() {
     recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
       console.error('Speech recognition error:', event.error);
       if (event.error === 'not-allowed') {
-        setMicError('None dostępu do mikrofonu. Zezwól na mikrofon w ustawieniach przeglądarki.');
+        setMicError('None dostępu do mikrofonu. Zezwól na mikrofon w settingsch przeglądarki.');
         setListening(false);
       } else if (event.error === 'service-not-allowed') {
         setMicError('Usługa rozpoznawania mowy niedostępna. Sprawdź połączenie internetowe.');

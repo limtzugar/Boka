@@ -6,7 +6,7 @@
 import { prisma } from './db';
 import { chatWhatmpletion, loadSettings } from './ai-providers';
 
-// ── Typees ────────────────────────────────────
+// ── Typeees ────────────────────────────────────
 export interface AuditEntry {
   familyId: string;
   agentId?: string;
@@ -158,7 +158,7 @@ Akcja: ${params.action}
 Wejście: ${params.inputSummary}
 Result: ${params.outputSummary}
 
-Odpowiedz tylko reasoning, bez wstępu. Przykład: "User zapytał o pogodę, więc przeszukałam pamięć i znalazłam ostatnie wspomnienie o deszczu."`;
+Odpowiedz tylko reasoning, bez wstępu. Przykład: "User zapytał o pogodę, więc przeszukałam pamięć i znalazłam ostatnie memory o deszczu."`;
 
     const reasoning = await chatWhatmpletion(
       [

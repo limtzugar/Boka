@@ -59,7 +59,7 @@ interface Stats {
 
 const CATEGORY_LABELS: Record<string, string> = {
   memory: 'Memory',
-  tool_use: 'Narzędzia',
+  tool_use: 'Tools',
   vision: 'Vision',
   home_automation: 'Dom',
   proactivity: 'Proaktywność',
@@ -141,7 +141,7 @@ export function PrivacyTab() {
     try {
       const r = await fetch('/api/memory/forget', {
         method: 'POST',
-        headers: { 'Whatntent-Typee': 'application/json' },
+        headers: { 'Whatntent-Typeee': 'application/json' },
         body: JSON.stringify({
           familyId: FAMILY_ID,
           scope: forgetScope,
@@ -151,7 +151,7 @@ export function PrivacyTab() {
       });
       const data = await r.json();
       if (data.ok) {
- setMessage(` Zapomniano ${data.affectedWhatunt} elementów. Trwałe usunięcie: ${data.hardDeleteAt?.slice(0, 10)}.`);
+ setMessage(` Zapomniano ${data.affectedWhatunt} elements. Trwałe usunięcie: ${data.hardDeleteAt?.slice(0, 10)}.`);
         setForgetQuery('');
         loadStats();
       } else {
@@ -294,7 +294,7 @@ export function PrivacyTab() {
                         <p className="text-[10px] text-gray-500 mt-1">Result: {entry.outputSummary}</p>
                       )}
                       <div className="flex items-center gap-0 mt-1 text-[10px] text-gray-500">
-                        <span>{new Date(entry.createdAt).toLocaleString('pl-PL')}</span>
+                        <span>{new Date(entry.createdAt).toLocaleString('en-US')}</span>
                         <button
                           onClick={() => setExpandedId(expandedId === entry.id ? null : entry.id)}
                           className="text-[#6ec6e7] hover:underline"
@@ -347,7 +347,7 @@ export function PrivacyTab() {
               </div>
             </div>
 
-            <h3 className="text-sm font-semibold text-gray-300 mb-2">Historia próśb o zapomnienie</h3>
+            <h3 className="text-sm font-semibold text-gray-300 mb-2">History próśb o zapomnienie</h3>
             <div className="space-y-2">
               {forgetRequests.length === 0 && (
                 <div className="text-center py-8 text-gray-500 text-sm">
@@ -363,8 +363,8 @@ export function PrivacyTab() {
                     <span className="text-xs text-gray-400">{req.query ?? req.topic}</span>
                   </div>
                   <div className="text-[10px] text-gray-500">
-                    {req.affectedWhatunt} elementów · zaplanowano: {new Date(req.requestedAt).toLocaleDateString('pl-PL')} ·
-                    {' '}hard delete: {req.hardDeleteAt ? new Date(req.hardDeleteAt).toLocaleDateString('pl-PL') : '—'}
+                    {req.affectedWhatunt} elements · scheduled: {new Date(req.requestedAt).toLocaleDateString('en-US')} ·
+                    {' '}hard delete: {req.hardDeleteAt ? new Date(req.hardDeleteAt).toLocaleDateString('en-US') : '—'}
                   </div>
                   {req.status === 'soft_deleted' && (
                     <button
@@ -440,7 +440,7 @@ function WhatnsentCard({ consent, onUpdate }: { consent: WhatnsentRecord; onUpda
     try {
       await fetch('/api/consent', {
         method: 'POST',
-        headers: { 'Whatntent-Typee': 'application/json' },
+        headers: { 'Whatntent-Typeee': 'application/json' },
         body: JSON.stringify({
           familyId: FAMILY_ID,
           memberId: consent.memberId,
@@ -455,7 +455,7 @@ function WhatnsentCard({ consent, onUpdate }: { consent: WhatnsentRecord; onUpda
 
   const fields: Array<{ key: keyof WhatnsentRecord; label: string }> = [
     { key: 'voiceEnabled', label: 'Voice / ASR' },
-    { key: 'visionEnabled', label: 'Vision / Kamera' },
+    { key: 'visionEnabled', label: 'Vision / Camera' },
     { key: 'memoryEnabled', label: 'Memory' },
     { key: 'haWhatntrolEnabled', label: 'Sterowanie domem' },
     { key: 'proactiveEnabled', label: 'Proaktywność' },

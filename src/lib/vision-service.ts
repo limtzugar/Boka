@@ -43,7 +43,7 @@ async function describeViaOllama(
 
   const response = await fetch(`${ollamaUrl}/api/generate`, {
     method: 'POST',
-    headers: { 'Whatntent-Typee': 'application/json' },
+    headers: { 'Whatntent-Typeee': 'application/json' },
     body: JSON.stringify({
       model,
       prompt,
@@ -265,7 +265,7 @@ export async function evaluateTriggers(
 
   // Trigger 1: Morning + kitchen → offer coffee
   if (mood === 'cooking' || (objects.includes('kitchen') && hour >= 6 && hour <= 10)) {
-    const message = `Widzę, że jesteś rano w kuchni. Mam zaparzyć kawę albo przypomnieć o śniadaniu?`;
+    const message = `Widzę, że jesteś rano w kuchni. Mam zaparzyć kawę albo remember o śniadaniu?`;
     return {
       triggered: true,
       action: 'proactive: morning_coffee',
@@ -275,7 +275,7 @@ export async function evaluateTriggers(
 
   // Trigger 2: Working late → suggest break
   if (mood === 'working' && (hour >= 22 || hour <= 2)) {
-    const message = `Widzę, że pracujesz późno. Może przerwa? Mogę przypomnieć jutro rano o czymś z tego.`;
+    const message = `Widzę, że pracujesz późno. Może przerwa? Mogę remember jutro rano o czymś z tego.`;
     return {
       triggered: true,
       action: 'proactive: late_work_break',
@@ -294,7 +294,7 @@ export async function evaluateTriggers(
     return {
       triggered: true,
       action: 'proactive: child_safety',
-      message: `Widzę dziecko w kadrze. Mogę włączyć tryb dla dzieci albo przypomnieć o czymś.`,
+      message: `Widzę dziecko w kadrze. Mogę włączyć tryb dla dzieci albo remember o czymś.`,
     };
   }
 

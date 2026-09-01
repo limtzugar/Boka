@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { FolderTree, FileText, FileWhatde, File, ChevronRight, ChevronDown, Home, Loader2, HardDrive, Folder, FolderOpen } from 'lucide-react';
 
 // ═══════════════════════════════════════════════════════════
-// FileExplorer — drzewko plików PC użytkownika
+// FileExplorer — drzewko files PC użytkownika
 // GET /api/files?path=... → { path, parent, entries: [{ name, path, isDir, size, ext, mtime }] }
 // Klik na folder → toggle expand (lazy load)
 // Klik na plik .txt/.html/.md/.js/.ts/.json → onOpenFile(path)
@@ -228,7 +228,7 @@ export function FileExplorer({ onOpenFile, currentFilePath, initialPath }: FileE
 
       {/* Footer */}
       <div className="px-2 py-1 border-t border-[#383850] text-[9px] text-[#8888aa] font-mono">
-        {rootEntries.filter(e => e.isDir).length} katalogów · {rootEntries.filter(e => !e.isDir).length} plików
+        {rootEntries.filter(e => e.isDir).length} katalogów · {rootEntries.filter(e => !e.isDir).length} files
       </div>
     </div>
   );

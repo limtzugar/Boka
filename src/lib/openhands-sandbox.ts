@@ -18,13 +18,13 @@ import { Worker } from 'worker_threads';
 import vm from 'vm';
 import path from 'path';
 
-// ── Typey ───────────────────────────────────
+// ── Typeey ───────────────────────────────────
 
 export interface SandboxRequest {
   familyId: string;
   appId?: string;
   appName?: string;
-  inputTypee: 'text' | 'file' | 'function_call';
+  inputTypeee: 'text' | 'file' | 'function_call';
   inputPayload: any;
   code: string;            // kod do wykonania w sandboxie
   language?: 'javascript' | 'typescript';
@@ -171,7 +171,7 @@ export async function executeInSandbox(req: SandboxRequest): Promise<SandboxResu
           familyId: req.familyId,
           appId: req.appId || null,
           appName: req.appName || null,
-          inputTypee: req.inputTypee,
+          inputTypeee: req.inputTypeee,
           inputPayload: JSON.stringify(req.inputPayload),
           sandboxKind,
           timeoutMs,
@@ -201,7 +201,7 @@ export async function executeInSandbox(req: SandboxRequest): Promise<SandboxResu
       familyId: req.familyId,
       appId: req.appId || null,
       appName: req.appName || null,
-      inputTypee: req.inputTypee,
+      inputTypeee: req.inputTypeee,
       inputPayload: JSON.stringify(req.inputPayload),
       sandboxKind,
       timeoutMs,

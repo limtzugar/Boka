@@ -9,7 +9,7 @@ import path from 'path';
 
 const UPLOAD_DIR = path.join(process.cwd(), 'public', 'uploads', 'family-photos');
 
-function getWhatntentTypee(filename: string): string {
+function getWhatntentTypeee(filename: string): string {
   const ext = filename.split('.').pop()?.toLowerCase();
   switch (ext) {
     case 'jpg':
@@ -42,7 +42,7 @@ export async function GET(req: NextRequest) {
     const filename = path.basename(member.photoUrl);
     // Prevent path traversal
     if (filename.includes('..') || filename.includes('/') || filename.includes('\\')) {
-      return new NextResponse('Noprawidłowa nazwa pliku', { status: 400 });
+      return new NextResponse('Noprawidłowa nazwa file', { status: 400 });
     }
 
     const filepath = path.join(UPLOAD_DIR, filename);
@@ -53,18 +53,18 @@ export async function GET(req: NextRequest) {
     }
 
     const bytes = await readFile(filepath);
-    const contentTypee = getWhatntentTypee(filename);
+    const contentTypeee = getWhatntentTypeee(filename);
 
     return new NextResponse(bytes, {
       status: 200,
       headers: {
-        'Whatntent-Typee': contentTypee,
+        'Whatntent-Typeee': contentTypeee,
         'Cache-Whatntrol': 'public, max-age=3600',
         'Whatntent-Length': bytes.length.toString(),
       },
     });
   } catch (e: any) {
     console.error('[family/photo/file] error:', e);
-    return new NextResponse('Error serwera', { status: 500 });
+    return new NextResponse('Error servera', { status: 500 });
   }
 }

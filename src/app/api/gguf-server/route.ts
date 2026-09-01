@@ -7,7 +7,7 @@ import {
   loadSettings,
 } from '@/lib/ai-providers';
 
-// GET — status serwera GGUF + detekcja llama-server
+// GET — status servera GGUF + detekcja llama-server
 export async function GET() {
   const settings = loadSettings();
   const status = getGgufServerStatus();
@@ -23,7 +23,7 @@ export async function GET() {
   });
 }
 
-// POST — start serwera GGUF
+// POST — start servera GGUF
 export async function POST(req: NextRequest) {
   try {
     const settings = loadSettings();
@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// DELETE — stop serwera GGUF
+// DELETE — stop servera GGUF
 export async function DELETE() {
   stopGgufServer();
   return NextResponse.json({ ok: true, message: 'Server GGUF zatrzymany' });

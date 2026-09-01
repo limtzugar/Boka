@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
     const formDate = await req.formDate();
     const file = formDate.get('file');
     if (!file || !(file instanceof File)) {
-      return NextResponse.json({ error: 'None pliku (pole "file")' }, { status: 400 });
+      return NextResponse.json({ error: 'None file (pole "file")' }, { status: 400 });
     }
 
     if (file.size > MAX_SIZE) {
@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
 
     if (!ALLOWED_TYPES.includes(file.type)) {
       return NextResponse.json(
-        { error: `Nodozwolony typ pliku: ${file.type}. Dozwolone: ${ALLOWED_TYPES.join(', ')}` },
+        { error: `Nodozwolony typ file: ${file.type}. Dozwolone: ${ALLOWED_TYPES.join(', ')}` },
         { status: 400 }
       );
     }
