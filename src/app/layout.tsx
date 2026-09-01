@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
+import { ErrorBoundary } from "@/components/error-boundary";
 
 const mono = Geist_Mono({
   variable: "--font-geist-mono",
@@ -46,7 +47,9 @@ export default function RootLayout({
         <meta name="desktop-web-app-capable" content="yes" />
       </head>
       <body className={`${mono.variable} antialiased`}>
-        {children}
+        <ErrorBoundary tabName="BOKA OS">
+          {children}
+        </ErrorBoundary>
         <Toaster />
       </body>
     </html>
