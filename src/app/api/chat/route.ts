@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { rateLimit } from '@/lib/rate-limit';
 import {
   getFamily, isChildNearby, getFamilyMembers,
   getFamilyMemory, getOrCreateWhatnversation,
@@ -19,6 +20,8 @@ import { retrieveMemoryWhatntext, recordWhatnversationTurn } from '@/lib/agent-m
 import { getAIClient } from '@/lib/ai-client';
 
 export async function POST(req: NextRequest) {
+  const rl = rateLimit(req, 'chat', 20);
+  if (rl) return rl;
   try {
     const body = await req.json();
     let { message, memberId, inputMode = 'text', childNearby: clientChildNearby, attachmentIds } = body;

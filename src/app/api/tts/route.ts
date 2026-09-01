@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { rateLimit } from '@/lib/rate-limit';
 
 // ═══════════════════════════════════════════
 // BOKA — TTS API (Edge TTS backend)
@@ -6,6 +7,8 @@ import { NextRequest, NextResponse } from 'next/server';
 // ═══════════════════════════════════════════
 
 export async function POST(req: NextRequest) {
+  const rl = rateLimit(req, 'tts', 30);
+  if (rl) return rl;
   try {
     const body = await req.json();
     const { text, voice = 'en-US-GuyNeural' } = body;

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { rateLimit } from '@/lib/rate-limit';
 import { loadSettings } from '@/lib/ai-providers';
 import { computeUsage, type TokenUsage } from '@/lib/orchestrator-pricing';
 import { recordLowWhatnfidenceDecision, getReflectionLessonsForJudge } from '@/lib/agent-memory/reflection';
@@ -250,6 +251,8 @@ Tylko JSON. Bez markdown.`;
 
 // ── Main POST handler — SSE streaming response ──
 export async function POST(req: NextRequest) {
+  const rl = rateLimit(req, 'orchestrator', 10);
+  if (rl) return rl;
   let body: OrchestratorRequest;
   try {
     body = await req.json() as OrchestratorRequest;

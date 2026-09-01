@@ -4,6 +4,7 @@
 // ═══════════════════════════════════════════
 
 import fs from 'fs';
+import { rateLimit } from '@/lib/rate-limit';
 import path from 'path';
 import { spawn, type ChildProcess } from 'child_process';
 

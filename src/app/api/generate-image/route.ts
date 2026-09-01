@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { rateLimit } from '@/lib/rate-limit';
 import { db } from '@/lib/db';
 import { getAIClient } from '@/lib/ai-client';
 
@@ -19,6 +20,8 @@ const VALID_SIZES = [
 type ValidSize = (typeof VALID_SIZES)[number];
 
 export async function POST(req: NextRequest) {
+  const rl = rateLimit(req, 'generate-image', 10);
+  if (rl) return rl;
   try {
     const body = await req.json();
     const { prompt, size = '1024x1024', memberId } = body;

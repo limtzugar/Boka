@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { rateLimit } from '@/lib/rate-limit';
 import { chatWhatmpletion, loadSettings } from '@/lib/ai-providers';
 
 // ═══════════════════════════════════════════════════════════
@@ -25,6 +26,8 @@ export interface DebateRequest {
 }
 
 export async function POST(req: NextRequest) {
+  const rl = rateLimit(req, 'debate', 15);
+  if (rl) return rl;
   try {
     const body = await req.json() as DebateRequest;
     const {

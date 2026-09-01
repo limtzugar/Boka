@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { rateLimit } from '@/lib/rate-limit';
 import { getAIClient } from '@/lib/ai-client';
 
 // ═══════════════════════════════════════════════════════════
@@ -47,6 +48,8 @@ function getASREngine(): ASREngine {
 }
 
 export async function POST(req: NextRequest) {
+  const rl = rateLimit(req, 'asr', 30);
+  if (rl) return rl;
   try {
     const body = await req.json();
     const { audio, format, engine: requestedEngine } = body;
