@@ -4,6 +4,7 @@ import path from 'path';
 import { db } from '@/lib/db';
 import { ensureFamilySeeded } from '@/lib/auto-seed';
 import { getFamily } from '@/lib/family-service';
+import { getAIClient } from '@/lib/ai-client';
 
 export const runtime = 'nodejs';
 export const maxDuration = 90;
@@ -14,8 +15,6 @@ export const maxDuration = 90;
 // Returns: { id, fileName, fileType, extractedText, extractionKind, thumbnailDataUrl }
 //
 // Extraction routing:
-//   image/*     → VLM description (z-ai-web-dev-sdk createVision)
-//   audio/*     → ASR transcript (z-ai-web-dev-sdk ASR)
 //   text/*      → direct read (utf-8)
 //   application/pdf → pdf-parse text extraction
 //   other       → mark as unsupported, return null text
@@ -97,16 +96,14 @@ async function makeThumbnail(buffer: Buffer, mime: string): Promise<string | nul
 
 // ── Image → VLM description ──
 async function describeImage(buffer: Buffer, mime: string, fileName: string): Promise<string> {
-  const ZAI = (await import('z-ai-web-dev-sdk')).default;
-  const zai = await ZAI.create();
-  const dataUrl = fileToDataUrl(buffer, mime);
+      const dataUrl = fileToDataUrl(buffer, mime);
 
   const prompt =
     `Jesteś BOKA — domownik, osoba, nie AI. User wrzucił do chatu plik obrazu "${fileName}". ` +
     'Opisz go szczegółowo po polsku: co widać, jaka scena, kolory, ewentualny tekst na obrazie. ' +
     'Bądź konkretny — to opis trafi do pamięci BOKA jako kontekst rozmowy. 3-6 zdań.';
 
-  const result = await zai.chat.completions.createVision({
+  const result = await sdk.chat.completions.createVision({
     model: 'glm-4v',
     messages: [
       {
@@ -125,12 +122,9 @@ async function describeImage(buffer: Buffer, mime: string, fileName: string): Pr
 
 // ── Audio → ASR transcript ──
 async function transcribeAudio(buffer: Buffer, fileName: string): Promise<string> {
-  const ZAI = (await import('z-ai-web-dev-sdk')).default;
-  const zai = await ZAI.create();
-
-  // z-ai-web-dev-sdk exposes ASR via audio.transcriptions
-  const base64 = buffer.toString('base64');
-  const asrModule = (zai as unknown as { audio?: { transcriptions?: { create: (p: unknown) => Promise<unknown> } } }).audio;
+    
+    const base64 = buffer.toString('base64');
+  const asrModule = (sdk as unknown as { audio?: { transcriptions?: { create: (p: unknown) => Promise<unknown> } } }).audio;
   if (asrModule?.transcriptions?.create) {
     const result = (await asrModule.transcriptions.create({
       file: { base64, name: fileName },
@@ -139,7 +133,7 @@ async function transcribeAudio(buffer: Buffer, fileName: string): Promise<string
     })) as { text?: string };
     return result.text || '';
   }
-  throw new Error('ASR module niedostępny w z-ai-web-dev-sdk');
+  throw new Error('ASR module not available');
 }
 
 // ── PDF → text (pdf-parse) ──

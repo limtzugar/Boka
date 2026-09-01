@@ -30,6 +30,7 @@ import { chatCompletion, loadSettings } from '@/lib/ai-providers';
 import { ensureFamilySeeded } from '@/lib/auto-seed';
 import { mem0Ingest } from '@/lib/mem0-service';
 import { retrieveMemoryContext, recordConversationTurn } from '@/lib/agent-memory/chat-integration';
+import { getAIClient } from '@/lib/ai-client';
 
 // ═══════════════════════════════════════════
 // BOKA — Streaming Chat API (SSE)
@@ -407,11 +408,9 @@ export async function POST(req: NextRequest) {
     let searchPerformed = false;
     const searchQueries = extractSearchQueries(responseText);
 
-    if (searchQueries.length > 0 && settings.provider === 'z-ai-sdk') {
+    if (searchQueries.length > 0 && settings.provider === 'openrouter') {
       try {
-        const ZAI = (await import('z-ai-web-dev-sdk')).default;
-        const zai = await ZAI.create();
-        const searchResult = await zai.functions.invoke('web_search', {
+                        const searchResult = await sdk.functions.invoke('web_search', {
           query: searchQueries[0],
           num: 5,
         });
@@ -462,11 +461,9 @@ export async function POST(req: NextRequest) {
     let generatedImageUrl: string | null = null;
     let generatedImagePrompt: string | null = null;
 
-    if (imageGenPrompts.length > 0 && settings.provider === 'z-ai-sdk') {
+    if (imageGenPrompts.length > 0 && settings.provider === 'openrouter') {
       try {
-        const ZAI = (await import('z-ai-web-dev-sdk')).default;
-        const zai = await ZAI.create();
-        const imgResult = await zai.images.generations.create({
+                        const imgResult = await sdk.images.generations.create({
           prompt: imageGenPrompts[0] + ', family-friendly, colorful, child-appropriate illustration style',
           size: '1024x1024',
         });

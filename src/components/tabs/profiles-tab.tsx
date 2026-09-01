@@ -631,7 +631,7 @@ export function ProfilesTab({ members, activeMemberId, setActiveMember, childNea
 // ═══════════════════════════════════════════
 // SETTINGS TAB — Provider, API Keys, Model
 // ═══════════════════════════════════════════
-type ProviderType = 'z-ai-sdk' | 'openrouter' | 'ollama' | 'gguf' | 'custom';
+type ProviderType = 'openrouter' | 'openrouter' | 'ollama' | 'gguf' | 'custom';
 
 interface SettingsState {
   provider: ProviderType;
@@ -662,7 +662,7 @@ interface SettingsState {
   stopSequences?: string[];
   // Memory & ASR
   memoryFolder?: string;
-  asrEngine: 'auto' | 'whisper' | 'z-ai-sdk';
+  asrEngine: 'auto' | 'whisper' | 'openrouter';
   whisperUrl: string;
   whisperModel: string;
 }

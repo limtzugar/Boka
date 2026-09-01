@@ -234,8 +234,7 @@ export function SettingsTab() {
     { id: 'openrouter', label: 'OpenRouter', icon: <Globe size={16} />, desc: 'Dostęp do setek modeli: GPT, Claude, Llama, Mistral' },
     { id: 'ollama', label: 'Ollama (lokalny)', icon: <Cpu size={16} />, desc: 'Lokalne modele na Twoim komputerze. Darmowe, prywatne.' },
     { id: 'gguf', label: 'Plik GGUF (z dysku)', icon: <HardDrive size={16} />, desc: 'Wskaż dowolny plik .gguf — BOKA uruchomi go przez llama.cpp' },
-    { id: 'z-ai-sdk', label: 'Z-AI SDK', icon: <Zap size={16} />, desc: 'Domyślny silnik AI' },
-    { id: 'custom', label: 'Własny API', icon: <Server size={16} />, desc: 'LM Studio, vLLM — dowolny serwer OpenAI-compat' },
+        { id: 'custom', label: 'Własny API', icon: <Server size={16} />, desc: 'LM Studio, vLLM — dowolny serwer OpenAI-compat' },
   ];
 
   return (
@@ -818,8 +817,7 @@ export function SettingsTab() {
             {([
               { id: 'auto' as const, label: 'Auto', desc: 'Whisper lokalny jeśli dostępny, inaczej chmura', icon: <Zap size={14} /> },
               { id: 'whisper' as const, label: 'Whisper (lokalny)', desc: 'Najlepsza jakość PL, wymaga serwera na :5100', icon: <Mic size={14} /> },
-              { id: 'z-ai-sdk' as const, label: 'Chmura (Z-AI)', desc: 'Zawsze działa, wymaga internetu', icon: <Globe size={14} /> },
-            ]).map(e => (
+                          ]).map(e => (
               <button
                 key={e.id}
                 onClick={() => update('asrEngine', e.id)}

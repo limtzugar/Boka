@@ -19,9 +19,9 @@ export async function GET() {
   let visionNote = '';
 
   switch (settings.provider) {
-    case 'z-ai-sdk':
+    case 'openrouter':
       visionSupport = true;
-      visionNote = 'Z-AI SDK VLM (wbudowany)';
+      visionNote = 'AI SDK VLM (built-in)';
       break;
     case 'openrouter':
       // Sprawdź czy model ma vision w nazwie (heurystyka)
@@ -55,7 +55,7 @@ export async function GET() {
       supported: visionSupport,
       note: visionNote,
       provider: settings.provider,
-      model: settings.openrouterModel || settings.ollamaModel || settings.customModel || 'z-ai-sdk',
+      model: settings.openrouterModel || settings.ollamaModel || settings.customModel || 'openrouter',
     },
   });
 }

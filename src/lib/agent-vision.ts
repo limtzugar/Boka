@@ -2,11 +2,12 @@
 // BOKA — AGENT VISION LOOP
 // Pętla agenta: screenshot → AI analizuje → planuje akcję → wykonuje → repeat
 // Wymaga modelu z capability "vision" — najlepiej Claude 3.5 Computer Use,
-// GPT-4V, Qwen-VL. Z-ai-sdk VLM też działa do analizy (bez akcji).
+// GPT-4V, Qwen-VL. AI SDK VLM też działa do analizy (bez akcji).
 // ════════════════════════════════════════════════════════════════
 
 import { takeScreenshot, clickAt, typeText, pressKey, scroll } from './desktop-agent';
 import { chatCompletion, loadSettings, type ChatMessage } from './ai-providers';
+import { getAIClient } from '@/lib/ai-client';
 
 export type AgentAction =
   | { type: 'click'; x: number; y: number; button?: 'left' | 'right' | 'middle'; reasoning: string }
@@ -148,11 +149,9 @@ Co dalej?`;
       },
     ];
 
-    // Najpierw spróbuj przez vision API z-ai-sdk (jeśli provider to z-ai-sdk)
-    if (settings.provider === 'z-ai-sdk') {
-      const ZAI = (await import('z-ai-web-dev-sdk')).default;
-      const zai = await ZAI.create();
-      const result = await zai.chat.completions.createVision({
+    // Najpierw spróbuj przez vision API openrouter (jeśli provider to openrouter)
+    if (settings.provider === 'openrouter') {
+                  const result = await sdk.chat.completions.createVision({
         messages: [
           { role: 'system', content: systemPrompt } as any,
           {

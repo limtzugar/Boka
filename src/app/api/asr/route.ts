@@ -1,14 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getAIClient } from '@/lib/ai-client';
 
 // ═══════════════════════════════════════════════════════════
 // BOKA — ASR API (Speech-to-Text backend)
 // Obsługuje 3 silniki:
-//   1. z-ai-sdk   — chmurowe API (domyślne, działa wszędzie)
+//   1. openrouter   — chmurowe API (domyślne, działa wszędzie)
 //   2. whisper    — lokalny Whisper medium (najlepsza jakość PL)
-//   3. auto       — próbuje whisper, fallback do z-ai-sdk
+//   3. auto       — próbuje whisper, fallback do openrouter
 // ═══════════════════════════════════════════════════════════
 
-type ASREngine = 'z-ai-sdk' | 'whisper' | 'auto';
+type ASREngine = 'openrouter' | 'whisper' | 'auto';
 
 interface ASRSettings {
   engine: ASREngine;
@@ -64,7 +65,7 @@ export async function POST(req: NextRequest) {
     const asrSettings = getASRSettings();
     const engine = (requestedEngine as ASREngine) || asrSettings.engine;
 
-    // ── AUTO: spróbuj whisper, fallback do z-ai-sdk ──
+    // ── AUTO: spróbuj whisper, fallback do openrouter ──
     if (engine === 'auto') {
       const whisperResult = await tryWhisper(base64Data, asrSettings.whisperUrl);
       if (whisperResult) {
@@ -77,7 +78,7 @@ export async function POST(req: NextRequest) {
       const cloudResult = await tryCloudASR(base64Data);
       return NextResponse.json({
         ...cloudResult,
-        engine: 'z-ai-sdk',
+        engine: 'openrouter',
       });
     }
 
@@ -93,9 +94,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // ── Z-AI-SDK: tylko chmura ──
-    const cloudResult = await tryCloudASR(base64Data);
-    return NextResponse.json({ ...cloudResult, engine: 'z-ai-sdk' });
+        const cloudResult = await tryCloudASR(base64Data);
+    return NextResponse.json({ ...cloudResult, engine: 'openrouter' });
 
   } catch (error: unknown) {
     const msg = error instanceof Error ? error.message : 'Nieznany błąd';
@@ -119,7 +119,7 @@ export async function GET() {
   return NextResponse.json({
     currentEngine: asrSettings.engine,
     engines: {
-      'z-ai-sdk': { available: true, description: 'Chmurowe API (działa wszędzie)' },
+      'openrouter': { available: true, description: 'Chmurowe API (działa wszędzie)' },
       'whisper': {
         available: whisperAvailable,
         description: `Lokalny Whisper ${asrSettings.whisperModel} (najlepsza jakość PL)`,
@@ -172,10 +172,8 @@ async function tryWhisper(base64Data: string, whisperUrl: string = 'http://127.0
 }
 
 async function tryCloudASR(base64Data: string): Promise<{ text: string; confidence: number }> {
-  const ZAI = (await import('z-ai-web-dev-sdk')).default;
-  const zai = await ZAI.create();
-
-  const response = await zai.audio.asr.create({
+    
+  const response = await sdk.audio.asr.create({
     file_base64: base64Data,
   });
 

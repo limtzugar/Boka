@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
+import { getAIClient } from '@/lib/ai-client';
 
 // ═══════════════════════════════════════════
 // BOKA — Image Generation API
-// Boka draws images using z-ai-web-dev-sdk
 // ═══════════════════════════════════════════
 
 const VALID_SIZES = [
@@ -50,11 +50,8 @@ export async function POST(req: NextRequest) {
     // Enrich the prompt with safety and style modifiers
     const enrichedPrompt = `${prompt}, family-friendly, colorful, child-appropriate illustration style`;
 
-    // Use z-ai-web-dev-sdk for image generation
-    const ZAI = (await import('z-ai-web-dev-sdk')).default;
-    const zai = await ZAI.create();
-
-    const result = await zai.images.generations.create({
+            
+    const result = await sdk.images.generations.create({
       prompt: enrichedPrompt,
       size: size as ValidSize,
     });

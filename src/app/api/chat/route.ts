@@ -16,6 +16,7 @@ import { extractFactsFromConversation, buildMemoryContext } from '@/lib/memory-e
 import { chatCompletion, loadSettings } from '@/lib/ai-providers';
 import { ensureFamilySeeded } from '@/lib/auto-seed';
 import { retrieveMemoryContext, recordConversationTurn } from '@/lib/agent-memory/chat-integration';
+import { getAIClient } from '@/lib/ai-client';
 
 export async function POST(req: NextRequest) {
   try {
@@ -209,15 +210,13 @@ export async function POST(req: NextRequest) {
       responseText = 'Przepraszam, nie mogłem przetworzyć odpowiedzi.';
     }
 
-    // Check if agent wants to search the web (only supported with z-ai-sdk)
+    // Check if agent wants to search the web (only supported with openrouter)
     const searchQueries = extractSearchQueries(responseText);
     let searchResults: Array<{ title: string; url: string; snippet: string; source: string }> = [];
 
-    if (searchQueries.length > 0 && settings.provider === 'z-ai-sdk') {
+    if (searchQueries.length > 0 && settings.provider === 'openrouter') {
       try {
-        const ZAI = (await import('z-ai-web-dev-sdk')).default;
-        const zai = await ZAI.create();
-        const searchResult = await zai.functions.invoke('web_search', {
+                        const searchResult = await sdk.functions.invoke('web_search', {
           query: searchQueries[0],
           num: 5,
         });
@@ -255,11 +254,9 @@ export async function POST(req: NextRequest) {
     }
 
     // Also check if the user explicitly asked to search
-    if (agentId === 'search' && searchQueries.length === 0 && settings.provider === 'z-ai-sdk') {
+    if (agentId === 'search' && searchQueries.length === 0 && settings.provider === 'openrouter') {
       try {
-        const ZAI = (await import('z-ai-web-dev-sdk')).default;
-        const zai = await ZAI.create();
-        const searchResult = await zai.functions.invoke('web_search', {
+                        const searchResult = await sdk.functions.invoke('web_search', {
           query: message.replace(/szukaj|wyszukaj|znajdź w internecie|poguglaj|sprawdź w sieci/gi, '').trim(),
           num: 5,
         });
@@ -301,11 +298,9 @@ export async function POST(req: NextRequest) {
     let generatedImageUrl: string | null = null;
     let generatedImagePrompt: string | null = null;
 
-    if (imageGenPrompts.length > 0 && settings.provider === 'z-ai-sdk') {
+    if (imageGenPrompts.length > 0 && settings.provider === 'openrouter') {
       try {
-        const ZAI = (await import('z-ai-web-dev-sdk')).default;
-        const zai = await ZAI.create();
-        const imgResult = await zai.images.generations.create({
+                        const imgResult = await sdk.images.generations.create({
           prompt: imageGenPrompts[0] + ', family-friendly, colorful, child-appropriate illustration style',
           size: '1024x1024',
         });

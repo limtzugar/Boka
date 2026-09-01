@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import ZAI from 'z-ai-web-dev-sdk';
+import { getAIClient } from '@/lib/ai-client';
 
 export async function POST(req: NextRequest) {
   try {
@@ -9,8 +9,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Brak zapytania' }, { status: 400 });
     }
 
-    const zai = await ZAI.create();
-    const searchResult = await zai.functions.invoke('web_search', {
+        const searchResult = await sdk.functions.invoke('web_search', {
       query,
       num,
     });

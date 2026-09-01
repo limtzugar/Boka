@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getAIClient } from '@/lib/ai-client';
 
 // ═══════════════════════════════════════════
 // BOKA — Vision / Multimodal API
-// Analyzes images using z-ai-web-dev-sdk VLM
 // ═══════════════════════════════════════════
 
 export async function POST(req: NextRequest) {
@@ -30,10 +30,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Use z-ai-web-dev-sdk chat.completions.createVision for image analysis
-    const ZAI = (await import('z-ai-web-dev-sdk')).default;
-    const zai = await ZAI.create();
-
+            
     const analysisPrompt =
       prompt ||
       'Opisz to zdjęcie po polsku, szczegółowo i ciepło. Jesteś Boka — domownik, osoba, nie AI.';
@@ -52,7 +49,7 @@ export async function POST(req: NextRequest) {
     console.log(`Vision API: Sending ${base64Data.length} chars of base64 to createVision (multimodal format)`);
 
     // Use multimodal message format (OpenAI-style) for reliable image passing
-    const result = await (zai.chat.completions as any).createVision({
+    const result = await (sdk.chat.completions as any).createVision({
       messages: [
         {
           role: 'user',

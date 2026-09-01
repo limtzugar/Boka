@@ -12,7 +12,7 @@ describe('orchestrator-pricing', () => {
     it('has pricing for default Cockpit models', () => {
       expect(MODEL_PRICING['moonshotai/kimi-k2']).toBeDefined();
       expect(MODEL_PRICING['deepseek/deepseek-r1']).toBeDefined();
-      expect(MODEL_PRICING['z-ai/glm-4.6']).toBeDefined();
+      expect(MODEL_PRICING['zhipu/glm-4']).toBeDefined();
       expect(MODEL_PRICING['anthropic/claude-opus-4']).toBeDefined();
     });
 

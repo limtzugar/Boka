@@ -55,7 +55,7 @@
 
 | Provider | API Key | Notes |
 |----------|---------|-------|
-| Z-AI SDK | No | Default, free |
+
 | OpenRouter | Yes | Any model via OpenRouter |
 | Ollama | No | Local models (localhost:11434) |
 | GGUF | No | .gguf file via llama.cpp |
@@ -133,7 +133,7 @@ BOKA OS/
 |-------|-----------|
 | GUI | Next.js 16, React 19, Tailwind CSS 4, shadcn/ui |
 | Database | Prisma 6, SQLite |
-| AI | Z-AI SDK, OpenRouter, Ollama, AutoGen, CrewAI, DeepAgents |
+| AI | OpenRouter, Ollama, AutoGen, CrewAI, DeepAgents |
 | Voice | Web Speech API, Edge TTS, Whisper |
 | Memory | Qdrant, Mem0, GraphRAG |
 | Privacy | Audit log, Forget API, consent management |

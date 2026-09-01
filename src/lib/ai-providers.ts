@@ -1,15 +1,15 @@
 // ═══════════════════════════════════════════
 // BOKA — Multi-Provider AI System
-// Supports: z-ai-sdk, OpenRouter, Ollama, GGUF file (llama.cpp), any OpenAI-compatible API
+// Supports: openrouter, OpenRouter, Ollama, GGUF file (llama.cpp), any OpenAI-compatible API
 // ═══════════════════════════════════════════
 
 import fs from 'fs';
 import path from 'path';
 import { spawn, type ChildProcess } from 'child_process';
 
-export type AIProvider = 'z-ai-sdk' | 'openrouter' | 'ollama' | 'gguf' | 'custom';
+export type AIProvider = 'openrouter' | 'ollama' | 'gguf' | 'custom';
 
-export type ASREngine = 'auto' | 'whisper' | 'z-ai-sdk';
+export type ASREngine = 'auto' | 'whisper';
 
 export interface AISettings {
   provider: AIProvider;
@@ -45,7 +45,7 @@ export interface AISettings {
   // Memory
   memoryFolder?: string;
   // ASR (Speech-to-Text)
-  asrEngine?: ASREngine;     // auto | whisper | z-ai-sdk
+  asrEngine?: ASREngine;     // auto | whisper
   whisperUrl?: string;       // np. http://127.0.0.1:5100
   whisperModel?: string;     // tiny | base | small | medium | large-v3
   // ── v0.3.17: Home Assistant ──
@@ -70,7 +70,7 @@ const MEMORY_BASE = process.env.BOKA_MEMORY_DIR || '/home/z/boka-memory';
 const SETTINGS_PATH = path.join(MEMORY_BASE, 'settings', 'boka-settings.json');
 
 const DEFAULT_SETTINGS: AISettings = {
-  provider: 'z-ai-sdk',
+  provider: 'openrouter',
   openrouterKey: '',
   openrouterModel: 'openai/gpt-oss-120b',
   ollamaUrl: 'http://localhost:11434',
@@ -162,17 +162,14 @@ export async function chatCompletion(
       return ggufCompletion(messages, s);
     case 'custom':
       return customCompletion(messages, s);
-    case 'z-ai-sdk':
     default:
-      return zaiCompletion(messages, s);
+      return openrouterCompletion(messages, s);
   }
 }
 
-// ── z-ai-sdk ──
-async function zaiCompletion(messages: ChatMessage[], _settings: AISettings): Promise<string> {
-  const ZAI = (await import('z-ai-web-dev-sdk')).default;
-  const zai = await ZAI.create();
-  const completion = await zai.chat.completions.create({
+// ── openrouter ──
+async function openrouterCompletion(messages: ChatMessage[], _settings: AISettings): Promise<string> {
+      const completion = const sdk = await getAIClient(); if (!sdk) throw new Error("AI SDK not available"); await sdk.chat.completions.create({
     messages: messages as Array<{ role: 'system' | 'user' | 'assistant'; content: string }>,
     temperature: _settings.temperature ?? 0.7,
     max_tokens: _settings.maxTokens ?? 1500,

@@ -17,8 +17,8 @@ export const MODEL_PRICING: Record<string, ModelPrice> = {
   // Krytyk — reasoning
   'deepseek/deepseek-r1':        { inputPerMTokens: 0.55,  outputPerMTokens: 2.19,  label: 'DeepSeek R1' },
   // Wykonawca — code / structure
-  'z-ai/glm-4.6':                { inputPerMTokens: 0.60,  outputPerMTokens: 2.20,  label: 'GLM-4.6' },
-  'z-ai/glm-4.5':                { inputPerMTokens: 0.60,  outputPerMTokens: 2.20,  label: 'GLM-4.5' },
+  'zhipu/glm-4':                { inputPerMTokens: 0.60,  outputPerMTokens: 2.20,  label: 'GLM-4.6' },
+  'zhipu/glm-4-flash':                { inputPerMTokens: 0.60,  outputPerMTokens: 2.20,  label: 'GLM-4.5' },
   // Sędzia — synthesis
   'anthropic/claude-opus-4':     { inputPerMTokens: 15.0,  outputPerMTokens: 75.0,  label: 'Claude Opus 4' },
   'anthropic/claude-sonnet-4':   { inputPerMTokens: 3.0,   outputPerMTokens: 15.0,  label: 'Claude Sonnet 4' },

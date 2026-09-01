@@ -9,6 +9,7 @@ import { loadSettings } from './ai-providers';
 import { logDecision } from './audit-service';
 import fs from 'fs';
 import path from 'path';
+import { getAIClient } from '@/lib/ai-client';
 
 // ── Vision config ────────────────────────────
 export interface VisionConfig {
@@ -64,16 +65,13 @@ async function describeViaOllama(
   return data.response?.trim() ?? '';
 }
 
-// ── Describe scene via z-ai-sdk (glm-4v) ─────
+// ── Describe scene via openrouter (glm-4v) ─────
 async function describeViaGLM4V(
   base64Image: string,
   prompt: string,
 ): Promise<string> {
-  const ZAI = await import('z-ai-web-dev-sdk').then((m) => m.default || m).catch(() => null);
-  if (!ZAI) throw new Error('z-ai-web-dev-sdk not available');
 
-  const zai = await ZAI.create();
-  const completion = await (zai.chat.completions as any).create({
+    const completion = await (sdk.chat.completions as any).create({
     messages: [
       {
         role: 'user',

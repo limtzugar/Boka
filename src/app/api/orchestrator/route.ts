@@ -66,7 +66,7 @@ export interface AggregatedResult {
 export const DEFAULT_MODELS: OrchestratorModelConfig[] = [
   { id: 'kimi',     role: 'strateg',    openrouterModel: 'moonshotai/kimi-k2',                enabled: true,  weight: 0.20 },
   { id: 'deepseek', role: 'krytyk',     openrouterModel: 'deepseek/deepseek-r1',              enabled: true,  weight: 0.20 },
-  { id: 'glm',      role: 'wykonawca',  openrouterModel: 'z-ai/glm-4.6',                      enabled: true,  weight: 0.20 },
+  { id: 'glm',      role: 'wykonawca',  openrouterModel: 'zhipu/glm-4',                      enabled: true,  weight: 0.20 },
   { id: 'advocate', role: 'kontrarian', openrouterModel: 'deepseek/deepseek-r1',              enabled: true,  weight: 0.10 },
   { id: 'claude',   role: 'sędzia',     openrouterModel: 'anthropic/claude-opus-4',           enabled: true,  weight: 0.30 },
 ];

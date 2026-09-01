@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { chatCompletion } from '@/lib/ai-providers';
+import { getAIClient } from '@/lib/ai-client';
 
 // ═══════════════════════════════════════════
 // BOKA — Voice Emotion Analysis API
@@ -144,11 +145,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Step 1: Transcribe audio using z-ai-web-dev-sdk ASR
-    const ZAI = (await import('z-ai-web-dev-sdk')).default;
-    const zai = await ZAI.create();
-
-    const asrResponse = await zai.audio.asr.create({
+            
+    const asrResponse = await sdk.audio.asr.create({
       file_base64: base64Data,
     });
 

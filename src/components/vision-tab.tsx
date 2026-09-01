@@ -492,7 +492,7 @@ export function VisionTab() {
               <option value="moondream:1.8b">moondream:1.8b (lokalnie, 1.8B)</option>
               <option value="llava:7b">llava:7b (lokalnie, 7B)</option>
               <option value="llava:13b">llava:13b (lokalnie, 13B)</option>
-              <option value="glm-4v">glm-4v (chmura Z.ai)</option>
+              <option value="glm-4v">glm-4v (Zhipu Cloud)</option>
             </select>
             <input
               type="number"
