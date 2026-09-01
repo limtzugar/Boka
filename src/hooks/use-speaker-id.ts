@@ -140,15 +140,19 @@ function notifyStoreListeners() {
 // Cached snapshot: only create a new reference when the data actually changes.
 // Without this, loadProfiles() returns a new array every call, causing
 // useSyncExternalStore to think the store changed → infinite re-renders.
-let cachedSnapshot: VoiceProfile[] = [];
-let cachedRaw: string | undefined;
+const EMPTY_PROFILES: VoiceProfile[] = [];
+let cachedSnapshot: VoiceProfile[] = EMPTY_PROFILES;
+let cachedRaw: string | null | undefined = undefined;
 
 function getStoreSnapshot(): VoiceProfile[] {
-  const raw = typeof window !== 'undefined' ? localStorage.getItem(STORAGE_KEY) : null;
-  if (raw !== cachedRaw) {
-    cachedRaw = raw ?? undefined;
-    cachedSnapshot = parseProfiles(raw);
-  }
+  if (typeof window === 'undefined') return EMPTY_PROFILES;
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (raw === cachedRaw) return cachedSnapshot;
+  cachedRaw = raw;
+  const parsed = parseProfiles(raw);
+  // Only replace if contents actually differ (avoid new reference for same data)
+  if (parsed.length === cachedSnapshot.length && parsed.length === 0) return cachedSnapshot;
+  cachedSnapshot = parsed;
   return cachedSnapshot;
 }
 
