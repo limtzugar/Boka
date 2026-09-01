@@ -1,0 +1,45 @@
+import { NextRequest, NextResponse } from 'next/server';
+import ZAI from 'z-ai-web-dev-sdk';
+
+export async function POST(req: NextRequest) {
+  try {
+    const { query, num = 5 } = await req.json();
+
+    if (!query || typeof query !== 'string') {
+      return NextResponse.json({ error: 'Brak zapytania' }, { status: 400 });
+    }
+
+    const zai = await ZAI.create();
+    const searchResult = await zai.functions.invoke('web_search', {
+      query,
+      num,
+    });
+
+    if (!Array.isArray(searchResult)) {
+      return NextResponse.json({ error: 'Błąd wyszukiwania' }, { status: 500 });
+    }
+
+    const results = searchResult.map((item: {
+      url?: string;
+      name?: string;
+      snippet?: string;
+      host_name?: string;
+      date?: string;
+    }) => ({
+      title: item.name || 'Bez tytułu',
+      url: item.url || '',
+      snippet: item.snippet || '',
+      source: item.host_name || '',
+      date: item.date || '',
+    }));
+
+    return NextResponse.json({ results, query });
+  } catch (error: unknown) {
+    const errMsg = error instanceof Error ? error.message : 'Nieznany błąd';
+    console.error('Search API error:', errMsg);
+    return NextResponse.json(
+      { error: 'Błąd wyszukiwania', details: errMsg },
+      { status: 500 }
+    );
+  }
+}

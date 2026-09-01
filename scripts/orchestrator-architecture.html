@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<title>BOKA Cockpit — Architektura Organizmu</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --text: #111827;
+    --text-sub: #4B5563;
+    --text-muted: #6B7280;
+    --bg: #FFFFFF;
+    --surface: #F9FAFB;
+    --border: #E5E7EB;
+    --blue: #2563EB;
+    --cyan: #06B6D4;
+    --purple: #7C3AED;
+    --amber: #D97706;
+    --red: #DC2626;
+    --green: #059669;
+    --connector: #94A3B8;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  #root { width: fit-content; min-width: 1200px; margin: 0 auto; padding: 48px 56px; }
+
+  .flow-title {
+    font-size: 26px; font-weight: 800; color: var(--text);
+    text-align: center; letter-spacing: -0.01em;
+  }
+  .flow-subtitle {
+    font-size: 14px; color: var(--text-sub);
+    text-align: center; margin-top: 6px; max-width: 880px;
+    margin-left: auto; margin-right: auto; line-height: 1.6;
+  }
+  .flow-tagline {
+    display: inline-block; margin-top: 14px;
+    padding: 5px 14px; border-radius: 999px;
+    background: #EFF6FF; color: #1E40AF;
+    font-size: 12px; font-weight: 600;
+    border: 1px solid #DBEAFE;
+  }
+
+  /* ── Phased groups (Layout C, Scheme B — 8 phases) ── */
+  .phase-group {
+    background: #F8FAFC; border-radius: 14px; padding: 22px 26px 18px;
+    margin: 0 auto 18px; max-width: 1080px;
+    border: 1px solid #E2E8F0;
+  }
+  .phase-title {
+    font-size: 16px; font-weight: 700; padding: 10px 18px;
+    border-radius: 8px; margin-bottom: 14px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .phase-title .phase-num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px; border-radius: 50%;
+    background: rgba(255,255,255,0.7);
+    font-size: 13px; font-weight: 800;
+  }
+  .phase-title .phase-icon { font-size: 18px; }
+  .phase-title .phase-label { flex: 1; }
+  .phase-title .phase-tech {
+    font-size: 11px; font-weight: 500;
+    padding: 3px 10px; border-radius: 4px;
+    background: rgba(255,255,255,0.65); color: var(--text-muted);
+    font-family: 'SF Mono', Consolas, monospace;
+  }
+
+  .phase-steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 10px;
+  }
+  .phase-step {
+    font-size: 13px; font-weight: 500; color: var(--text);
+    padding: 10px 14px; background: white; border-radius: 7px;
+    border: 1px solid var(--border);
+    display: flex; flex-direction: column; gap: 3px;
+  }
+  .phase-step .step-name { font-weight: 600; }
+  .phase-step .step-desc {
+    font-size: 11.5px; font-weight: 400; color: var(--text-muted);
+    line-height: 1.45;
+  }
+  .phase-step .step-tag {
+    display: inline-block; align-self: flex-start;
+    font-size: 10px; font-weight: 600; padding: 1px 6px;
+    border-radius: 3px; margin-top: 3px;
+    background: #F1F5F9; color: var(--text-sub);
+    font-family: 'SF Mono', Consolas, monospace;
+  }
+
+  /* Phase colors — Scheme B (neutral gray base + blue accent progression) */
+  .phase-1 .phase-title { background: #F8FAFC; color: #334155; border-left: 4px solid #94A3B8; }
+  .phase-1 .phase-num   { color: #475569; }
+  .phase-2 .phase-title { background: #F1F5F9; color: #334155; border-left: 4px solid #7B8FA3; }
+  .phase-2 .phase-num   { color: #475569; }
+  .phase-3 .phase-title { background: #E8EDF3; color: #2D4156; border-left: 4px solid #6B809A; }
+  .phase-3 .phase-num   { color: #2D4156; }
+  .phase-4 .phase-title { background: #E2E8F0; color: #283C52; border-left: 4px solid #5B7590; }
+  .phase-4 .phase-num   { color: #283C52; }
+  .phase-5 .phase-title { background: #DBE5F0; color: #23364D; border-left: 4px solid #4B6A87; }
+  .phase-5 .phase-num   { color: #23364D; }
+  .phase-6 .phase-title { background: #D5E0ED; color: #1E3048; border-left: 4px solid #3B5F7D; }
+  .phase-6 .phase-num   { color: #1E3048; }
+  .phase-7 .phase-title { background: #CFDBEB; color: #192A3E; border-left: 4px solid #2B5473; }
+  .phase-7 .phase-num   { color: #192A3E; }
+  .phase-8 .phase-title { background: #C9D6E9; color: #14243A; border-left: 4px solid #1B4A6E; }
+  .phase-8 .phase-num   { color: #14243A; }
+
+  /* Phase-to-phase arrow */
+  .phase-arrow {
+    text-align: center; color: #94A3B8;
+    font-size: 22px; margin: 0 auto;
+    line-height: 1; padding: 2px 0;
+  }
+
+  /* Legend */
+  .flow-legend {
+    display: flex; gap: 22px; justify-content: center;
+    margin-top: 32px; padding: 14px 22px;
+    background: #F9FAFB; border-radius: 10px;
+    border: 1px solid #E5E7EB;
+    flex-wrap: wrap;
+  }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: #4B5563; }
+  .legend-dot { width: 12px; height: 12px; border-radius: 3px; border: 2px solid; }
+
+  /* Principle banner */
+  .principle {
+    margin-top: 32px; padding: 18px 28px;
+    background: linear-gradient(135deg, #1E293B 0%, #0F172A 100%);
+    border-radius: 12px; color: white;
+    text-align: center; max-width: 1080px;
+    margin-left: auto; margin-right: auto;
+  }
+  .principle .quote {
+    font-size: 17px; font-weight: 700; line-height: 1.5;
+    font-style: italic;
+  }
+  .principle .quote .accent { color: #60A5FA; font-style: normal; }
+  .principle .caption {
+    font-size: 12px; color: #94A3B8; margin-top: 8px;
+    font-family: 'SF Mono', Consolas, monospace;
+  }
+</style>
+</head>
+<body>
+<div id="root">
+  <div class="flow-title">BOKA COCKPIT — Architektura Organizmu Multi-Modelowego</div>
+  <div class="flow-subtitle">
+    Wielomodelowe środowisko myślowe sterowane głosem. Każdy prompt rozchodzi się równolegle na 4 role-modeli,
+    aggregator podejmuje decyzję, pamięć jest włączana tylko gdy trzeba. 8 warstw, 1 panel kontrolny.
+  </div>
+  <div style="text-align:center;"><span class="flow-tagline">Default to stateless · Elevate to memory only when needed</span></div>
+
+  <div style="margin-top: 36px;"></div>
+
+  <!-- PHASE 1 — VOICE LAYER -->
+  <div class="phase-group phase-1">
+    <div class="phase-title">
+      <span class="phase-num">1</span>
+      <span class="phase-icon">🎙️</span>
+      <span class="phase-label">VOICE LAYER — Warstwa wejścia</span>
+      <span class="phase-tech">Superwhisper · ASR</span>
+    </div>
+    <div class="phase-steps">
+      <div class="phase-step">
+        <span class="step-name">Superwhisper → tekst</span>
+        <span class="step-desc">Lokalny Whisper (medium/large-v3) zamienia mowę na tekst w czasie rzeczywistym.</span>
+        <span class="step-tag">/api/asr</span>
+      </div>
+      <div class="phase-step">
+        <span class="step-name">Parser komend głosowych</span>
+        <span class="step-desc">Wykrywa intencje: „tryb szybki”, „tryb pamięć”, „tryb projektu”, „zapisz to”, „porównaj modele”.</span>
+        <span class="step-tag">IntentParser</span>
+      </div>
+      <div class="phase-step">
+        <span class="step-name">Routing intencji</span>
+        <span class="step-desc">Wybór trybu pracy + kierunek do backendu (TEMP / MEMORY / PROJECT).</span>
+        <span class="step-tag">→ Orchestrator</span>
+      </div>
+    </div>
+  </div>
+  <div class="phase-arrow">↓</div>
+
+  <!-- PHASE 2 — ORCHESTRATOR -->
+  <div class="phase-group phase-2">
+    <div class="phase-title">
+      <span class="phase-num">2</span>
+      <span class="phase-icon">🧠</span>
+      <span class="phase-label">ORCHESTRATOR — Core System</span>
+      <span class="phase-tech">Next.js API · FastAPI-style</span>
+    </div>
+    <div class="phase-steps">
+      <div class="phase-step">
+        <span class="step-name">Intent Parser</span>
+        <span class="step-desc">Dekoduje prompt + tryb + tagi. Decyduje czy pamięć jest potrzebna.</span>
+        <span class="step-tag">/api/orchestrator</span>
+      </div>
+      <div class="phase-step">
+        <span class="step-name">Mode Selector</span>
+        <span class="step-desc">🟢 TEMP · 🟡 MEMORY · 🔴 PROJECT. Determinuje koszt, kontekst i persistencję.</span>
+        <span class="step-tag">3 tryby</span>
+      </div>
+      <div class="phase-step">
+        <span class="step-name">Memory Retrieval</span>
+        <span class="step-desc">Gdy MEMORY/PROJECT: pobiera top-k kontekst z lokalnej bazy JSON + tagów.</span>
+        <span class="step-tag">opcjonalnie</span>
+      </div>
+      <div class="phase-step">
+        <span class="step-name">Multi-Model Dispatcher</span>
+        <span class="step-desc">Równoległe wysłanie promptu do 4 modeli przez OpenRouter. Kontrola kosztów i timeoutów.</span>
+        <span class="step-tag">Promise.all</span>
+      </div>
+    </div>
+  </div>
+  <div class="phase-arrow">↓</div>
+
+  <!-- PHASE 3 — MODELE -->
+  <div class="phase-group phase-3">
+    <div class="phase-title">
+      <span class="phase-num">3</span>
+      <span class="phase-icon">🧬</span>
+      <span class="phase-label">MODELE — Multi-Provider via OpenRouter</span>
+      <span class="phase-tech">4 role</span>
+    </div>
+    <div class="phase-steps">
+      <div class="phase-step">
+        <span class="step-name">🧭 Kimi 2.7 — Strateg</span>
+        <span class="step-desc">Szybkie myślenie, planowanie, szybkie porównania, intuicyjne skoki.</span>
+        <span class="step-tag">strategy</span>
+      </div>
+      <div class="phase-step">
+        <span class="step-name">🔍 DeepSeek R1 — Krytyk</span>
+        <span class="step-desc">Analiza ryzyka, luki w argumentacji, alternativa perspective.</span>
+        <span class="step-tag">critique</span>
+      </div>
+      <div class="phase-step">
+        <span class="step-name">⚙️ GLM-5.2 — Wykonawca</span>
+        <span class="step-desc">Kod, struktura, konkretne kroki implementacji, techniczne detale.</span>
+        <span class="step-tag">execution</span>
+      </div>
+      <div class="phase-step">
+        <span class="step-name">⚖️ Claude Opus 4.8 — Sędzia</span>
+        <span class="step-desc">Finalna synteza, ważona decyzja, confidence scoring.</span>
+        <span class="step-tag">judge</span>
+      </div>
+    </div>
+  </div>
+  <div class="phase-arrow">↓</div>
+
+  <!-- PHASE 4 — AGGREGATOR -->
+  <div class="phase-group phase-4">
+    <div class="phase-title">
+      <span class="phase-num">4</span>
+      <span class="phase-icon">🧮</span>
+      <span class="phase-label">AGGREGATOR — Decyzyjny rdzeń</span>
+      <span class="phase-tech">Scoring · Weighted Vote</span>
+    </div>
+    <div class="phase-steps">
+      <div class="phase-step">
+        <span class="step-name">Confidence scoring</span>
+        <span class="step-desc">Każda odpowiedź modelu dostaje 0.0–1.0 na podstawie spójności i ostateczności.</span>
+        <span class="step-tag">0.0 – 1.0</span>
+      </div>
+      <div class="phase-step">
+        <span class="step-name">Weighted vote</span>
+        <span class="step-desc">Wagi ról: strateg 0.25 · krytyk 0.25 · wykonawca 0.25 · sędzia 0.25 (domyślnie równe).</span>
+        <span class="step-tag">Σ w_i · c_i</span>
+      </div>
+      <div class="phase-step">
+        <span class="step-name">Final decision</span>
+        <span class="step-desc">Sędzia Claude Opus wybiera jedną odpowiedź lub syntezyje je w jedną decyzję końcową.</span>
+        <span class="step-tag">→ UI</span>
+      </div>
+    </div>
+  </div>
+  <div class="phase-arrow">↓</div>
+
+  <!-- PHASE 5 — MEMORY SYSTEM -->
+  <div class="phase-group phase-5">
+    <div class="phase-title">
+      <span class="phase-num">5</span>
+      <span class="phase-icon">🧠</span>
+      <span class="phase-label">MEMORY SYSTEM — Dwa poziomy</span>
+      <span class="phase-tech">JSON store · Vector-ready</span>
+    </div>
+    <div class="phase-steps">
+      <div class="phase-step">
+        <span class="step-name">🔹 MEMORY TEMP (default)</span>
+        <span class="step-desc">Brak zapisu. Kontekst tylko w jednym promptcie. Reset po zadaniu.</span>
+        <span class="step-tag">stateless</span>
+      </div>
+      <div class="phase-step">
+        <span class="step-name">🔹 MEMORY LONG-TERM (toggle)</span>
+        <span class="step-desc">Zapis decyzji, wniosków, projektów. Retrieval po tagach i timestampie.</span>
+        <span class="step-tag">stateful</span>
+      </div>
+      <div class="phase-step">
+        <span class="step-name">Struktura rekordu</span>
+        <span class="step-desc">{timestamp, topic, input, outputs{kimi,deepseek,glm}, final_decision, confidence, tags[]}</span>
+        <span class="step-tag">JSON</span>
+      </div>
+    </div>
+  </div>
+  <div class="phase-arrow">↓</div>
+
+  <!-- PHASE 6 — TRYBY PRACY -->
+  <div class="phase-group phase-6">
+    <div class="phase-title">
+      <span class="phase-num">6</span>
+      <span class="phase-icon">🔁</span>
+      <span class="phase-label">TRYBY PRACY — UX core</span>
+      <span class="phase-tech">3 modes</span>
+    </div>
+    <div class="phase-steps">
+      <div class="phase-step">
+        <span class="step-name">🟢 MODE 1 — TEMP</span>
+        <span class="step-desc">Brak pamięci · 2–4 modele · krótki output. „Zrób szybkie porównanie X”.</span>
+        <span class="step-tag">default</span>
+      </div>
+      <div class="phase-step">
+        <span class="step-name">🟡 MODE 2 — MEMORY</span>
+        <span class="step-desc">Pobiera kontekst · porównuje z historią. „Pracujemy nad tym projektem dalej”.</span>
+        <span class="step-tag">refleksja</span>
+      </div>
+      <div class="phase-step">
+        <span class="step-name">🔴 MODE 3 — PROJECT</span>
+        <span class="step-desc">Pełna pamięć · zapis każdej decyzji · iteracyjna poprawa. „To jest mój system”.</span>
+        <span class="step-tag">rozwój</span>
+      </div>
+    </div>
+  </div>
+  <div class="phase-arrow">↓</div>
+
+  <!-- PHASE 7 — VOICE COMMANDS -->
+  <div class="phase-group phase-7">
+    <div class="phase-title">
+      <span class="phase-num">7</span>
+      <span class="phase-icon">🗣️</span>
+      <span class="phase-label">VOICE COMMANDS — Sterowanie głosem</span>
+      <span class="phase-tech">Superwhisper triggers</span>
+    </div>
+    <div class="phase-steps">
+      <div class="phase-step">
+        <span class="step-name">Tryby</span>
+        <span class="step-desc">„tryb szybki” · „tryb pamięć” · „tryb projektu”</span>
+        <span class="step-tag">mode-switch</span>
+      </div>
+      <div class="phase-step">
+        <span class="step-name">Operacje</span>
+        <span class="step-desc">„porównaj modele” · „wybierz najlepszą odpowiedź” · „zapisz to” · „przypomnij co ustaliliśmy”</span>
+        <span class="step-tag">actions</span>
+      </div>
+      <div class="phase-step">
+        <span class="step-name">Hands-free</span>
+        <span class="step-desc">Działa bez przełączania okien — mówisz, Boka odpowiada głosem (TTS) + tekstem.</span>
+        <span class="step-tag">no-window-switch</span>
+      </div>
+    </div>
+  </div>
+  <div class="phase-arrow">↓</div>
+
+  <!-- PHASE 8 — UI COCKPIT -->
+  <div class="phase-group phase-8">
+    <div class="phase-title">
+      <span class="phase-num">8</span>
+      <span class="phase-icon">🖥️</span>
+      <span class="phase-label">UI COCKPIT — Panel 3-kolumnowy</span>
+      <span class="phase-tech">Next.js + Tailwind</span>
+    </div>
+    <div class="phase-steps">
+      <div class="phase-step">
+        <span class="step-name">🔲 LEWA — Kontrolki</span>
+        <span class="step-desc">Voice input, toggle trybu (TEMP/MEMORY/PROJECT), memory switch, lista modeli.</span>
+        <span class="step-tag">controls</span>
+      </div>
+      <div class="phase-step">
+        <span class="step-name">🔲 ŚRODEK — Odpowiedzi</span>
+        <span class="step-desc">Kolumny per model (Kimi / DeepSeek / GLM / Claude). Streamowane równolegle.</span>
+        <span class="step-tag">model-columns</span>
+      </div>
+      <div class="phase-step">
+        <span class="step-name">🔲 PRAWA — Final</span>
+        <span class="step-desc">Final answer, confidence score, „save to memory”, historia decyzji.</span>
+        <span class="step-tag">decision</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Legend -->
+  <div class="flow-legend">
+    <div class="legend-item"><div class="legend-dot" style="border-color:#94A3B8;background:#F8FAFC;"></div>Warstwa wejścia / UX</div>
+    <div class="legend-item"><div class="legend-dot" style="border-color:#5B7590;background:#E2E8F0;"></div>Backend / Orchestracja</div>
+    <div class="legend-item"><div class="legend-dot" style="border-color:#2B5473;background:#CFDBEB;"></div>UI / Output</div>
+    <div class="legend-item" style="font-family:'SF Mono',Consolas,monospace; font-size:12px;">↓ flow: top → bottom</div>
+  </div>
+
+  <!-- Principle -->
+  <div class="principle">
+    <div class="quote">
+      „Default to <span class="accent">stateless</span>, elevate to <span class="accent">memory</span> only when needed”
+    </div>
+    <div class="caption">TEMP = szybkie myślenie · MEMORY = refleksja · PROJECT = rozwój</div>
+  </div>
+</div>
+</body>
+</html>

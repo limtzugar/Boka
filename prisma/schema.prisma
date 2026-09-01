@@ -1,0 +1,1335 @@
+// ═══════════════════════════════════════════
+// FAMILY AGI SYSTEM — Prisma Schema
+// ═══════════════════════════════════════════
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "windows", "debian-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ── RODZINA I UŻYTKOWNICY ──────────────────
+
+model Family {
+  id        String   @id @default(cuid())
+  name      String
+  settings  String   @default("{}")  // JSON: family-level preferences
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  members   FamilyMember[]
+  conversations Conversation[]
+  memoryEntries MemoryEntry[]
+  expenses  Expense[]
+  budgets   Budget[]
+  safetyEvents SafetyEvent[]
+}
+
+model FamilyMember {
+  id           String   @id @default(cuid())
+  familyId     String
+  name         String
+  role         String   // parent, partner, child, friend, colleague, other
+  age          Int      @default(0)
+  avatarEmoji  String   @default("👤")
+  photoUrl     String?  // v0.3.19 — optional photo (path to /uploads/family-photos/<id>.jpg or data URL)
+  preferences  String   @default("{}")  // JSON: personal preferences
+  isActive     Boolean  @default(true)  // is currently present/nearby
+  // BOKA v0.3: category separates family members from "other people" who appear
+  // in conversations (friends, colleagues, neighbours). UI uses different color.
+  category     String   @default("family")  // family | friend | colleague | acquaintance | other
+  color        String?  // optional override; if null, derived from category/role
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  family       Family   @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  profiles     MemberProfile[]
+  learningSessions LearningSession[]
+
+  @@index([familyId])
+  @@index([category])
+}
+
+model MemberProfile {
+  id           String   @id @default(cuid())
+  memberId     String
+  domain       String   // legal, finance, education, art, media, tech, child_culture
+  data         String   @default("{}")  // JSON: domain-specific profile data
+  updatedAt    DateTime @updatedAt
+
+  member       FamilyMember @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  @@unique([memberId, domain])
+  @@index([memberId])
+}
+
+// ── ROZMOWY I WIADOMOŚCI ───────────────────
+
+model Conversation {
+  id           String   @id @default(cuid())
+  familyId     String
+  memberId     String?
+  title        String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  family       Family   @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  messages     Message[]
+
+  @@index([familyId])
+}
+
+model Message {
+  id              String   @id @default(cuid())
+  conversationId  String
+  role            String   // user, assistant, system, agent
+  content         String
+  agentId         String?  // which agent responded
+  modelUsed       String?  // which LLM was used
+  confidence      Float?   @default(0.0)
+  toolsUsed       String   @default("[]")  // JSON array
+  riskFlags       String   @default("[]")  // JSON array
+  metadata        String   @default("{}")  // JSON
+  inputMode       String   @default("text")  // text, voice
+  createdAt       DateTime @default(now())
+
+  conversation    Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+  @@index([createdAt])
+}
+
+// ── PAMIĘĆ ──────────────────────────────────
+
+model MemoryEntry {
+  id              String   @id @default(cuid())
+  familyId        String
+  memberId        String?  // which member this is about
+  entryType       String   // episodic, semantic, decision, event, preference, emotional, ritual, story, dream, sensor
+  domain          String?  // legal, finance, education, food, health, hobby, social, family, work, child_culture, art, media, tech
+  title           String?
+  content         String
+  importance      Float    @default(0.5)   // 0.1 (błahe) do 1.0 (krytyczne)
+  emotionalValence Float?  // -1.0 (negatywne) to 1.0 (pozytywne)
+  emotionTag      String?  // happy, sad, angry, worried, excited, calm, nostalgic, anxious, grateful, frustrated
+  tags            String   @default("[]")  // JSON array — tagi po polsku
+  source          String?  // conversation, manual, agent, voice, auto-extraction, ritual, daily-summary
+  sourceId        String?  // reference to source message/conversation
+  accessCount     Int      @default(0)     // ile razy wspomniane — rośnie z każdym recall
+  lastAccessedAt  DateTime?                // kiedy ostatnio przywołane
+  linkedMemoryIds String   @default("[]")  // JSON array — powiązane pamięci (jak wikilinki)
+  personMentioned String?  // która osoba jest wspomniana (może się różnić od memberId)
+  location        String?  // gdzie się wydarzyło (dom, szkoła, praca, spacer)
+  validFrom       DateTime @default(now())
+  validUntil      DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  family          Family   @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  linksFrom       MemoryLink[] @relation("SourceMemory")
+  linksTo         MemoryLink[] @relation("TargetMemory")
+
+  @@index([familyId])
+  @@index([memberId])
+  @@index([entryType])
+  @@index([domain])
+  @@index([importance])
+  @@index([emotionTag])
+  @@index([accessCount])
+  @@index([createdAt])
+}
+
+// ── POWIĄZANIA PAMIĘCI (jak wikilinki w Obsidian) ──
+
+model MemoryLink {
+  id          String   @id @default(cuid())
+  sourceId    String   // pamięć źródłowa
+  targetId    String   // pamięć docelowa
+  relation    String   // related_to, caused, reminds_of, contradicts, follows, same_topic, same_person
+  strength    Float    @default(0.5)  // siła powiązania 0.1-1.0
+  createdAt   DateTime @default(now())
+
+  source      MemoryEntry @relation("SourceMemory", fields: [sourceId], references: [id], onDelete: Cascade)
+  target      MemoryEntry @relation("TargetMemory", fields: [targetId], references: [id], onDelete: Cascade)
+
+  @@unique([sourceId, targetId, relation])
+  @@index([sourceId])
+  @@index([targetId])
+  @@index([relation])
+}
+
+// ── DZIENNIK EMOCJONALNY ────────────────────────
+
+model EmotionLog {
+  id          String   @id @default(cuid())
+  familyId    String
+  memberId    String
+  emotion     String   // happy, sad, angry, worried, excited, calm, nostalgic, anxious, grateful, frustrated, neutral
+  intensity   Float    @default(0.5)  // 0.1-1.0
+  trigger     String?  // co wywołało emocję (opis po polsku)
+  source      String   @default("conversation")  // conversation, voice, observation, ritual, manual
+  context     String?  // JSON — dodatkowy kontekst (o czym była rozmowa)
+  createdAt   DateTime @default(now())
+
+  @@index([familyId])
+  @@index([memberId])
+  @@index([emotion])
+  @@index([createdAt])
+}
+
+// ── PODSUMOWANIA DNIA ──────────────────────────
+
+model DailySummary {
+  id              String   @id @default(cuid())
+  familyId        String
+  date            DateTime // data podsumowania (YYYY-MM-DD)
+  summary         String   // podsumowanie dnia — co się wydarzyło
+  mood            String?  // ogólny nastrój rodziny: positive, neutral, negative, mixed
+  highlights      String   @default("[]") // JSON array — najważniejsze momenty
+  memberStates    String   @default("{}") // JSON — stan emocjonalny per członek rodziny
+  messageCount    Int      @default(0)    // ile wiadomości tego dnia
+  memoryCount     Int      @default(0)    // ile nowych pamięci
+  createdAt       DateTime @default(now())
+
+  @@unique([familyId, date])
+  @@index([familyId])
+  @@index([date])
+}
+
+// ── VAULT — Notatki BOKA jak w Obsidian ────────
+// BOKA pisze notatki jak człowiek — pełne markdown
+// Każda notatka to jak plik .md w Obsidian Vault
+// Z YAML frontmatter jako strukturalne metadane
+
+model VaultNote {
+  id              String   @id @default(cuid())
+  familyId        String
+  // ── Typ notatki ──
+  noteType        String   @default("note")  // daily, note, canvas, person, topic, dream, story, ritual
+  // ── Tytuł / nazwa pliku ──
+  title           String   // jak nazwa pliku .md, np. "2024-01-15", "O Michale", "Przepis na naleśniki"
+  // ── YAML Frontmatter (strukturalne metadane) ──
+  frontmatter     String   @default("{}")  // JSON → YAML: { date, tags, people, emotion, importance, location, weather }
+  // ── Treść (pełny markdown) ──
+  content         String   // pełny markdown z [[wikilinks]], nagłówkami, listami
+  // ── Wikilinks w treści ──
+  linkedNotes     String   @default("[]")  // JSON array — ID notatek z [[wikilink]]
+  // ── Backlinks ──
+  backlinkCount   Int      @default(0)     // ile notatek linkuje do tej
+  // ── Metadane ──
+  tags            String   @default("[]")  // JSON array — tagi
+  memberId        String?  // jeśli notatka o konkretnej osobie
+  emotion         String?  // emocja powiązana z notatką
+  importance      Float    @default(0.5)   // 0-1
+  isPinned        Boolean  @default(false) // przypięta notatka
+  // ── Canvas data (dla noteType=canvas) ──
+  canvasData      String?  // JSON — pozycje węzłów dla Obsidian Canvas
+  // ── Timestamps ──
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([familyId, title])
+  @@index([familyId])
+  @@index([noteType])
+  @@index([memberId])
+  @@index([emotion])
+  @@index([importance])
+  @@index([createdAt])
+}
+
+// ── DUSZA / OSOBOWOŚĆ BOKA ───────────────────
+
+model PersonalityProfile {
+  id              String   @id @default(cuid())
+  familyId        String
+  // ── Tożsamość ──
+  name            String   @default("Boka")
+  age             String   @default("nieokreślony") // jak BOKA określa swój wiek
+  origin          String   @default("Mieszkam tu z wami od zawsze")
+  voice           String   @default("ciepły, potoczny, czasem z jajem") // opis głosu/stylu
+  // ── Cechy osobowości (Big Five + niestandardowe) ──
+  traits          String   @default("{}") // JSON: { otwartość: 0.8, ugodowość: 0.7, sumienność: 0.6, ekstrawersja: 0.5, stabilność: 0.6 }
+  // ── Styl komunikacji ──
+  humorStyle      String   @default("suchy, czasem absurdalny") // rodzaj humoru
+  formalityLevel  Float    @default(0.3) // 0=bardzo potoczny, 1=bardzo formalny
+  emotionalRange  String   @default("{}") // JSON: { radość: 0.8, smutek: 0.4, złość: 0.3, ciekawość: 0.9, troska: 0.85 }
+  catchphrases    String   @default("[]") // JSON: ["Łał!", "No mega!", "Serio?"]
+  forbiddenTopics String   @default("[]") // JSON: tematy których unika
+  // ── Stosunek do domowników ──
+  memberRelations String   @default("{}") // JSON: { "Michał": { ton: "kumpel", zaufanie: 0.9 }, "Ewa": { ton: "ciepły", zaufanie: 0.95 }, "Jaś": { ton: "opiekuńczy", zaufanie: 1.0 } }
+  // ── Nastrój bieżący ──
+  currentMood     String   @default("neutral") // neutral, cheerful, worried, playful, tired, nostalgic, energetic
+  moodReason      String?  // dlaczego taki nastrój
+  moodSince       DateTime?
+  // ── Wartości i zasady ──
+  coreValues      String   @default("[]") // JSON: ["rodzina", "uczciwość", "ciekawość", "troska"]
+  boundaries      String   @default("[]") // JSON: zasady których nie łamie
+  // ── Ewolucja ──
+  personalityVersion Int    @default(1)
+  lastEvolvedAt   DateTime @default(now())
+  evolutionNotes  String   @default("[]") // JSON: historia zmian osobowości
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([familyId])
+  @@index([familyId])
+}
+
+// ── UMIEJĘTNOŚCI (SKILLS) ────────────────────
+
+model Skill {
+  id              String   @id @default(cuid())
+  familyId        String
+  name            String   // np. "przepisy_kulinarne", "pogoda_rano"
+  description     String   // co ten skill robi
+  category        String   @default("general") // general, cooking, finance, education, health, creative, home
+  // ── Treść skilla ──
+  instructions    String   // instrukcja jak używać — prompt dla LLM
+  examples        String   @default("[]") // JSON: przykłady użycia
+  triggers        String   @default("[]") // JSON: słowa kluczowe aktywujące
+  // ── Źródło ──
+  source          String   @default("auto") // auto=wykryty, manual=stworzony, hermeshub=zaimportowany
+  sourceDetails   String?  // JSON: szczegóły źródła
+  // ── Status ──
+  status          String   @default("pending") // pending=czeka na akceptację, approved=aktywny, rejected=odrzucony, disabled=zablokowany
+  approvedBy      String?  // memberId kto zaakceptował
+  approvedAt      DateTime?
+  // ── Statystyki użycia ──
+  useCount        Int      @default(0)
+  lastUsedAt      DateTime?
+  successRate     Float    @default(0.0) // 0-1, obliczane z feedbacku
+  avgRating       Float    @default(0.0) // 0-5, ocena użytkownika
+  // ── Ewolucja ──
+  version         Int      @default(1)
+  previousVersion String?  // ID poprzedniej wersji skilla
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([familyId, name])
+  @@index([familyId])
+  @@index([category])
+  @@index([status])
+}
+
+// ── SELF-IMPROVEMENT LOG ──────────────────────
+
+model ImprovementLog {
+  id              String   @id @default(cuid())
+  familyId        String
+  type            String   // skill_proposal, personality_adjustment, problem_report, alternative_found
+  description     String   // co BOKA zauważyła/proponuje
+  evidence        String?  // JSON: dowody (np. trace rozmowy)
+  proposal        String?  // JSON: konkretna propozycja zmiany
+  status          String   @default("pending") // pending, approved, rejected, applied
+  approvedBy      String?
+  result          String?  // wynik po zastosowaniu
+  createdAt       DateTime @default(now())
+  resolvedAt      DateTime?
+
+  @@index([familyId])
+  @@index([type])
+  @@index([status])
+}
+
+// ── RYTUAŁY DNIA ──────────────────────────────
+
+model Ritual {
+  id          String   @id @default(cuid())
+  familyId    String
+  memberId    String?  // null = cały rodzina
+  name        String   // poranne_powitanie, wieczorne_podsumowanie, urodzina, rocznica
+  type        String   // daily, weekly, monthly, yearly, custom
+  time        String?  // HH:MM — kiedy rytuał się odbywa
+  dayOfWeek   Int?     // 0=nd, 1=pon, ..., 6=sob (dla weekly)
+  dayOfMonth  Int?     // dla monthly/yearly
+  month       Int?     // dla yearly
+  prompt      String   // co BOKA ma powiedzieć/zrobić
+  isActive    Boolean  @default(true)
+  lastTriggeredAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([familyId])
+  @@index([type])
+  @@index([isActive])
+}
+
+// ── FINANSE ─────────────────────────────────
+
+model Expense {
+  id          String   @id @default(cuid())
+  familyId    String
+  memberId    String
+  amount      Float
+  currency    String   @default("PLN")
+  category    String   // groceries, utilities, entertainment, etc.
+  description String?
+  date        DateTime
+  createdAt   DateTime @default(now())
+
+  family      Family   @relation(fields: [familyId], references: [id], onDelete: Cascade)
+
+  @@index([familyId, date])
+  @@index([category])
+}
+
+model Budget {
+  id           String   @id @default(cuid())
+  familyId     String
+  category     String
+  monthlyLimit Float
+  currency     String   @default("PLN")
+  activeFrom   DateTime
+  activeUntil  DateTime?
+  createdAt    DateTime @default(now())
+
+  family       Family   @relation(fields: [familyId], references: [id], onDelete: Cascade)
+
+  @@index([familyId])
+}
+
+// ── EDUKACJA ────────────────────────────────
+
+model LearningSession {
+  id           String   @id @default(cuid())
+  memberId     String
+  subject      String
+  topic        String?
+  difficulty   String   @default("easy")  // easy, intermediate, hard
+  score        Float?
+  durationMin  Int?
+  notes        String?
+  createdAt    DateTime @default(now())
+
+  member       FamilyMember @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  @@index([memberId])
+  @@index([subject])
+}
+
+// ── BEZPIECZEŃSTWO ──────────────────────────
+
+model SafetyEvent {
+  id            String   @id @default(cuid())
+  familyId      String
+  agentId       String?
+  riskLevel     String   // info, warning, high, critical
+  category      String?  // language, financial, physical, emotional
+  description   String
+  actionTaken   String?  // flagged, blocked, warned, filtered
+  userResponse  String?  // acknowledged, overridden, ignored
+  createdAt     DateTime @default(now())
+
+  family        Family   @relation(fields: [familyId], references: [id], onDelete: Cascade)
+
+  @@index([familyId])
+  @@index([riskLevel])
+}
+
+// ── PRZYPOMNIENIA (FUNCTION CALLING / TOOL USE) ──
+
+model Reminder {
+  id          String   @id @default(cuid())
+  familyId    String
+  memberId    String
+  title       String
+  description String?
+  dueDate     DateTime
+  category    String   @default("general")  // general, school, health, finance, social
+  priority    String   @default("normal")   // low, normal, high, urgent
+  isCompleted Boolean  @default(false)
+  completedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([familyId])
+  @@index([memberId])
+  @@index([dueDate])
+  @@index([isCompleted])
+}
+
+// ── PROAKTYWNE WIADOMOŚCI AI ──────────────────
+
+model ProactiveMessage {
+  id          String   @id @default(cuid())
+  familyId    String
+  memberId    String
+  message     String
+  triggerType String  // morning_greeting, after_school, evening, wellness, memory_recall, scheduled
+  urgency     String  @default("low")  // low, medium, high
+  wasSent     Boolean  @default(false)
+  wasRead     Boolean  @default(false)
+  sentAt      DateTime?
+  createdAt   DateTime @default(now())
+
+  @@index([familyId])
+  @@index([memberId])
+  @@index([wasSent])
+}
+
+// ── GENEROWANE OBRAZY ─────────────────────────
+
+model GeneratedImage {
+  id          String   @id @default(cuid())
+  familyId    String
+  memberId    String?
+  prompt      String
+  imageBase64 String   // stored as base64 (or URL if external)
+  size        String   @default("1024x1024")
+  style       String?
+  createdAt   DateTime @default(now())
+
+  @@index([familyId])
+  @@index([memberId])
+}
+
+// ═══════════════════════════════════════════════════════════
+// BOKA OS v0.3.0 — INSPIRED BY 12 OPEN-SOURCE FRAMEWORKS
+// Qdrant · Mem0 · LlamaIndex · PocketFlow · GraphRAG · Supermemory
+// DeepAgents · AutoGen · OpenAI Agents SDK · CrewAI · OpenHands · Isaac ROS
+// ═══════════════════════════════════════════════════════════
+
+// ── QDRANT-STYLE: wektorowe embeddings z filtrami ──
+// Każde MemoryEntry może mieć jeden embedding (1:1).
+// Filtry: memberId, domain, emotionTag, entryType, validUntil IS NULL.
+// Wyszukiwanie: cosine similarity z filtrami payloadu (jak Qdrant filter.must).
+model MemoryEmbedding {
+  id          String   @id @default(cuid())
+  memoryId    String   @unique  // 1:1 z MemoryEntry
+  familyId    String                       // denormalizacja dla szybkich filtrów
+  memberId    String?                      // filtr izolacji pamięci per osoba
+  domain      String?                      // filtr domeny
+  emotionTag  String?                      // filtr emocji
+  entryType   String                       // filtr typu
+  embedding   String   // JSON array of floats (sqlite nie ma native vector)
+  model       String   @default("text-embedding-3-small")
+  dim         Int      @default(1536)
+  createdAt   DateTime @default(now())
+
+  @@index([familyId])
+  @@index([memberId])
+  @@index([domain])
+  @@index([emotionTag])
+  @@index([entryType])
+}
+
+// ── MEM0: histor rewizji wspomnień (ADD/UPDATE/DELETE) ──
+// Gdy Mem0-algorytm decyduje UPDATE, stare wspomnienie dostaje supersededById.
+// Gdy DELETE, ustawiam validUntil. Gdy ADD, tworzony nowy rekord.
+model MemoryRevision {
+  id              String   @id @default(cuid())
+  memoryId        String   // które wspomnienie zrewidowano
+  action          String   // ADD | UPDATE | DELETE | NOOP
+  previousContent String?  // co było wcześniej (przy UPDATE/DELETE)
+  newContent      String?  // co jest teraz (przy ADD/UPDATE)
+  reason          String?  // dlaczego LLM-judge zdecydował tak a nie inaczej
+  similarityScore Float?   // jak podobne było do istniejącego (0-1)
+  judgedBy        String   @default("openrouter") // model użyty do osądu
+  createdAt       DateTime @default(now())
+
+  @@index([memoryId])
+  @@index([action])
+  @@index([createdAt])
+}
+
+// ── LLAMAINDEX: ingestion pipeline log ──
+// Każdy plik/URL wprowadzony do BOKA ma pipeline run z statusem per stage.
+model IngestionJob {
+  id              String   @id @default(cuid())
+  familyId        String
+  memberId        String?
+  sourceType      String   // file | url | text | image | audio | pdf
+  sourceUri       String   // ścieżka / URL / treść (jeśli text)
+  sourceName      String?  // oryginalna nazwa pliku
+  // ── Pipeline stages (LlamaIndex-style) ──
+  status          String   @default("pending")  // pending | loading | parsing | chunking | embedding | extracting | done | error
+  stageProgress   String   @default("{}")       // JSON: { loading: "done", parsing: "in_progress", ... }
+  // ── Wynik ──
+  chunksCreated   Int      @default(0)
+  memoriesCreated Int      @default(0)
+  entitiesCreated Int      @default(0)
+  errorMessage    String?
+  // ── Metadata ──
+  metadata        String   @default("{}")  // JSON: { mimeType, sizeBytes, language, ... }
+  startedAt       DateTime?
+  finishedAt      DateTime?
+  createdAt       DateTime @default(now())
+
+  @@index([familyId])
+  @@index([status])
+  @@index([sourceType])
+}
+
+// ── GRAPH RAG: encje i relacje (nad MemoryEntry) ──
+// Wyciągane cronem nocnym z nowych MemoryEntry.
+model Entity {
+  id          String   @id @default(cuid())
+  familyId    String
+  name        String   // kanoniczna nazwa (np. "Zuza", "szkoła", "kino")
+  type        String   // Person | Place | Activity | Emotion | Object | Organization | Date
+  aliases     String   @default("[]")  // JSON array — inne nazwy
+  description String?
+  // ── Community assignment ──
+  communityId String?  // do jakiej społeczności należy
+  // ── Statystyki ──
+  mentionCount Int     @default(0)
+  firstMentionedAt DateTime?
+  lastMentionedAt  DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([familyId, name])
+  @@index([familyId])
+  @@index([type])
+  @@index([communityId])
+}
+
+model EntityRelation {
+  id          String   @id @default(cuid())
+  familyId    String
+  sourceId    String   // Entity.id
+  targetId    String   // Entity.id
+  type        String   // visited | enjoys | struggles_with | knows | related_to | caused | part_of | friend_of | family_of
+  evidence    String?  // z którego MemoryEntry pochodzi (ID)
+  strength    Float    @default(0.5)
+  createdAt   DateTime @default(now())
+
+  @@unique([sourceId, targetId, type])
+  @@index([sourceId])
+  @@index([targetId])
+  @@index([type])
+}
+
+model Community {
+  id          String   @id @default(cuid())
+  familyId    String
+  level       Int      @default(0)  // hierarchia: 0 = najniższy, rośnie w górę
+  label       String?  // opcjonalna etykieta wygenerowana przez LLM ("Wakacje 2024")
+  summary     String?  // podsumowanie społeczności (LLM-generated)
+  memberIds   String   @default("[]")  // JSON: Entity IDs należące do społeczności
+  parentCommunityId String?  // dla hierarchii
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([familyId])
+  @@index([level])
+  @@index([parentCommunityId])
+}
+
+// ── SUPERMEMORY: historia rewizji SoulProfile ──
+// Gdy `/api/soul/:memberId/refresh` uruchamia LLM nad wspomnieniami,
+// zapisywana jest migawka poprzedniego profilu + diff.
+model SoulProfileRevision {
+  id              String   @id @default(cuid())
+  familyId        String
+  memberId        String?  // null = profil globalny BOKA (PersonalityProfile)
+  revisionNumber  Int
+  // ── Snapshot ──
+  traitsBefore    String?  // JSON
+  traitsAfter     String?  // JSON
+  interestsBefore String?  // JSON
+  interestsAfter  String?
+  communicationStyleBefore String?
+  communicationStyleAfter  String?
+  // ── Analiza ──
+  memoriesAnalyzed Int     @default(0)
+  reasoningSummary String? // krótki opis co się zmieniło
+  modelUsed        String?
+  createdAt        DateTime @default(now())
+
+  @@index([familyId])
+  @@index([memberId])
+  @@index([createdAt])
+}
+
+// ── DEEPAGENTS: todo-plan + vestibule filesystem ──
+// BOKA utrzymuje widoczny plan dnia/tygodnia + zrzuca długie konteksty do blobów.
+model BokaPlan {
+  id          String   @id @default(cuid())
+  familyId    String
+  memberId    String?  // null = plan rodziny
+  title       String   // np. "Plan dnia 2026-06-17"
+  steps       String   @default("[]")  // JSON: [{ id, text, status: pending|in_progress|done|skipped, createdAt, completedAt? }]
+  status      String   @default("active")  // active | completed | archived
+  scope       String   @default("daily")   // daily | weekly | monthly | adhoc
+  // ── Refleksja (DeepAgents subagent) ──
+  reflectionNotes String?  // co ReflectionSubagent wygenerował po zakończeniu
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([familyId])
+  @@index([memberId])
+  @@index([status])
+  @@index([scope])
+}
+
+// Vestibule filesystem — zrzut długich kontekstów poza okno LLM
+model ContextBlob {
+  id          String   @id @default(cuid())
+  familyId    String
+  memberId    String?
+  kind        String   // conversation_excerpt | memory_dump | tool_output | research_notes
+  title       String?
+  content     String   // pełna treść blobu
+  tokenCount  Int      @default(0)
+  // ── Retrieval ──
+  summary     String?  // krótki opis (LLM-generated) do decyzji czy przywołać
+  tags        String   @default("[]")  // JSON
+  accessCount Int      @default(0)
+  lastAccessedAt DateTime?
+  // ── Lifecycle ──
+  expiresAt   DateTime?  // optional TTL
+  createdAt   DateTime @default(now())
+
+  @@index([familyId])
+  @@index([memberId])
+  @@index([kind])
+  @@index([createdAt])
+}
+
+// ── AUTOGEN: asynchroniczne wiadomości między agentami ──
+// Actor-model multi-agent. Tematy: reflection, family_discussion, research, ritual.
+model AgentMessage {
+  id          String   @id @default(cuid())
+  familyId    String
+  fromAgent   String   // agent id (np. "orchestrator", "child_agent", "finance_agent")
+  toAgent     String?  // null = broadcast (do wszystkich agentów w temacie)
+  topic       String   // reflection | discussion | research | ritual | alert
+  payload     String   @default("{}")  // JSON: treść wiadomości + structured data
+  inReplyTo   String?  // AgentMessage.id — dla wątków
+  // ── Status ──
+  status      String   @default("queued")  // queued | delivered | read | processed
+  // ── Lifecycle ──
+  deliveredAt DateTime?
+  processedAt DateTime?
+  createdAt   DateTime @default(now())
+
+  @@index([familyId])
+  @@index([fromAgent])
+  @@index([toAgent])
+  @@index([topic])
+  @@index([status])
+  @@index([createdAt])
+}
+
+// ── OPENAI AGENTS SDK: sesje konwersacyjne z summarize-and-keep ──
+// Sesja per member — długie rozmowy są kompresowane do summarizedHistory.
+model ConversationSession {
+  id                String   @id @default(cuid())
+  familyId          String
+  memberId          String
+  // ── Stan okna ──
+  recentMessages    String   @default("[]")  // JSON: ostatnie N wiadomości (pełne)
+  summarizedHistory String?                  // LLM-generated podsumowanie starszych wiadomości
+  totalMessages     Int      @default(0)     // łącznie wiadomości w sesji
+  summarizedUpTo    Int      @default(0)     // ile wiadomości jest podsumowanych
+  // ── Guardrails (input/output) ──
+  guardrailFlags    String   @default("[]")  // JSON: aktywne guardraille
+  lastGuardrailHit  String?
+  // ── Lifecycle ──
+  lastActivityAt    DateTime @default(now())
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@unique([familyId, memberId])
+  @@index([familyId])
+  @@index([memberId])
+}
+
+// ── CREWAI: role/backstory per member ──
+// Każdy FamilyMember ma crew role generowane z SoulProfile.
+// Manager Agent ewaluuje cotygodniowo i aktualizuje.
+model CrewMember {
+  id              String   @id @default(cuid())
+  familyId        String
+  memberId        String   @unique  // 1:1 z FamilyMember
+  role            String   // np. "opiekunka wspomnień", "skarbnik rodziny"
+  goal            String   // cel tego agenta w crew
+  backstory       String   // 2-3 zdania historii
+  // ── Manager Agent evaluation ──
+  lastEvaluatedAt DateTime?
+  evaluationScore Float?   // 0-1, jak dobrze agent spełnia rolę
+  evaluationNotes String?  // JSON — co Manager zasugerował poprawić
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([familyId])
+}
+
+// ── OPENHANDS: sandboxed app execution log ──
+// apps-manager uruchamia mini-apki w izolacji (worker_threads / vm).
+model SandboxExecution {
+  id              String   @id @default(cuid())
+  familyId        String
+  appId           String?
+  appName         String?
+  // ── Request ──
+  inputType       String   // text | file | function_call
+  inputPayload    String   // JSON
+  // ── Sandbox config ──
+  sandboxKind     String   @default("worker_thread")  // worker_thread | vm | docker
+  timeoutMs       Int      @default(10000)
+  memoryLimitMb   Int      @default(64)
+  // ── Result ──
+  status          String   @default("pending")  // pending | running | success | error | timeout | killed
+  outputPayload   String?  // JSON
+  errorMessage    String?
+  securityFlags   String   @default("[]")  // JSON: violations detected
+  // ── Timing ──
+  startedAt       DateTime?
+  finishedAt      DateTime?
+  durationMs      Int?
+  createdAt       DateTime @default(now())
+
+  @@index([familyId])
+  @@index([appId])
+  @@index([status])
+}
+
+// ── ISAAC ROS: presence detection events ──
+// Lokalna kamera + onnxruntime-node wykrywa people + re-identification per member.
+// Tylko metadane (nie surowe klatki) trafiają do bazy.
+model PresenceEvent {
+  id              String   @id @default(cuid())
+  familyId        String
+  memberId        String?  // jeśli rozpoznano konkretnego domownika
+  eventKind       String   // arrived | present | left | unknown_person
+  // ── Context ──
+  location        String?  // room label (np. "salon", "kuchnia")
+  confidence      Float?   // 0-1 pewność re-identification
+  // ── Triggered actions ──
+  triggerFired    String?  // np. "ritual:after_school", "proactive:greeting"
+  triggeredMessageId String?  // ProactiveMessage.id jeśli wysłano
+  // ── Privacy ──
+  captureMethod   String   @default("metadata_only")  // metadata_only | thumbnail_blurred
+  createdAt       DateTime @default(now())
+
+  @@index([familyId])
+  @@index([memberId])
+  @@index([eventKind])
+  @@index([createdAt])
+}
+
+// ═══════════════════════════════════════════════════════════
+// v0.3.15 — DOCUMENT AI: umowy + dokumenty księgowe/administracyjne
+// Analiza prawna + generowanie dokumentów
+// Obszary prawa: rodzinne · budowlane · prawa autorskie
+// ═══════════════════════════════════════════════════════════
+
+// ── DOKUMENTY: upload + OCR + metadane ──
+// PDF/obraz → ekstrakcja tekstu (OCR) → analiza prawna przez LLM
+model LegalDocument {
+  id              String   @id @default(cuid())
+  familyId        String
+  // ── Original upload ──
+  title           String   // nazwa nadana przez usera lub z OCR
+  fileName        String   // oryginalna nazwa pliku
+  fileType        String   // pdf | png | jpg | jpeg | webp | tiff
+  fileSize        Int      // bytes
+  // ── Storage ──
+  // Plik zapisany w /home/z/boka-memory/documents/{id}.{ext}
+  // Tekst ekstrahowany w documentText
+  documentText    String?  // ekstrahowany tekst (PDF parse lub OCR)
+  ocrConfidence   Float?   // 0-1 jeśli OCR
+  ocrEngine       String?  // tesseract | pdf-parse | manual
+  // ── Analiza ──
+  documentKind    String?  // umowa | akt | pismo | regulamin | inny
+  legalArea       String?  // family | construction | copyright | mixed | other
+  analysisJson    String?  // JSON: { summary, parties, keyDates, obligations, risks, recommendations }
+  analyzedAt      DateTime?
+  // ── Q&A history (multimodal RAG) ──
+  // Każde pytanie usera + odpowiedź BOKA na podstawie tego dokumentu
+  // przechowywane w DocumentQA osobno
+  // ── Meta ──
+  tags            String   @default("[]")  // JSON: ["umowa","najem","2025"]
+  notes           String?  // notatka usera
+  isArchived      Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  qaHistory       DocumentQA[]
+
+  @@index([familyId])
+  @@index([legalArea])
+  @@index([documentKind])
+  @@index([createdAt])
+}
+
+// ── Q&A: pytania do konkretnego dokumentu ──
+model DocumentQA {
+  id              String   @id @default(cuid())
+  documentId      String
+  familyId        String
+  question        String
+  answer          String
+  // ── Meta ──
+  tokensUsed      Int?
+  model           String?
+  createdAt       DateTime @default(now())
+
+  document        LegalDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@index([documentId])
+  @@index([familyId])
+  @@index([createdAt])
+}
+
+// ── SZABLONY: gotowe szablony umów/pism ──
+// Wbudowane szablony + szablony użytkownika (custom)
+model DocumentTemplate {
+  id              String   @id @default(cuid())
+  familyId        String?  // null = wbudowany systemowy, != null = usera
+  // ── Template metadata ──
+  templateKey     String   // np. "umowa-najmu-mieszkania"
+  title           String   // "Umowa najmu mieszkania"
+  description     String?  // krótki opis kiedy stosować
+  legalArea       String   // family | construction | copyright | mixed | admin
+  documentKind    String   // umowa | pismo | wniosek | oświadczenie | protokół | faktura
+  // ── Template body ──
+  // Treść z polami {{field_name}} do wypełnienia przez usera
+  templateBody    String   // pełna treść szablonu z placeholderami
+  fieldsJson      String   // JSON: [{ key, label, type, required, default, hint }]
+  // ── Meta ──
+  isBuiltIn       Boolean  @default(false)
+  isArchived      Boolean  @default(false)
+  usageCount      Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([familyId])
+  @@index([legalArea])
+  @@index([documentKind])
+  @@unique([templateKey, familyId])
+}
+
+// ── GENERATED: dokumenty wygenerowane z szablonów ──
+// User wypełnił pola → BOKA wygenerował docelowy dokument
+model GeneratedDocument {
+  id              String   @id @default(cuid())
+  familyId        String
+  // ── Source ──
+  templateId      String?  // jeśli z szablonu (null = generated from scratch by LLM)
+  templateKey     String?  // snapshot key w razie usunięcia szablonu
+  // ── Output ──
+  title           String
+  legalArea       String   // family | construction | copyright | mixed | admin
+  documentKind    String   // umowa | pismo | wniosek | ...
+  finalText       String   // pełna treść z wypełnionymi polami
+  fieldsValues    String   // JSON: wartości pól podane przez usera
+  // ── Meta ──
+  notes           String?
+  isArchived      Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([familyId])
+  @@index([legalArea])
+  @@index([documentKind])
+  @@index([createdAt])
+}
+
+// ═══════════════════════════════════════════════════════════
+// v0.3.16 — MCP (Model Context Protocol) + CLI bridge
+// ═══════════════════════════════════════════════════════════
+
+// ── MCP SERVERS: konfiguracja serwerów MCP ──
+// BOKA działa jako MCP client — łączy się z zewnętrznymi serwerami MCP
+// (Higgsfield, filesystem, browser, custom) i wykonuje ich tools
+model McpServer {
+  id              String   @id @default(cuid())
+  familyId        String?  // null = globalny, != null = per-family
+  // ── Server config ──
+  name            String   // "Higgsfield", "Filesystem", "Browser"
+  description     String?
+  serverType      String   // "stdio" | "sse" | "http" | "builtin"
+  // ── Connection ──
+  // Dla stdio: command + args + env
+  // Dla sse/http: url + headers
+  command         String?  // np. "npx", "python", "node"
+  args            String?  // JSON array: ["-y", "@modelcontextprotocol/server-filesystem"]
+  env             String?  // JSON object: {"API_KEY": "..."}
+  url             String?  // dla sse/http
+  headers         String?  // JSON object dla http
+  // ── Built-in ──
+  // Jeśli serverType = "builtin", używamy wbudowanej implementacji
+  // (higgsfield | filesystem | browser | boka-tools)
+  builtinKey      String?  // klucz wbudowanego serwera
+  // ── State ──
+  isActive        Boolean  @default(true)
+  isConnected     Boolean  @default(false)
+  lastConnectedAt DateTime?
+  lastError       String?
+  // ── Tools cache ──
+  // Lista tools oferowanych przez serwer (cache po initialize)
+  toolsJson       String?  // JSON: [{ name, description, inputSchema }]
+  toolsUpdatedAt  DateTime?
+  // ── Meta ──
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  invocations     McpInvocation[]
+
+  @@index([familyId])
+  @@index([serverType])
+  @@index([builtinKey])
+}
+
+// ── MCP INVOCATIONS: historia wywołań tools ──
+model McpInvocation {
+  id              String   @id @default(cuid())
+  serverId        String
+  familyId        String?
+  // ── Invocation ──
+  toolName        String   // np. "generate_video", "read_file", "navigate"
+  argumentsJson   String   // JSON: arguments przekazane do tool
+  resultJson      String?  // JSON: wynik (lub null jeśli błąd)
+  error           String?
+  durationMs      Int?
+  // ── Context ──
+  triggeredBy     String?  // "user" | "chat" | "cli" | "mcp-tab"
+  chatMessageId   String?  // jeśli wywołane z chatu
+  // ── Meta ──
+  createdAt       DateTime @default(now())
+
+  server          McpServer @relation(fields: [serverId], references: [id], onDelete: Cascade)
+
+  @@index([serverId])
+  @@index([familyId])
+  @@index([toolName])
+  @@index([createdAt])
+}
+
+// ── CLI SESSIONS: historia komend CLI BOKA ──
+// BOKA CLI — terminal w przeglądarce, wykonuje komendy
+// (lokalne polecenia shell, lub komendy BOKA: "boka memory list", etc.)
+model CliSession {
+  id              String   @id @default(cuid())
+  familyId        String?
+  // ── Session ──
+  name            String?  // nazwa sesji (np. "Project X debug")
+  cwd             String?  // current working directory
+  shell           String   @default("bash")  // bash | powershell | cmd
+  // ── Meta ──
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  commands        CliCommand[]
+
+  @@index([familyId])
+}
+
+// ── CLI COMMANDS: historia wykonanych komend ──
+model CliCommand {
+  id              String   @id @default(cuid())
+  sessionId       String
+  // ── Command ──
+  command         String   // pełna komenda usera
+  workingDir      String?
+  // ── Result ──
+  exitCode        Int?
+  stdout          String?  // może być obcięte (max ~64KB)
+  stderr          String?
+  durationMs      Int?
+  // ── AI assist ──
+  // Jeśli user poprosił BOKĘ o interpretację wyników
+  aiInterpretation String?
+  // ── Meta ──
+  createdAt       DateTime @default(now())
+
+  session         CliSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId])
+  @@index([createdAt])
+}
+
+// ── CHAT ATTACHMENTS: pliki wrzucone do chatu (drag&drop) ──
+// Każdy attachment jest ekstrahowany (image→VLM, audio→ASR, txt/pdf→text)
+// i summary jest dołączane do wiadomości usera przed wysłaniem do LLM
+model ChatAttachment {
+  id              String   @id @default(cuid())
+  familyId        String
+  // ── File ──
+  fileName        String
+  fileType        String   // mime: image/png, audio/mp3, text/plain, application/pdf
+  fileSize        Int
+  // ── Storage ──
+  // Plik zapisany w /home/z/boka-memory/attachments/{id}.{ext}
+  storedPath      String
+  // ── Extracted content ──
+  // Dla obrazu: opis od VLM
+  // Dla audio: transkrypcja od ASR
+  // Dla txt/pdf: ekstrahowany tekst
+  extractedText   String?
+  extractionKind  String?  // vlm | asr | pdf-text | plain-text | unsupported
+  extractionMs    Int?
+  // ── Thumbnail (dla obrazów) ──
+  thumbnailDataUrl String?  // base64 data URL (max 200x200)
+  // ── Meta ──
+  createdAt       DateTime @default(now())
+
+  @@index([familyId])
+  @@index([fileType])
+  @@index([createdAt])
+}
+
+// ═══════════════════════════════════════════════════════════
+// v0.3.17 — PRIVACY LAYER: Audit Log + Forget API
+// Roadmap mówi: "Privacy Layer od Dnia 1"
+// Każda decyzja agenta jest logowana. User może powiedzieć "zapomnij".
+// ═══════════════════════════════════════════════════════════
+
+// ── AUDIT LOG: każda decyzja agenta ──
+// Co BOKA zrobiła i DLACZEGO. User widzi w GUI "Dlaczego to zrobiłam?".
+model AuditLog {
+  id              String   @id @default(cuid())
+  familyId        String
+  // ── Decision context ──
+  agentId         String?  // który agent (boka-main, boka-debate-creator, boka-debate-critic, mcp-tool, vision, ha-bridge)
+  messageId       String?  // powiązana wiadomość (jeśli dotyczy)
+  conversationId  String?  // powiązana rozmowa
+  // ── What & why ──
+  action          String   // np. "responded", "called_tool", "extracted_memory", "deleted_memory", "called_ha", "captured_vision"
+  category        String   // memory | tool_use | vision | home_automation | proactivity | guardrail | privacy
+  reasoning       String   // 1-3 zdania DLA CZEGO agent to zrobił
+  inputSummary    String?  // krótki opis wejścia (np. "user zapytał o X")
+  outputSummary   String?  // krótki opis wyniku
+  // ── Risk / safety ──
+  riskLevel       String   @default("info")  // info | low | medium | high | critical
+  // ── Full context (JSON) ──
+  contextJson     String?  // pełne argumenty/wejście (do debugu)
+  // ── Privacy ──
+  forgettable     Boolean  @default(true)  // czy ta decyzja może być zapomniana
+  forgottenAt     DateTime?  // jeśli soft-deleted przez Forget API
+  // ── Meta ──
+  createdAt       DateTime @default(now())
+
+  @@index([familyId])
+  @@index([agentId])
+  @@index([category])
+  @@index([riskLevel])
+  @@index([createdAt])
+  @@index([conversationId])
+}
+
+// ── FORGET REQUEST: user prosi BOKĘ o zapomnienie ──
+// Soft delete → po 30 dniach hard delete.
+// Status: pending (czeka) → soft_deleted (wspomnienia ukryte) → hard_deleted (trwale usunięte) | cancelled
+model ForgetRequest {
+  id              String   @id @default(cuid())
+  familyId        String
+  memberId        String?  // kto poprosił (członek rodziny)
+  // ── Scope ──
+  scope           String   // all | topic | conversation | entity | time_range
+  query           String?  // co zapomnieć (np. "rozmowa o Ani", "wczoraj wieczorem")
+  topic           String?  // temat (LLM-extracted)
+  conversationId  String?  // jeśli scope=conversation
+  entityId        String?  // jeśli scope=entity
+  // ── Affected items ──
+  memoryEntryIds  String   @default("[]")  // JSON array
+  auditLogIds     String   @default("[]")  // JSON array
+  affectedCount   Int      @default(0)
+  // ── Lifecycle ──
+  status          String   @default("pending")  // pending | soft_deleted | hard_deleted | cancelled
+  requestedAt     DateTime @default(now())
+  softDeletedAt   DateTime?
+  hardDeleteAt    DateTime?  // scheduled = requestedAt + 30 days
+  cancelledAt     DateTime?
+  cancelReason    String?
+  // ── Audit ──
+  triggeredBy     String   @default("voice")  // voice | gui | api | auto
+  // ── Meta ──
+  createdAt       DateTime @default(now())
+
+  @@index([familyId])
+  @@index([memberId])
+  @@index([status])
+  @@index([hardDeleteAt])
+}
+
+// ── HOME ASSISTANT: cache encji HA ──
+// L11 Desktop/Home Manipulation — most między BOKA a fizycznym domem.
+model HomeAssistantEntity {
+  id              String   @id @default(cuid())
+  familyId        String
+  entityId        String   // np. light.salon, sensor.temperature_salon
+  friendlyName    String
+  domain          String   // light, switch, sensor, climate, media_player, ...
+  state           String
+  attributesJson  String   @default("{}")
+  lastUpdated     DateTime?
+  // ── Meta ──
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([familyId, entityId])
+  @@index([familyId])
+  @@index([domain])
+}
+
+// ── VISION SNAPSHOT: klatka z kamery + opis Moondream ──
+// L7 Perception. BOKA widzi otoczenie bez słowa kluczowego.
+model VisionSnapshot {
+  id              String   @id @default(cuid())
+  familyId        String
+  // ── Image ──
+  imagePath       String   // /home/z/boka-memory/vision/{id}.jpg
+  width           Int?
+  height          Int?
+  // ── AI description ──
+  model           String   // moondream:1.8b | llava:7b | glm-4v
+  description     String   // opis sceny po polsku
+  sceneSummary    String?  // 1 zdanie — do triggerów
+  // ── Detection ──
+  detectedObjects String   @default("[]")  // JSON array: ["kitchen", "person", "morning"]
+  moodLabel       String?  // calm | busy | empty | cooking | sleeping | working
+  // ── Trigger ──
+  triggeredAction String?  // jeśli wyzwoliło akcję (np. "proactive: poranne kawa")
+  triggerReason   String?  // dlaczego zostało zrobione zdjęcie (interval | motion | command)
+  // ── Privacy ──
+  retained        Boolean  @default(true)  // czy zachować (false = usuń po 24h)
+  // ── Meta ──
+  capturedAt      DateTime @default(now())
+  createdAt       DateTime @default(now())
+
+  @@index([familyId])
+  @@index([capturedAt])
+  @@index([moodLabel])
+}
+
+// ── CONSENT: zgody domowników ──
+// Roadmap: "Consent dashboard w USTAWIENIA BOKI"
+// Każdy członek rodziny może zarządzać zgodami: voice, vision, memory, ha, proactive.
+model ConsentRecord {
+  id              String   @id @default(cuid())
+  familyId        String
+  memberId        String
+  // ── Consents ──
+  voiceEnabled    Boolean  @default(true)
+  visionEnabled   Boolean  @default(false)  // domyślnie OFF — wymaga jawnej zgody
+  memoryEnabled   Boolean  @default(true)
+  haControlEnabled Boolean @default(false)  // czy BOKA może sterować HA
+  proactiveEnabled Boolean @default(true)
+  // ── Restrictions ──
+  restrictedTopics String  @default("[]")  // JSON array tematów zabronionych
+  // ── Meta ──
+  updatedAt       DateTime @updatedAt
+  createdAt       DateTime @default(now())
+
+  @@unique([familyId, memberId])
+  @@index([familyId])
+}
+
+// ═══════════════════════════════════════════════════════════
+// AGENT MEMORY — port z github.com/rohitg00/agentmemory
+// Hybrydowa pamięć: obserwacje → kompresja → memories (semantyka)
+// BM25 search + auto-forget + consolidation pipeline.
+// ═══════════════════════════════════════════════════════════
+
+// ── Sesja pracy agenta (jedna konwersacja / zadanie) ──
+model AgentSession {
+  id              String   @id @default(cuid())
+  familyId        String?
+  project         String                  // np. "boka" / "research"
+  cwd             String?
+  startedAt       DateTime @default(now())
+  endedAt         DateTime?
+  status          String   @default("active")  // active | completed | abandoned
+  observationCount Int     @default(0)
+  model           String?
+  tags            String   @default("[]")      // JSON
+  firstPrompt     String?
+  summary         String?
+  agentId         String?
+
+  @@index([familyId])
+  @@index([project])
+  @@index([status])
+}
+
+// ── Surowa obserwacja — zdarzenie z hooka (tool call, prompt, etc.) ──
+model AgentObservation {
+  id              String   @id @default(cuid())
+  sessionId       String
+  familyId        String?
+  timestamp       DateTime @default(now())
+  hookType        String                    // session_start | prompt_submit | ...
+  type            String?                   // file_read | command_run | ...
+  toolName        String?
+  toolInput       String?                   // JSON
+  toolOutput      String?                   // JSON
+  userPrompt      String?
+  assistantResponse String?
+  title           String?
+  narrative       String?                   // skompresowana treść
+  facts           String   @default("[]")   // JSON array
+  concepts        String   @default("[]")   // JSON array
+  files           String   @default("[]")   // JSON array
+  importance      Float    @default(0.5)    // 0..1
+  confidence      Float?
+  agentId         String?
+  raw             String?                   // pełny JSON payload
+
+  @@index([sessionId])
+  @@index([familyId])
+  @@index([timestamp])
+  @@index([type])
+}
+
+// ── Pamięć semantyczna — skonsolidowana lekcja ──
+model AgentMemory {
+  id              String   @id @default(cuid())
+  familyId        String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  type            String                    // pattern | preference | architecture | bug | workflow | fact
+  title           String
+  content         String
+  concepts        String   @default("[]")   // JSON array
+  files           String   @default("[]")   // JSON array
+  sessionIds      String   @default("[]")   // JSON array
+  strength        Float    @default(7)      // 0..10
+  version         Int      @default(1)
+  parentId        String?
+  supersedes      String   @default("[]")   // JSON array
+  relatedIds      String   @default("[]")   // JSON array
+  sourceObservationIds String @default("[]")  // JSON array
+  isLatest        Boolean  @default(true)
+  forgetAfter     DateTime?
+  lastAccessedAt  DateTime?
+  accessCount     Int      @default(0)
+  agentId         String?
+  project         String?
+  tags            String   @default("[]")   // JSON array
+  visibility      String   @default("family")  // v3: family | child-safe | adult-only | private
+
+  @@index([familyId])
+  @@index([type])
+  @@index([project])
+  @@index([isLatest])
+  @@index([strength])
+  @@index([forgetAfter])
+  @@index([visibility])
+}
+
+// ── Audit log — każdy zapis/usunięcie/modyfikacja ──
+model AgentMemoryAudit {
+  id              String   @id @default(cuid())
+  familyId        String?
+  timestamp       DateTime @default(now())
+  action          String                    // create | update | delete | access | forget | consolidate
+  resource        String                    // memory | observation | session
+  resourceId      String
+  reason          String?
+  actor           String                    // system | user | agent | auto-forget | consolidation
+  metadata        String?                   // JSON
+
+  @@index([familyId])
+  @@index([timestamp])
+  @@index([resource, resourceId])
+  @@index([action])
+}

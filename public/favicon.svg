@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#0f0f1a"/>
+      <stop offset="100%" stop-color="#0a0a0f"/>
+    </radialGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="rgba(0,245,212,0.15)"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </radialGradient>
+    <filter id="neon">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Dark background circle -->
+  <circle cx="256" cy="256" r="256" fill="url(#bg)"/>
+  
+  <!-- Inner glow -->
+  <circle cx="256" cy="256" r="200" fill="url(#glow)"/>
+  
+  <!-- Main waveform circle — organic wavy shape -->
+  <g filter="url(#neon)">
+    <path d="
+      M 256 116
+      C 290 110, 330 130, 348 156
+      C 365 180, 370 200, 378 220
+      C 388 244, 400 252, 396 268
+      C 392 288, 380 310, 368 330
+      C 355 348, 338 365, 316 376
+      C 296 386, 276 392, 256 396
+      C 236 392, 210 384, 192 372
+      C 172 358, 155 340, 144 318
+      C 134 298, 120 278, 118 256
+      C 116 234, 128 210, 140 190
+      C 154 168, 172 150, 196 136
+      C 218 124, 236 118, 256 116
+      Z
+    " fill="none" stroke="#00f5d4" stroke-width="8" stroke-linecap="round"/>
+  </g>
+  
+  <!-- Inner waveform ring -->
+  <g filter="url(#neon)" opacity="0.5">
+    <path d="
+      M 256 186
+      C 272 182, 296 192, 310 206
+      C 322 218, 330 234, 326 250
+      C 322 268, 312 284, 298 296
+      C 284 306, 270 312, 256 314
+      C 240 312, 224 304, 212 292
+      C 200 278, 190 262, 188 246
+      C 186 230, 194 214, 206 202
+      C 220 190, 238 184, 256 186
+      Z
+    " fill="none" stroke="#00f5d4" stroke-width="4" stroke-linecap="round"/>
+  </g>
+  
+  <!-- Center dot -->
+  <circle cx="256" cy="256" r="8" fill="#00f5d4" opacity="0.7"/>
+  <circle cx="256" cy="256" r="4" fill="#00f5d4"/>
+  
+  <!-- Subtle outer pulse ring -->
+  <circle cx="256" cy="256" r="180" fill="none" stroke="#00f5d4" stroke-width="1.5" opacity="0.2" stroke-dasharray="8 16"/>
+</svg>
